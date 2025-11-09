@@ -9,7 +9,7 @@ const routes = [
     path: '/login',
     name: 'login',
     component:LoginComponent
-  },
+  }, 
   {
     path:'/',
     component:MainLayout,

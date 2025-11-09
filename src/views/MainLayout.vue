@@ -1,35 +1,62 @@
 <template>
-  <q-layout view="lHh Lpr lFf">
-    <q-header class="text-white banner">
-      <q-toolbar>
-        <q-btn flat round dense icon="menu" @click="toggleLeftDrawer" />
-        <q-toolbar-title>MES Dashboard</q-toolbar-title>
+  <q-layout view="hHh Lpr lFf">
+    <!-- 上方標題列 -->
+    <q-header class="text-white">
+      <q-toolbar class="banner">
+        <div class="col-1">
+          <q-btn size="2" @click="toggleLeftDrawer">
+            <q-item-section avatar>
+              <q-icon :name="matMenu" />
+            </q-item-section>
+          </q-btn>
+        </div>
+        <div class="col-9">MES Dashboard</div>
+        <div class="col-2">{{ Account.accountName }}，你好!</div>
       </q-toolbar>
     </q-header>
 
-    <!-- 將 Menu 抽成 Component -->
-    <Menu v-model="leftDrawerOpen" @navigate="goTo" />
+    <!-- 左側選單 -->
+    <SideMenu v-model="leftDrawerOpen" />
 
+    <!-- 主內容區 -->
     <q-page-container>
       <router-view />
     </q-page-container>
   </q-layout>
 </template>
 
-<script setup>
+<script>
+import {
+  QLayout, QHeader, QToolbar, QBtn, QPageContainer,
+  QItemSection, QIcon, SessionStorage
+} from 'quasar'
+import { matMenu } from '@quasar/extras/material-icons'
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
-import Menu from '@/components/Menu.vue'
+import SideMenu from '../components/SideMenu.vue'
 
-const router = useRouter()
-const leftDrawerOpen = ref(true)
+export default {
+  name: 'MainLayout',
+  components: {
+    QLayout, QHeader, QToolbar, QBtn, QPageContainer,
+    QItemSection, QIcon, SideMenu
+  },
+  setup() {
+    const Account = SessionStorage.getItem('Account')
+    const leftDrawerOpen = ref(true)
 
-function toggleLeftDrawer() {
-  leftDrawerOpen.value = !leftDrawerOpen.value
-}
+    function toggleLeftDrawer() {
+      leftDrawerOpen.value = !leftDrawerOpen.value
+    }
 
-function goTo(path) {
-  router.push(path)
+    return {
+      Account,
+      leftDrawerOpen,
+      toggleLeftDrawer,
+      useRouter,
+      matMenu
+    }
+  }
 }
 </script>
 
@@ -37,5 +64,6 @@ function goTo(path) {
 .banner {
   background-color: #484745;
   height: 10vh;
+  font-size: 3dvh;
 }
 </style>
