@@ -4,6 +4,7 @@ import DashboardComponent from '@/views/DashboardView.vue'
 import ReportPage from '@/views/ReportView.vue'
 import SettingPage from '@/views/SystemSettingsView.vue'
 import MainLayout from '@/views/MainLayout.vue'
+import UserManagementView from '@/views/UserManagementView.vue'
 const routes = [
   { 
     path: '/login',
@@ -16,7 +17,9 @@ const routes = [
     children:[
       { path: 'dashboard', component: DashboardComponent },
       { path: 'report', component: ReportPage },
-      { path: 'setting', component: SettingPage }
+      { path: 'setting', component: SettingPage},
+      { path: 'setting/user', component:UserManagementView},
+      { path: 'setting/role', component: () => import('@/views/RoleManagementView.vue') },
     ]
   },
   {

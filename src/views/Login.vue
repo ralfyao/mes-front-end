@@ -15,9 +15,12 @@
                 </div> 
                 <br>
                 <div class="row">
-                    <div class="col-6"><button class="btn btn-primary col-12" @click="login" :loading="loading">登入</button></div>
-                    <div class="col-6"><button class="btn btn-info  col-12" @click="reset">清除</button></div>
-                     &nbsp;
+                    <div class="q-pa-md q-gutter-sm">
+                        <q-btn color="primary" @click="login" style="width: 175px;"  :loading="loading" label="登入"></q-btn>
+                    </div>
+                    <div class="q-pa-md q-gutter-md">
+                        <q-btn color="info" @click="reset" style="width: 175px;" label="清除"></q-btn>
+                    </div>
                 </div>
             </q-card-section>
             <q-card-section v-if="errorMessage" class="text-negative text-center">
@@ -66,7 +69,7 @@
 <script>
 import { ref } from 'vue';
 import { useUserStore } from '@/composables/useUser';
-import { QPageContainer, QLayout, QCard, QPage, QCardSection } from 'quasar' ;
+import { QPageContainer, QLayout, QCard, QPage, QCardSection, QBtn } from 'quasar' ;
 import { SessionStorage } from 'quasar';
 import router from '@/router';
 export default {
@@ -74,7 +77,7 @@ export default {
     components:{
         QCard,
         QPage,
-        QLayout,QPageContainer, QCardSection,
+        QLayout,QPageContainer, QCardSection, QBtn
     },
     setup(){
         const thisuser = useUserStore();

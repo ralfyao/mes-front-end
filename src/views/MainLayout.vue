@@ -3,10 +3,10 @@
     <!-- 上方標題列 -->
     <q-header class="text-white">
       <q-toolbar class="banner">
-        <div class="col-1">
-          <q-btn size="2" @click="toggleLeftDrawer">
+        <div class="col">
+          <q-btn @click="toggleLeftDrawer">
             <q-item-section avatar>
-              <q-icon :name="matMenu" />
+              <q-icon name="menu" size="lg" />
             </q-item-section>
           </q-btn>
         </div>
