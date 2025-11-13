@@ -16,6 +16,7 @@
                   <q-item
                     v-for="menuSub in menu.menuSubList"
                     clickable
+                    class="bg-grey-2"
                     v-ripple
                     @click="goTo(menuSub.menuSubUrl)"
                     :key="menuSub.menuSubID"
@@ -33,11 +34,13 @@
 <script setup>
 import { computed, defineProps, defineEmits, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { useMenuStore } from '@/composables/useMenus';
-import { QDrawer, QList, QItem, QItemSection, 
-  QExpansionItem, 
+import { useMenuStore } from '@/composables/useMenus'
+import {
+  QDrawer, QList, QItem, QItemSection,
+  QExpansionItem,
   SessionStorage,
-  QIcon } from 'quasar'
+  QIcon
+} from 'quasar'
 
 const props = defineProps({
   modelValue: {
@@ -46,19 +49,19 @@ const props = defineProps({
   }
 })
 const emit = defineEmits(['update:modelValue'])
-const menuList = ref([]);
+const menuList = ref([])
 
 onMounted(async () => {
   // You can add any setup logic here if needed
-  const menuStore = useMenuStore();
-  const account = SessionStorage.getItem('Account');
-  console.log('account in SideMenu:', account);
+  const menuStore = useMenuStore()
+  const account = SessionStorage.getItem('Account')
+  console.log('account in SideMenu:', account)
   await menuStore.getMenus(account.account).then(menus => {
-    console.log('menus in SideMenu:', menus);
+    console.log('menus in SideMenu:', menus)
     menus.forEach(menu => {
-      menuList.value.push(menu);
-    });
-  });
+      menuList.value.push(menu)
+    })
+  })
 })
 
 const drawer = computed({
@@ -67,7 +70,7 @@ const drawer = computed({
 })
 
 const router = useRouter()
-function goTo(path) {
+function goTo (path) {
   router.push(path)
 }
 </script>

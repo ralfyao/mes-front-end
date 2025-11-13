@@ -6,25 +6,27 @@ import SettingPage from '@/views/SystemSettingsView.vue'
 import MainLayout from '@/views/MainLayout.vue'
 import UserManagementView from '@/views/UserManagementView.vue'
 const routes = [
-  { 
+  {
     path: '/login',
     name: 'login',
-    component:LoginComponent
-  }, 
+    component: LoginComponent
+  },
   {
-    path:'/',
-    component:MainLayout,
-    children:[
+    path: '/',
+    component: MainLayout,
+    children: [
       { path: 'dashboard', component: DashboardComponent },
       { path: 'report', component: ReportPage },
-      { path: 'setting', component: SettingPage},
-      { path: 'setting/user', component:UserManagementView},
+      { path: 'setting', component: SettingPage },
+      { path: 'setting/user', component: UserManagementView },
       { path: 'setting/role', component: () => import('@/views/RoleManagementView.vue') },
+      { path: 'setting/userrole', component: () => import('@/views/UserRole.vue') },
+      { path: 'product', component: () => import('@/views/ProductView.vue') }
     ]
   },
   {
-    path:'/:pathMatch(.*)*',//捕捉所有未知路由
-    redirect:'/login'
+    path: '/:pathMatch(.*)*', // 捕捉所有未知路由
+    redirect: '/login'
   }
 ]
 

@@ -5,12 +5,12 @@
 </template>
 <script>
 export default {
-    name: 'RoleComponent',
-    setup() {
-        // 組件邏輯
-        return{
-            
-        }
+  name: 'RoleComponent',
+  setup () {
+    // 組件邏輯
+    return {
+
     }
+  }
 }
 </script>

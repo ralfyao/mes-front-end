@@ -11,7 +11,9 @@
           </q-btn>
         </div>
         <div class="col-9">MES Dashboard</div>
-        <div class="col-2">{{ Account.accountName }}，你好!</div>
+        <div class="col-2">{{ Account.accountName }}，你好!
+        <q-btn flat rounded @click="logout"><h6>登出</h6></q-btn>
+        </div>
       </q-toolbar>
     </q-header>
 
@@ -21,6 +23,10 @@
     <!-- 主內容區 -->
     <q-page-container>
       <router-view />
+
+      <q-footer elevated class="bg-grey-9 text-white footer">
+        2025 &copy; MES 系統
+      </q-footer>
     </q-page-container>
   </q-layout>
 </template>
@@ -28,7 +34,7 @@
 <script>
 import {
   QLayout, QHeader, QToolbar, QBtn, QPageContainer,
-  QItemSection, QIcon, SessionStorage
+  QItemSection, QIcon, SessionStorage, QFooter
 } from 'quasar'
 import { matMenu } from '@quasar/extras/material-icons'
 import { ref } from 'vue'
@@ -38,14 +44,36 @@ import SideMenu from '../components/SideMenu.vue'
 export default {
   name: 'MainLayout',
   components: {
-    QLayout, QHeader, QToolbar, QBtn, QPageContainer,
-    QItemSection, QIcon, SideMenu
+    QLayout,
+    QHeader,
+    QToolbar,
+    QBtn,
+    QPageContainer,
+    QItemSection,
+    QIcon,
+    SideMenu,
+    QFooter
   },
-  setup() {
+  setup () {
     const Account = SessionStorage.getItem('Account')
+    const router = useRouter()
+    if (!Account) {
+      router.push('/login')
+    }
     const leftDrawerOpen = ref(true)
 
-    function toggleLeftDrawer() {
+    function logout () {
+      try {
+        SessionStorage.removeItem('Account')
+        // const router = useRouter();
+        router.push('/login')
+      } finally {
+        // const router = useRouter();
+        router.push('/login')
+      }
+    }
+
+    function toggleLeftDrawer () {
       leftDrawerOpen.value = !leftDrawerOpen.value
     }
 
@@ -54,7 +82,8 @@ export default {
       leftDrawerOpen,
       toggleLeftDrawer,
       useRouter,
-      matMenu
+      matMenu,
+      logout
     }
   }
 }
@@ -64,6 +93,11 @@ export default {
 .banner {
   background-color: #484745;
   height: 10vh;
+  font-size: 3dvh;
+}
+.footer {
+  background-color: #484745;
+  height: 5vh;
   font-size: 3dvh;
 }
 </style>
