@@ -1,6 +1,10 @@
 <template>
-    <div class="user-role">
-        <h1>User Role Management</h1>
-        <p>This is the User Role Management page.</p>
-    </div>
+    <q-layout class="q-pa-md padding  q-gutter-sm">
+      <h5 class="text-left">
+        <q-icon name="play_circle" size="30px" >使用者角色列表</q-icon>
+      </h5>
+    </q-layout>
 </template>
+<script setup>
+import { QLayout, QIcon } from 'quasar';
+</script>

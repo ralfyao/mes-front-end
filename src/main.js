@@ -6,6 +6,7 @@ import { Quasar } from 'quasar'
 import 'quasar/dist/quasar.css'
 import '@quasar/extras/material-icons/material-icons.css'
 import '@quasar/extras/material-icons'
+import '@/assets/main.css'
 // import quasarUserOptions from './quasar-user-options'
 // import 'bootstrap/dist/css/bootstrap.min.css'
 const pinia = createPinia()

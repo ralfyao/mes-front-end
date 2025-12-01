@@ -1,33 +1,33 @@
 <template>
-  <q-layout view="hHh Lpr lFf">
-    <!-- 上方標題列 -->
-    <q-header class="text-white">
-      <q-toolbar class="banner">
-        <div class="col">
-          <q-btn @click="toggleLeftDrawer">
-            <q-item-section avatar>
-              <q-icon name="menu" size="lg" />
-            </q-item-section>
-          </q-btn>
-        </div>
-        <div class="col-9">MES Dashboard</div>
-        <div class="col-2">{{ Account.accountName }}，你好!
-        <q-btn flat rounded @click="logout"><h6>登出</h6></q-btn>
-        </div>
-      </q-toolbar>
-    </q-header>
+  <q-layout view="hHh Lpr fFf">
+      <!-- 上方標題列 -->
+      <q-header class="text-white">
+        <q-toolbar class="banner">
+          <div class="col">
+            <q-btn @click="toggleLeftDrawer">
+              <q-item-section avatar>
+                <q-icon name="menu" size="lg" />
+              </q-item-section>
+            </q-btn>
+          </div>
+          <div class="col-9">MES Dashboard</div>
+          <div class="col-2">{{ Account.accountName }}，你好!
+          <q-btn flat rounded @click="logout"><h6>登出</h6></q-btn>
+          </div>
+        </q-toolbar>
+      </q-header>
 
-    <!-- 左側選單 -->
-    <SideMenu v-model="leftDrawerOpen" />
+      <!-- 左側選單 -->
+      <SideMenu v-model="leftDrawerOpen" />
 
-    <!-- 主內容區 -->
-    <q-page-container>
-      <router-view />
+      <!-- 主內容區 -->
+      <q-page-container>
+        <router-view />
 
-      <q-footer elevated class="bg-grey-9 text-white footer">
-        2025 &copy; MES 系統
-      </q-footer>
-    </q-page-container>
+        <q-footer elevated class="bg-grey-9 text-white footer">
+          2025 &copy; MES 系統
+        </q-footer>
+      </q-page-container>
   </q-layout>
 </template>
 
