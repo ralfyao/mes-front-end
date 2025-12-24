@@ -7,7 +7,7 @@
           <q-page>
             <q-table
                 :columns="columns"
-                row-key="account"
+                row-key="productId"
                 :rows="productList"
                 flat
                 bordered

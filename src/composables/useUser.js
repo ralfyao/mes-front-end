@@ -85,6 +85,19 @@ export const useUserStore = defineStore('user', {
         return 'OK'
       }
     },
+    async getUserRoles() {
+      const constant = Constant()
+      console.log('APIUrl', constant.APIUrl)
+      const response = await axios.post(constant.APIUrl + 'api/GetUserRoles')
+      if (response.data.errorMessage !== '') {
+        return []
+      } else {
+        if (response.data.resultList) {
+          console.log('resultList', response.data.resultList)
+          return response.data.resultList
+        }
+      }
+    },
     logout () {
       this.username = ''
       this.password = ''

@@ -11,7 +11,7 @@
             </q-btn>
           </div>
           <div class="col-9">MES Dashboard</div>
-          <div class="col-2">{{ Account.accountName }}，你好!
+          <div class="col-2">{{ Account?.accountName }}，你好!
           <q-btn flat rounded @click="logout"><h6>登出</h6></q-btn>
           </div>
         </q-toolbar>
