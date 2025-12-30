@@ -164,6 +164,8 @@ const checkSelectedMenu = (menuID) => {
 }
 
 const checkSelectedSubMenu = (menuID,menuSubID) => {
+  console.log('檢查子選單是否已選擇:', menuID, menuSubID);
+  console.log('目前選取的子選單:', selectedSub.value);
   return selectedSub.value.some(item => item.menuID == menuID && item.menuSubID === menuSubID);
 }
 
@@ -291,19 +293,16 @@ const openRoleDialog = async (type) => {
     const Account = SessionStorage.getItem('Account');
     form.value.roleName = role.privilegeDesc;
     form.value.account = Account.account;
-    userPrivList.value = await menuStore.getMenuByRole(form.value.roleName );
+    let res = await userPriv.getPrivMenuByRole(form.value.roleName );
+    userPrivList.value = res;
     console.log('userPrivList', userPrivList.value);
     userPrivList.value.forEach(x =>{
       selectedMenu.value.push({ menuID: x.menuID });
-      x.menuSubList.forEach(s =>{
         if (selectedMenu.value.filter(y => y.menuID == x.menuID).length == 0) {
           selectedMenu.value.push({ menuID: x.menuID });
         }
-        selectedSub.value.push({ menuID: x.menuID, menuSubID: s.menuSubID });
-      });
+        selectedSub.value.push({ menuID: x.menuID, menuSubID: x.menuSubID });
     });
-    // form.value.privList = user.accountName
-    // form.value.password = user.password
   } else {
     selected.value = [];
     selectedMenu.value = [];
@@ -312,7 +311,6 @@ const openRoleDialog = async (type) => {
     form.value.roleName = '';
     form.value.selectedMenu = [];
     form.value.selectedSub = [];
-    // form.value.privList = [];
   }
 }
 const submitForm = async () =>{

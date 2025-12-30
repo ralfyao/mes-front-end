@@ -98,6 +98,19 @@ export const useUserStore = defineStore('user', {
         }
       }
     },
+    async getRoleList() {
+      const constant = Constant()
+      console.log('APIUrl', constant.APIUrl)
+      const response = await axios.get(constant.APIUrl + 'api/GetAllPrivilege')
+      if (response.data.errorMessage !== '') {
+        return []
+      } else {
+        if (response.data.resultList) {
+          console.log('resultList', response.data.resultList)
+          return response.data.resultList
+        }
+      }
+    },
     logout () {
       this.username = ''
       this.password = ''

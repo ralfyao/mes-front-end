@@ -20,6 +20,28 @@ export const usePrivilegeStore = defineStore('roles',{
         return []
       }
     },
+    async getPrivMenuByRole(roleName){
+      const constant = Constant();
+      console.log('getPrivMenuByRole APIUrl', constant.APIUrl);
+      const response = await axios.get(constant.APIUrl + 'api/GetPrivMenuByRole?roleName=' + roleName);
+      console.log('getPrivMenuByRole response', response);
+      if (response.data.resultList) {
+        console.log('response.data.resultList', response.data.resultList);
+        return response.data.resultList;
+      }
+      return [];
+    },
+    async getUserPrivileges(account){
+      const constant = Constant();
+      console.log('APIUrl', constant.APIUrl)
+      const response = await axios.get(constant.APIUrl + 'api/GetUserPrivileges?account=' + account);
+      console.log('response', response);
+      if (response.data.resultList) {
+        return response.data.resultList;
+      } else {
+        return [];
+      }
+    },
     async saveRolePrivilege(form){
       const constant = Constant();
       const payload = { ...toRaw(form.value) };
