@@ -42,7 +42,7 @@
                       <q-checkbox
                         class="q-mr-sm"
                         :model-value="chekSelected(role.privilegeDesc)"
-                        @update:model-value="val => toggleRole(role.privilegeDesc, val)"
+                        @update:model-value="val => toggleRole(role.privilegeDesc, role.privilegeName, val)"
                       />
                       <span class="font-size-3dvh">
                         {{ role.privilegeDesc }}
@@ -54,7 +54,7 @@
             </q-card-section>
             <q-card-actions align="right">
                 <q-btn flat label="取消" color="primary" @click="closeWindow" v-close-popup />
-                <q-btn flat label="保存" color="primary" />
+                <q-btn flat label="保存" color="primary" @click="saveRoles" />
             </q-card-actions>
         </q-card>
       </q-dialog>
@@ -76,7 +76,8 @@ import {
   , QList
   , QItemSection
   , QItem
-  , QCheckbox
+  , QCheckbox,
+  SessionStorage
   } from 'quasar';
 import {
   ref
@@ -101,11 +102,28 @@ const showEditDialog = ref(false);
 const closeWindow = () => {
   showEditDialog.value = false;
 };
-const toggleRole = (privilegeDesc, checked) => {
+const saveRoles = async () => {
+  console.log('保存使用者角色:', userRoleList.value);
+  console.log('選中的使用者:', selectedUser.value);
+  console.log('當前登入帳號:', SessionStorage.getItem('Account').account);
+  if (!selectedUser.value) return;
+  try {
+    await userPriv.updateUserPrivileges(
+      SessionStorage.getItem('Account').account,
+      selectedUser.value.account,
+      userRoleList.value
+    );
+    alert('使用者角色保存成功');
+    showEditDialog.value = false;
+  } catch (error) {
+    console.error('保存使用者角色時出錯:', error);
+  }
+};
+const toggleRole = (privilegeDesc, privilegeName, checked) => {
   if (checked) {
     // 加入
     if (!chekSelected(privilegeDesc)) {
-      userRoleList.value.push({ privilegeDesc });
+      userRoleList.value.push({ privilegeDesc: privilegeDesc, privilegeName: privilegeName });
     }
   } else {
     // 移除

@@ -32,14 +32,14 @@ const secondDialog = ref(false);
 const columns = ref([
   { name: 'productId', label: '產品品號', align: 'left', field: 'productId', sortable: true },
   { name: 'productName', label: '產品品名', align: 'left', field: 'productName', sortable: true },
-  { name: 'productDescription', label: '產品品名', align: 'left', field: 'productDescription', sortable: true },
+  { name: 'productDescription', label: '產品描述', align: 'left', field: 'productDescription', sortable: true },
   { name: 'createUser', label: '建立人員', align: 'left', field: 'lastModifier', sortable: true },
   { name: 'createDate', label: '建立日期', align: 'left', field: 'lastModifyDate', sortable: true },
   { name: 'modifyUser', label: '修改人員', align: 'left', field: 'lastModifier', sortable: true },
   { name: 'modifyDate', label: '修改日期', align: 'left', field: 'lastModifyDate', sortable: true },
 ])
 onMounted(() => {
-  fetchProductList()
+  fetchProductList();
 })
 
 const fetchProductList = async () => {

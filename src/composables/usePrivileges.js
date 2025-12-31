@@ -20,6 +20,23 @@ export const usePrivilegeStore = defineStore('roles',{
         return []
       }
     },
+    async updateUserPrivileges(user, account, privList){
+      const constant = Constant();
+      const param = {
+        user: user,
+        account: account,
+        privList: privList
+      }
+      console.log('param', param);
+      const response = await axios.post(constant.APIUrl + 'api/UpdateUserPrivileges',JSON.stringify(param), {
+        headers: { 'Content-Type': 'application/json' }
+      });
+      if (response.data.errorMessage !== '') {
+        return response.data.errorMessage
+      } else {
+        return 'OK'
+      }
+    },
     async getPrivMenuByRole(roleName){
       const constant = Constant();
       console.log('getPrivMenuByRole APIUrl', constant.APIUrl);
