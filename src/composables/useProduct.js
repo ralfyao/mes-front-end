@@ -14,7 +14,21 @@ export const useProductStore = defineStore('product', {
     async getAllProducts() {
       const constant = Constant()
       console.log('APIUrl', constant.APIUrl)
-      const response = await axios.get(constant.APIUrl + 'api/GetAllProducts')
+      const response = await axios.get(constant.APIUrl + 'api/ProductList')
+      console.log('response', response)
+      if (response.data.errorMessage !== '') {
+        return []
+      } else {
+        if (response.data.resultList) {
+          console.log('resultList', response.data.resultList)
+          return response.data.resultList
+        }
+      }
+    },
+    async getAllProductSpecs(){
+      const constant = Constant()
+      console.log('APIUrl', constant.APIUrl)
+      const response = await axios.get(constant.APIUrl + 'api/ProductSpecList')
       console.log('response', response)
       if (response.data.errorMessage !== '') {
         return []
