@@ -4,7 +4,7 @@
     <q-page class="flex flex-center main">
         <q-card class= "q-pa-md shadow-22 col-12 bg-transparent ">
             <q-card-section class="bg-transparent" >
-                <div class="title row">MES 登入系統</div>
+                <div class="title row">營運管理系統</div>
                 <div class="row">
                     <label class="subtitle">Login Account： </label>
                     <input type="text" class="col-12 form-control" placeholder="請輸入帳號" v-model="thisuser.username"/>

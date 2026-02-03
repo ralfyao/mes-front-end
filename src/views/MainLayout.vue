@@ -10,7 +10,7 @@
               </q-item-section>
             </q-btn>
           </div>
-          <div class="col-9">MES Dashboard</div>
+          <div class="col-9">Dashboard</div>
           <div class="col-2">{{ Account?.accountName }}，你好!
           <q-btn flat rounded @click="logout"><h6>登出</h6></q-btn>
           </div>
@@ -25,7 +25,7 @@
         <router-view />
 
         <q-footer elevated class="bg-grey-9 text-white footer">
-          2025 &copy; MES 系統
+          2025 &copy; 營運管理系統
         </q-footer>
       </q-page-container>
   </q-layout>
