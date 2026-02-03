@@ -30,6 +30,16 @@ const routes = [
       { path: 'inventory/costcarryforward', component: () => import('@/views/Inventory/CostCarryForwardView.vue') },//成本結轉
       //採購供應
       { path: 'procurement/supplier', component: () => import('@/views/Procurement/SupplierView.vue') },//供應商管理
+      { path: 'procurement/quotation', component: () => import('@/views/Procurement/QuotationView.vue') },//廠商詢價
+      { path: 'procurement/purchase', component: () => import('@/views/Procurement/PurchaseView.vue') },//採購作業
+      { path: 'procurement/outsourcing', component: () => import('@/views/Procurement/OutsourcingView.vue') },//委外加工
+      { path: 'procurement/invoicewoff', component: () => import('@/views/Procurement/InvoiceWoffView.vue') },//付款作業
+      //客戶維護
+      { path: 'custmanagement/customer', component: () => import('@/views/CustManagement/CustomerView.vue') },//客戶資料維護
+      { path: 'custmanagement/salesrecord', component: () => import('@/views/CustManagement/SalesRecordView.vue') },//業務記錄
+      { path: 'custmanagement/projquotation', component: () => import('@/views/CustManagement/ProjectQuotationView.vue') },//專案報價
+      { path: 'custmanagement/ordercontract', component: () => import('@/views/CustManagement/OrderContractView.vue') },//訂單合約
+      { path: 'custmanagement/repairtest', component: () => import('@/views/CustManagement/RepairTestView.vue') },//維修測試
       // { path: 'product', component: () => import('@/views/ProductView.vue') }
     ]
   },
