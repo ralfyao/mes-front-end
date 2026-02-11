@@ -40,6 +40,8 @@ const routes = [
       { path: 'custmanagement/projquotation', component: () => import('@/views/CustManagement/ProjectQuotationView.vue') },//專案報價
       { path: 'custmanagement/ordercontract', component: () => import('@/views/CustManagement/OrderContractView.vue') },//訂單合約
       { path: 'custmanagement/repairtest', component: () => import('@/views/CustManagement/RepairTestView.vue') },//維修測試
+      // 404 → 回首頁
+      { path: '/:catchAll(.*)*', redirect: '/' },
       // { path: 'product', component: () => import('@/views/ProductView.vue') }
     ]
   },

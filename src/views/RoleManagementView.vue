@@ -133,9 +133,9 @@ import { QIcon
        , QPage,
   SessionStorage} from 'quasar';
 import { ref } from 'vue';
+import LoadingComponent from '../components/LoadingComponent.vue';
 import { usePrivilegeStore } from '@/composables/usePrivileges';
 import { onMounted } from 'vue';
-import LoadingComponent from '@/components/LoadingComponent.vue';
 import { useMenuStore } from '@/composables/useMenus';
 const privRoles = ref([]);
 const errorMessage = ref('');

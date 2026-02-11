@@ -1,5 +1,5 @@
 <template>
-  <q-layout view="hHh Lpr fFf">
+  <q-layout view="hHh Lpr fFf" class="container">
       <!-- 上方標題列 -->
       <q-header class="text-white">
         <q-toolbar class="banner">
@@ -37,7 +37,7 @@ import {
   QItemSection, QIcon, SessionStorage, QFooter
 } from 'quasar'
 import { matMenu } from '@quasar/extras/material-icons'
-import { ref } from 'vue'
+import { ref} from 'vue'
 import { useRouter } from 'vue-router'
 import SideMenu from '../components/SideMenu.vue'
 
@@ -56,6 +56,19 @@ export default {
   },
   setup () {
     const Account = SessionStorage.getItem('Account')
+    // Add debugging to identify problem callbacks
+    const originalResizeObserver = window.ResizeObserver;
+    window.ResizeObserver = class extends originalResizeObserver {
+      constructor(callback) {
+        super((entries, observer) => {
+          console.log('ResizeObserver triggered:', entries.length, 'entries');
+          entries.forEach(entry => {
+            console.log('Element:', entry.target, 'Size:', entry.contentRect);
+          });
+          callback(entries, observer);
+        });
+      }
+    };
     const router = useRouter()
     if (!Account) {
       router.push('/login')
@@ -85,7 +98,7 @@ export default {
       matMenu,
       logout
     }
-  }
+  },
 }
 </script>
 
@@ -99,5 +112,9 @@ export default {
   background-color: #484745;
   height: 5vh;
   font-size: 3dvh;
+}
+.container {
+  height: 100vh;
+  overflow: hidden;
 }
 </style>
