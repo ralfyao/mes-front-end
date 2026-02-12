@@ -13,6 +13,15 @@ export const useCustStore = defineStore('',  {
       }
       return null;
     },
+    async getUniqueCust(companyName){
+      const constant = Constant()
+      console.log('APIUrl', constant.APIUrl)
+      const response = await axios.get(constant.APIUrl + 'api/GetUniqueCust?companyName=' + companyName);
+      if (response.data.resultList) {
+        return response.data.result
+      }
+      return null;
+    },
     async getCountryList(){
       const constant = Constant()
       console.log('APIUrl', constant.APIUrl)
@@ -150,5 +159,105 @@ export const useCustStore = defineStore('',  {
       }
       return null;
     },
+    async getCompanyList(){
+      const constant = Constant()
+      console.log('APIUrl', constant.APIUrl)
+      const response = await axios.get(constant.APIUrl + 'api/GetCompanyList');
+      if (response.data.resultList) {
+        return response.data.resultList
+      }
+      return null;
+    },
+    async getSalesList(){
+      const constant = Constant()
+      console.log('APIUrl', constant.APIUrl)
+      const response = await axios.get(constant.APIUrl + 'api/GetSalesList');
+      if (response.data.resultList) {
+        return response.data.resultList
+      }
+      return null;
+    },
+    async getContactList(companyName){
+      const constant = Constant()
+      console.log('APIUrl', constant.APIUrl)
+      const response = await axios.get(constant.APIUrl + 'api/GetContactList?companyName=' + companyName);
+      if (response.data.resultList) {
+        return response.data.resultList
+      }
+      return null;
+    },
+    async getRanking(){
+      const constant = Constant()
+      const response = await axios.get(constant.APIUrl + 'api/GetRankingList');
+      if (response.data.resultList){
+        return response.data.resultList;
+      }
+      return null;
+    },
+    async getStatusList(){
+      const constant = Constant()
+      const response = await axios.get(constant.APIUrl + 'api/GetCustStatusList')
+      if (response.data.resultList){
+        return response.data.resultList;
+      }
+      return null;
+    },
+    async getAgentOptions(){
+      const constant = Constant()
+      const response = await axios.get(constant.APIUrl + 'api/GetAgentOptionList')
+      if (response.data.resultList){
+        return response.data.resultList;
+      }
+      return null;
+    },
+    async getRfqNo(){
+      const constant = Constant()
+      const response = await axios.get(constant.APIUrl + 'api/GetRfqNo')
+      if (response.data.result){
+        return response.data.result;
+      }
+      return null;
+    },
+    async getQuotationList(rfqNo){
+      const constant = Constant()
+      console.log('APIUrl', constant.APIUrl)
+      const response = await axios.get(constant.APIUrl + 'api/GetQuotationList?rfqNo=' + rfqNo);
+      if (response.data.resultList) {
+        return response.data.resultList
+      }
+      return null;
+    },
+    async getQuotationDetailList(quoNo){
+      const constant = Constant()
+      console.log('APIUrl', constant.APIUrl)
+      const response = await axios.get(constant.APIUrl + 'api/GetQuotationDetailList?quoNo=' + quoNo);
+      if (response.data.resultList) {
+        return response.data.resultList
+      }
+      return null;
+    },
+    async getSalesWorkRecordList(rfqNo){
+      const constant = Constant()
+      console.log('APIUrl', constant.APIUrl)
+      const response = await axios.get(constant.APIUrl + 'api/GetSalesWorkRecordList?rfqNo=' + rfqNo);
+      if (response.data.resultList) {
+        return response.data.resultList
+      }
+      return null;
+    },
+    async saveRfq(form){
+      const constant = Constant();
+      const payload = { ...toRaw(form.value) };
+      console.log('APIUrl', constant.APIUrl)
+      console.log('payload', payload);
+      const param = {
+
+      };
+      console.log('param', param);
+      const response = await axios.post(constant.APIUrl + 'api/SaveCustomer', JSON.stringify(param), {
+        headers: { 'Content-Type': 'application/json' }
+      });
+      return response;
+    }
   }
 })

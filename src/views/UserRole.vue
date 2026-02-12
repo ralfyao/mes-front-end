@@ -21,6 +21,13 @@
                   dense
                   @click="onEdit(props.row)"
                 />
+                <q-btn
+                  color="red"
+                  size="md"
+                  dense
+                  label="授權管理"
+                  @click="editAuth(props.row)">
+                </q-btn>
               </q-td>
             </template>
           </q-table>
@@ -58,6 +65,9 @@
             </q-card-actions>
         </q-card>
       </q-dialog>
+      <q-dialog v-model="showAuthorizeDialog" persistent>
+        <UserAuthorization />
+      </q-dialog>
     </q-layout>
 </template>
 <script setup>
@@ -85,6 +95,7 @@ import {
   } from 'vue';
 import { useUserStore } from '@/composables/useUser';
 import { usePrivilegeStore } from '@/composables/usePrivileges';
+import UserAuthorization from '@/components/userrole/UserAuthorization.vue';
 const columns = ref([
   { name: 'account', label: '帳號', align: 'left', field: 'account', sortable: true },
   { name: 'accountName', label: '帳號名稱', align: 'left', field: 'accountName', sortable: true },
@@ -99,9 +110,13 @@ const userRoleList = ref([]);
 const userStore = useUserStore();
 const userPriv = usePrivilegeStore();
 const showEditDialog = ref(false);
+const showAuthorizeDialog = ref(false);
 const closeWindow = () => {
   showEditDialog.value = false;
 };
+const editAuth = () =>{
+  showAuthorizeDialog.value = true;
+}
 const saveRoles = async () => {
   console.log('保存使用者角色:', userRoleList.value);
   console.log('選中的使用者:', selectedUser.value);

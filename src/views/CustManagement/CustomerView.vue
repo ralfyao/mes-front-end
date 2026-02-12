@@ -199,6 +199,7 @@
   </q-layout>
 </template>
 <script setup>
+//import block start
 import {
     QIcon
   , QLayout
@@ -220,6 +221,9 @@ import {
 // import  { CustomerForm } from '@/components/customer/CustomerForm.vue';
 import { useCustStore } from '@/composables/useCust';
 import { ref, onMounted,  } from 'vue';
+//import block end
+
+//variable block start
 const selected = ref([]);
 const countryList = ref([]);
 const bankList = ref([]);
@@ -229,54 +233,6 @@ const showDatePopup = ref(false)
 const secondDialog = ref(false)
 const readonly = ref(false)
 const countryname = ref('');
-const handleOtherAction = async () => {
-  const success = await myForm.value.validate()
-  if (success) {
-    submitForm();
-  } else {
-    return;
-  }
-}
-const deleteCustomer = () => {
-  console.log('selected', selected.value);
-  if (selected.value.length === 0) {
-      console.log('No role selected for modification')
-      errorMessage.value = '請選擇要刪除的角色'
-      showForm.value = false
-      return;
-  }
-  const custToDelete = selected.value[0];
-  console.log('要刪除的客戶資料:', custToDelete);
-  let result = confirm(`確定要刪除客戶 ${custToDelete.company} 嗎？`);
-  if (result) {
-    custStore.deleteCustomer(custToDelete.識別).then((res) => {
-      console.log('API回傳結果:', res);
-      if (res.data.errorMessage == '') {
-        alert('刪除成功');
-      } else {
-        alert('刪除失敗：' + res.data.errorMessage);
-        errorMessage.value = res.data.errorMessage
-      }
-      init();
-    });
-  }
-}
-// const formRef = ref(null);
-const getCountryName = (code) => {
-  console.log('選擇的國別代碼:', code);
-  const country = countryList.value.find(item => (item?.國別??'') === code.code || item.code === code.code);
-
-  console.log('選擇的國別value:', country);
-  countryname.value =  country ? country.code : '';
-  form.value.country = country?.國別??'';
-  console.log('選擇的form國別:', form.value.country);
-  console.log('選擇的國別:', countryname.value);
-};
-const getIndustryName = (code) => {
-  console.log('選擇的業別代碼:', code);
-  const industryItem = industryList.value.find(item => item.中分類碼 === code.中分類碼);
-  industry.value =  industryItem ? industryItem.中分類名稱 : '';
-};
 const columns =
 [
   { name: 'customerId', label: '客戶識別碼', align: 'left', field: '識別', sortable: true },
@@ -324,6 +280,10 @@ const form = ref({
   contactLists:[],
   contactDetails:[]
 })
+const myForm = ref(null)
+//variable block end
+
+//function block start
 onMounted(async () => {
   init();
   console.log('countryList', countryList.value);
@@ -383,7 +343,6 @@ const init = async () =>{
   console.log('銀行列表:', bankList.value);
   selected.value = [];
 }
-const myForm = ref(null)
 
 const submitForm = async () => {
   console.log('in submitForm');
@@ -395,6 +354,7 @@ const submitForm = async () => {
   console.log('送出的表單資料:', form.value);
   const Account = SessionStorage.getItem('Account');
   form.value.account = Account.account;
+  secondDialog.value = true;
   if (mode.value == '新增') {
     console.log('新增客戶資料:', form.value);
     form.value.建檔 = Account.account;
@@ -413,6 +373,7 @@ const submitForm = async () => {
         alert('新增失敗：' + res.data.errorMessage);
         errorMessage.value = res.data.errorMessage
       }
+      secondDialog.value = false;
       init();
     });
 
@@ -432,6 +393,7 @@ const submitForm = async () => {
         alert('修改失敗：' + res.data.errorMessage);
         errorMessage.value = res.data.errorMessage
       }
+      secondDialog.value = false;
       init();
     });
   }
@@ -474,8 +436,11 @@ function onSelection({ rows, added }) {
   }
   console.log('目前選取的客戶名稱:', selected.value)
 }
-
-
+const getIndustryName = (code) => {
+  console.log('選擇的業別代碼:', code);
+  const industryItem = industryList.value.find(item => item.中分類碼 === code.中分類碼);
+  industry.value =  industryItem ? industryItem.中分類名稱 : '';
+};
 const openCustomerDialog = (action) => {
   console.log('開啟客戶表單，操作:', action);
   if (action === '修改') {
@@ -539,4 +504,49 @@ const openCustomerDialog = (action) => {
   errorMessage.value = '';
   secondDialog.value = true;
 };
+const getCountryName = (code) => {
+  console.log('選擇的國別代碼:', code);
+  const country = countryList.value.find(item => (item?.國別??'') === code.code || item.code === code.code);
+
+  console.log('選擇的國別value:', country);
+  countryname.value =  country ? country.code : '';
+  form.value.country = country?.國別??'';
+  console.log('選擇的form國別:', form.value.country);
+  console.log('選擇的國別:', countryname.value);
+};
+const handleOtherAction = async () => {
+  const success = await myForm.value.validate()
+  if (success) {
+    submitForm();
+  } else {
+    return;
+  }
+}
+const deleteCustomer = () => {
+  console.log('selected', selected.value);
+  if (selected.value.length === 0) {
+      console.log('No role selected for modification')
+      errorMessage.value = '請選擇要刪除的角色'
+      showForm.value = false
+      return;
+  }
+  const custToDelete = selected.value[0];
+  console.log('要刪除的客戶資料:', custToDelete);
+  let result = confirm(`確定要刪除客戶 ${custToDelete.company} 嗎？`);
+  if (result) {
+    secondDialog.value = true;
+    custStore.deleteCustomer(custToDelete.識別).then((res) => {
+      console.log('API回傳結果:', res);
+      if (res.data.errorMessage == '') {
+        alert('刪除成功');
+      } else {
+        alert('刪除失敗：' + res.data.errorMessage);
+        errorMessage.value = res.data.errorMessage
+      }
+      secondDialog.value = false;
+      init();
+    });
+  }
+}
+//function block end
 </script>
