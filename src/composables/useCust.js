@@ -251,12 +251,67 @@ export const useCustStore = defineStore('',  {
       console.log('APIUrl', constant.APIUrl)
       console.log('payload', payload);
       const param = {
-
+        rfqno:payload.rfqno,
+        rfqdate:payload.rfqdate,
+        sales:payload.sales.工號,
+        company:payload.company,
+        ma:payload.ma,
+        tel:payload.tel,
+        position:payload.position,
+        email:payload.email,
+        country:payload.country,
+        industrycode:payload.industrycode,
+        industry:payload.industry,
+        machine:payload.machine,
+        enduser:payload.enduser,
+        source:payload.source,
+        status:payload.status.狀況,
+        description:payload.description,
+        quono:payload.quono,
+        rfqstatus:payload.rfqstatus,
+        agent:payload.agent.agent,
+        ranking:payload.ranking.ranking,
+        account:payload.account,
       };
       console.log('param', param);
-      const response = await axios.post(constant.APIUrl + 'api/SaveCustomer', JSON.stringify(param), {
+      const response = await axios.post(constant.APIUrl + 'api/SaveRfq', JSON.stringify(param), {
         headers: { 'Content-Type': 'application/json' }
       });
+      return response;
+    },
+    async updateRfq(form) {
+      const constant = Constant();
+      const payload = { ...toRaw(form.value) };
+
+      const param = {
+        rfqno: payload.rfqno ?? '',
+        rfqdate: payload.rfqdate ?? '',
+        sales: payload.sales?.工號 ?? '',
+        company: payload.company ?? '',
+        ma: payload.ma ?? '',
+        tel: payload.tel ?? '',
+        position: payload.position ?? '',
+        email: payload.email ?? '',
+        country: payload.country ?? '',
+        industrycode: payload.industrycode ?? '',
+        industry: payload.industry ?? '',
+        machine: payload.machine ?? '',
+        enduser: payload.enduser ?? '',
+        source: payload.source ?? '',
+        status: payload.status?.狀況 ?? '',
+        description: payload.description ?? '',
+        quono: payload.quono ?? '',
+        rfqstatus: payload.rfqstatus ?? '',
+        agent: payload.agent?.agent ?? '',
+        ranking: payload.ranking?.ranking ?? '',
+        account: payload.account ?? ''
+      };
+
+      const response = await axios.post(
+        constant.APIUrl + 'api/UpdateRfq',
+        param   // ✅ 不要 stringify
+      );
+
       return response;
     }
   }

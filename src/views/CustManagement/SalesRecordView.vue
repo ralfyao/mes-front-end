@@ -148,7 +148,10 @@
                 <q-select v-model="form.sales" :readonly="readonly" label="業務編號" outlined dense
                     :options="salesList"
                             option-value="工號"
-                            :option-label="item => `${item.工號??''} ${item.姓名??''}`"></q-select>
+                            option-label="工號"></q-select>
+                <label class="text-red text-center" style=" font-size: 24px;">
+                  {{ salesname }}
+                </label>
               </div>
               <div class="col-6 col-md-6" style="max-width: 500px">
                 <q-input v-model="form.source" :readonly="readonly" label="開發來源" outlined dense/>
@@ -236,6 +239,7 @@ const contactList = ref([]);
 const salesList = ref([]);
 const quotationList = ref([]);
 const workRecordList = ref([]);
+const salesname = ref('');
 const columns =
 [
   { name: 'rfqdate', label: '詢問函日期', align: 'left', field: 'rfqdate', sortable: true },
@@ -324,23 +328,25 @@ const openCustomerDialog = async (amode) => {
     });
 
   } else if (mode.value === '修改') {
-    if (selected.value.length === 0) {
-      errorMessage.value = '請先選擇要修改的詢問函';
-      return;
-    }
-    errorMessage.value = '';
-    const rfqNo = selected.value[0].rfqno;
-    const rfqSelected = list.value.find((x) => x.rfqno == rfqNo);
-    if (rfqSelected){
-      form.value = {...rfqSelected};
-      console.log('form', form.value);
-      getSelectedCustomer();
-    }
-    const data = await custStore.getQuotationList(form.value.rfqno);
-    quotationList.value = data ?? [];
+      if (selected.value.length === 0) {
+        errorMessage.value = '請先選擇要修改的詢問函';
+        return;
+      }
+      errorMessage.value = '';
+      const rfqNo = selected.value[0].rfqno;
+      const data = await custStore.getQuotationList(form.value.rfqno);
+      quotationList.value = data ?? [];
 
-    const data2 = await custStore.getSalesWorkRecordList(form.value.rfqno);
-    workRecordList.value = data2 ?? [];
+      const data2 = await custStore.getSalesWorkRecordList(form.value.rfqno);
+      workRecordList.value = data2 ?? [];
+      const rfqSelected = list.value.find((x) => x.rfqno == rfqNo);
+      if (rfqSelected){
+        form.value = {...rfqSelected};
+        console.log('form', form.value);
+        // getSelectedRfqData();
+        getSelectedCustomer();
+      }
+    }
 
     showForm.value = true;
     // await custStore.getQuotationList(form.value.rfqno).then((data)=>{
@@ -358,7 +364,10 @@ const openCustomerDialog = async (amode) => {
     console.log('Opening dialog for editing customer:', selected.value);
   }
 
-}
+// const getSelectedRfqData = () =>{
+
+// }
+
 const deleteCustomer = () => {
   if (selected.value.length === 0) {
     errorMessage.value = '請先選擇要刪除的客戶';
@@ -399,6 +408,8 @@ const getSelectedCustomer = async () => {
         }
         console.log('Selected contact person:', contactPerson);
         console.log('Fetched Contact List for selected company:', contactList.value);
+        custStatus.value = statusList.value.find(status => status.狀況 == form.value.status)?statusList.value.find(status => status.狀況 == form.value.status).狀況說明:'';
+        salesname.value = salesList.value.find(sales => sales.工號 == form.value.sales)?salesList.value.find(sales => sales.工號 == form.value.sales).姓名:''
       });
       await custStore.getCountryList().then((countries) => {
         const country = countries.find(c => c.國別 === form.value.country);
@@ -432,7 +443,7 @@ const init = async () => {
   agentOptions.value = await custStore.getAgentOptions();
   countryList.value = await custStore.getCountryList();
   // console.log('Fetched Company List:', companyList.value);
-  // console.log('Fetched Sales List:', salesList.value);
+  console.log('Fetched Sales List:', salesList.value);
   // console.log('Fetched Industry List:', industryList.value);
 }
 const handleOtherAction = async () => {
@@ -450,11 +461,18 @@ const submitForm = async () => {
   form.value.account = Account.account;
   if (mode.value == '新增') {
     console.log('新增客戶資料:', form.value);
-    await custStore.saveRfq(form.value).then((data) =>{
+    await custStore.saveRfq(form).then((data) =>{
       console.log(data);
+      alert('新增完成')
+      showForm.value = false;
     });
   } else if (mode.value == '修改'){
     console.log('修改客戶資料:', form.value);
+    await custStore.updateRfq(form).then((data) =>{
+      console.log(data);
+      alert('修改完成')
+      showForm.value = false;
+    });
   }
 };
 onMounted( async () => {
