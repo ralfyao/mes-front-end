@@ -105,23 +105,29 @@ export default {
         return
       }
       loading.value = true
-      const result = await thisuser.loginUser()
-      console.log('result', result)
-      if (result != '') {
-        errorMessage.value = result
-      } else {
-        const user = {
-          name: '',
-          username: thisuser.username,
-          password: thisuser.password,
-          lastModifier: ''
+      try {
+        const result = await thisuser.loginUser()
+        console.log('result', result)
+        if (result != '') {
+          errorMessage.value = result
+        } else {
+          const user = {
+            name: '',
+            username: thisuser.username,
+            password: thisuser.password,
+            lastModifier: ''
+          }
+          reset()
+          const loginAccount = await thisuser.getUser(user)
+          SessionStorage.set('Account', loginAccount)
+          router.push('/dashboard')
         }
-        reset()
-        const loginAccount = await thisuser.getUser(user)
-        SessionStorage.set('Account', loginAccount)
-        router.push('/dashboard')
+        loading.value = false
+      } catch (error) {
+        alert('登入有誤或伺服器無法連接');
+        loading.value = false
       }
-      loading.value = false
+
     }
     return {
       // members

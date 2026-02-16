@@ -121,7 +121,7 @@
                 <q-select v-model="form.ranking" :readonly="readonly" label="成交率"
                   :options="rankginList"
                   option-value="ratio"
-                  option-label="ranking"  outlined dense
+                  option-label="ranking"  outlined dense :rules="[val => !!val || '成交率為必填欄位']"
                 ></q-select>
               </div>
               <div class="col-6 col-md-6" style="max-width: 500px">
@@ -148,7 +148,9 @@
                 <q-select v-model="form.sales" :readonly="readonly" label="業務編號" outlined dense
                     :options="salesList"
                             option-value="工號"
-                            option-label="工號"></q-select>
+                            option-label="工號" @update:model-value="changeSalesName"
+                            :rules="[val => !!val || '業務編號為必填欄位']"
+                            ></q-select>
                 <label class="text-red text-center" style=" font-size: 24px;">
                   {{ salesname }}
                 </label>
@@ -193,7 +195,7 @@
     </q-dialog>
     <!--報價單-->
     <q-dialog  class="q-pa-md"  style="width: 1000px; max-width: 80vw;" v-model="showQuotationForm" persistent>
-      <QuotationView :form="form" :mode="mode" v-model:showForm="showQuotationForm"></QuotationView>
+      <QuotationView :form="form" :mode="'新增'" :custList="salesList" v-model:showForm="showQuotationForm"></QuotationView>
     </q-dialog>
     <LoadingComponent v-model="secondDialog"/>
   </q-layout>
@@ -244,8 +246,8 @@ const columns =
 [
   { name: 'rfqdate', label: '詢問函日期', align: 'left', field: 'rfqdate', sortable: true },
   { name: 'rfqno', label: '詢問函號', align: 'left', field: 'rfqno', sortable: true },
-  { name: 'sales', label: '業務編號', align: 'left', field: 'sales', sortable: true },
-  { name: 'company', label: '客戶地址', align: 'left', field: 'company', sortable: true },
+  //{ name: 'sales', label: '業務編號', align: 'left', field: 'sales', sortable: true },
+  { name: 'company', label: '客戶名稱', align: 'left', field: 'company', sortable: true },
 ];
 const form = ref({
   rfqno: '',
@@ -270,6 +272,8 @@ const form = ref({
   rfqstatus:'',
   agent:'',
   account:'',
+  欄位2:'',
+  正航編號:'',
 });
 const list = ref([]);
 const errorMessage = ref('');
@@ -333,11 +337,13 @@ const openCustomerDialog = async (amode) => {
         return;
       }
       errorMessage.value = '';
+      console.log('selected.value[0]',selected.value[0]);
       const rfqNo = selected.value[0].rfqno;
-      const data = await custStore.getQuotationList(form.value.rfqno);
+      console.log('rfqNo',rfqNo);
+      const data = await custStore.getQuotationList(rfqNo);
       quotationList.value = data ?? [];
 
-      const data2 = await custStore.getSalesWorkRecordList(form.value.rfqno);
+      const data2 = await custStore.getSalesWorkRecordList(rfqNo);
       workRecordList.value = data2 ?? [];
       const rfqSelected = list.value.find((x) => x.rfqno == rfqNo);
       if (rfqSelected){
@@ -349,32 +355,38 @@ const openCustomerDialog = async (amode) => {
     }
 
     showForm.value = true;
-    // await custStore.getQuotationList(form.value.rfqno).then((data)=>{
-    //   if (data){
-    //     quotationList.value = data;
-    //     console.log('quotationList', quotationList.value);
-    //   }
-    //   custStore.getSalesWorkRecordList(form.value.rfqno).then((data2)=>{
-    //     workRecordList.value = data2;
-    //     console.log('workRecordList', workRecordList.value);
-    //   });
-    //   showForm.value = true;
-    // })
+    init();
     // 打開修改詢問函的對話框，並載入選中的詢問函資料
     console.log('Opening dialog for editing customer:', selected.value);
-  }
-
-// const getSelectedRfqData = () =>{
-
-// }
-
-const deleteCustomer = () => {
+}
+const deleteCustomer = async () => {
   if (selected.value.length === 0) {
     errorMessage.value = '請先選擇要刪除的客戶';
     return;
   }
   errorMessage.value = '';
-  console.log('Delete Sales Record:', selected.value);
+  const result = confirm('您確定要刪除?');
+  if (!result){
+    return;
+  }
+  console.log('Delete Sales Record:', selected.value[0]);
+  await custStore.deleteRfq(selected.value[0]).then((data)=>{
+    if (data.errorMessage){
+      alert(data.errorMessage)
+    }
+    else{
+      alert('刪除成功')
+      selected.value = [];
+      init();
+    }
+  })
+}
+const changeSalesName = () => {
+  console.log('sales no',form.value.sales.工號)
+  salesname.value = salesList.value.find(sales => sales.工號 == form.value.sales.工號)
+        ?salesList.value.find(sales => sales.工號 == form.value.sales.工號).姓名
+        :'';
+  console.log('name:',salesname.value)
 }
 const getSelectedCustomer = async () => {
   console.log('Selected Company in getSelectedCustomer:', form.value.company);
@@ -386,6 +398,8 @@ const getSelectedCustomer = async () => {
     form.value.industrycode = '';
     form.value.contact = '';
     form.value.tel = '';
+    form.value.欄位2 = '';
+    form.value.正航編號='';
     position.value = '';
     _country.value = '';
     form.value.country = '';
@@ -397,6 +411,9 @@ const getSelectedCustomer = async () => {
       form.value.tel = selectedCompany.value.tel || '';
       form.value.country = selectedCompany.value.country || '';
       alias.value = selectedCompany.value.欄位2 || '';
+      form.value.欄位2 = alias.value;
+      form.value.正航編號=selectedCompany.value.正航編號;
+      console.log('form.value.正航編號', form.value.正航編號);
       await custStore.getContactList(form.value.company).then((contacts) => {
         contactList.value = contacts;
         form.value.contact = selectedCompany.value.contactperson || '';
@@ -433,6 +450,7 @@ const updateStatus = (pam) =>{
   }
 }
 const init = async () => {
+  list.value = [];
   list.value = await custStore.getSalesRecordList();
   // console.log('Fetched Sales Record List:', list.value);
   companyList.value = await custStore.getCompanyList();
@@ -453,7 +471,6 @@ const handleOtherAction = async () => {
   } else {
     return;
   }
-
 }
 const submitForm = async () => {
   console.log('送出的表單資料:', form.value);
@@ -462,15 +479,28 @@ const submitForm = async () => {
   if (mode.value == '新增') {
     console.log('新增客戶資料:', form.value);
     await custStore.saveRfq(form).then((data) =>{
-      console.log(data);
-      alert('新增完成')
+      console.log('data add',data);
+      if (!data.errorMessage){
+        alert('新增完成')
+        init();
+      } else if (data.data.errorMessage){
+        alert(data.data.errorMessage)
+      } else
+        alert(data.errorMessage)
       showForm.value = false;
     });
   } else if (mode.value == '修改'){
     console.log('修改客戶資料:', form.value);
     await custStore.updateRfq(form).then((data) =>{
-      console.log(data);
-      alert('修改完成')
+      console.log('data',data);
+      if (data.errorMessage){
+        alert(data.errorMessage)
+      } else if (data.data.errorMessage){
+        alert(data.data.errorMessage)
+      } else {
+        alert('修改完成')
+        init();
+      }
       showForm.value = false;
     });
   }
@@ -479,6 +509,7 @@ onMounted( async () => {
   init();
 });
 const openQuotationForm = () =>{
+
   showQuotationForm.value = true
 }
 //functions

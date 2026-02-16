@@ -174,13 +174,22 @@
                       </q-input>
                     </div>
                     <div class="col-3 col-md-3" style="max-width: 200px">
-                      <q-input v-model="item.註記" :readonly="readonly" label="註記" outlined dense/>
+                      <q-input v-model="item.註記" label="註記" outlined dense/>
                     </div>
                     <div class="col-3 col-md-3" style="max-width: 200px">
-                      <q-input v-model="item.業務人員" :readonly="readonly" label="工號" outlined dense/>
+                      <q-select v-model="item.業務人員" label="工號" outlined dense
+                        :options="salesList"
+                        option-value="工號"
+                        option-label="工號" @update:model-value="changeSalesName(item)"
+                        :rules="[val => !!val || '業務編號為必填欄位']"
+                        emit-value
+                        map-options
+                      />
                     </div>
                     <div class="col-3 col-md-3" style="max-width: 200px">
-                      <q-input v-model="item.業務人員姓名" :readonly="true" label="業務人員" outlined dense/>
+                      <q-input v-model="item.業務人員姓名" :readonly="true" label="業務人員" outlined dense
+
+                      />
                     </div>
                     <div class="col-2 col-md-2" style="max-width: 200px">
                       <q-input v-model="item.rfqno" :readonly="readonly" label="RFQNO" outlined dense/>
@@ -233,6 +242,7 @@ const showDatePopup = ref(false)
 const secondDialog = ref(false)
 const readonly = ref(false)
 const countryname = ref('');
+const salesList = ref([]);
 const columns =
 [
   { name: 'customerId', label: '客戶識別碼', align: 'left', field: '識別', sortable: true },
@@ -310,6 +320,7 @@ const init = async () =>{
   countryList.value = await custStore.getCountryList();
   industryList.value = await custStore.getIndustryList();
   bankList.value = await custStore.getBankList();
+  salesList.value = await custStore.getSalesList();
   form.value = {
   識別: '',
   company: '',
@@ -547,6 +558,15 @@ const deleteCustomer = () => {
       init();
     });
   }
+}
+const changeSalesName = (item) => {
+  console.log('業務人員',item)
+  console.log('sales no',item.業務人員)
+  console.log('salesList',salesList.value)
+  item.業務人員姓名= salesList.value.find(sales => sales.工號 == item.業務人員)
+        ?salesList.value.find(sales => sales.工號 == item.業務人員).姓名
+        :'';
+  console.log('name:', item.業務人員姓名)
 }
 //function block end
 </script>

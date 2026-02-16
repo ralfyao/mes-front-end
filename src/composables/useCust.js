@@ -221,7 +221,8 @@ export const useCustStore = defineStore('',  {
     async getQuotationList(rfqNo){
       const constant = Constant()
       console.log('APIUrl', constant.APIUrl)
-      const response = await axios.get(constant.APIUrl + 'api/GetQuotationList?rfqNo=' + rfqNo);
+      console.log('rfqNo 2', rfqNo);
+      const response = await axios.get(constant.APIUrl + `api/GetQuotationList?rfqNo=${rfqNo}`);
       if (response.data.resultList) {
         return response.data.resultList
       }
@@ -255,6 +256,8 @@ export const useCustStore = defineStore('',  {
         rfqdate:payload.rfqdate,
         sales:payload.sales.工號,
         company:payload.company,
+        contact:payload.contact,
+        commission:payload.commission,
         ma:payload.ma,
         tel:payload.tel,
         position:payload.position,
@@ -282,12 +285,14 @@ export const useCustStore = defineStore('',  {
     async updateRfq(form) {
       const constant = Constant();
       const payload = { ...toRaw(form.value) };
-
+      console.log('update payload',payload)
       const param = {
         rfqno: payload.rfqno ?? '',
         rfqdate: payload.rfqdate ?? '',
-        sales: payload.sales?.工號 ?? '',
+        sales: payload.sales.工號?payload.sales.工號 :payload.sales,
         company: payload.company ?? '',
+        contact:payload.contact,
+        commission:payload.commission,
         ma: payload.ma ?? '',
         tel: payload.tel ?? '',
         position: payload.position ?? '',
@@ -298,12 +303,12 @@ export const useCustStore = defineStore('',  {
         machine: payload.machine ?? '',
         enduser: payload.enduser ?? '',
         source: payload.source ?? '',
-        status: payload.status?.狀況 ?? '',
+        status: payload.status.狀況?payload.status.狀況 :payload.status,
         description: payload.description ?? '',
         quono: payload.quono ?? '',
         rfqstatus: payload.rfqstatus ?? '',
         agent: payload.agent?.agent ?? '',
-        ranking: payload.ranking?.ranking ?? '',
+        ranking: payload.ranking.ranking ? payload.ranking.ranking : payload.ranking,
         account: payload.account ?? ''
       };
 
@@ -313,6 +318,206 @@ export const useCustStore = defineStore('',  {
       );
 
       return response;
+    },
+    async deleteRfq(form){
+      console.log('delete form',form)
+      const constant = Constant()
+      const payload = { ...toRaw(form) };
+      console.log('payload',payload)
+      const response = await axios.get(constant.APIUrl+'api/DeleteRfq?rfqNo='+payload.rfqno)
+      if (response){
+        return response;
+      }
+      return null;
+    },
+    async getQuono(){
+      const constant = Constant()
+      const response = await  axios.get(constant.APIUrl+'api/GetQuono')
+      if (response){
+        return response.data.result;
+      }
+    },
+    async getEqpType(){
+      const constant = Constant()
+      const response = await  axios.get(constant.APIUrl+'api/GetEqpType')
+      if (response){
+        return response.data.resultList;
+      }
+    }
+    ,
+    async getCurrencyList(){
+      const constant = Constant()
+      const response = await  axios.get(constant.APIUrl+'api/GetCurrencyList')
+      if (response){
+        return response.data.resultList;
+      }
+    },
+    async getTaxRateList(){
+      const constant = Constant()
+      const response = await  axios.get(constant.APIUrl+'api/GetTaxRateList')
+      if (response){
+        return response.data.resultList;
+      }
+    },
+    async getExRateList(val){
+      const constant = Constant()
+      const response = await  axios.get(constant.APIUrl+'api/GetExRateList?currency='+val)
+      if (response){
+        return response.data.resultList;
+      }
+    },
+    async getTxConditionList(type){
+      const constant = Constant()
+      const response = await  axios.get(constant.APIUrl+'api/GetTxCondition?condition='+type)
+      if (response){
+        return response.data.resultList;
+      }
+    },
+    async saveQuotation(form){
+      const constant = Constant();
+      const payload = { ...toRaw(form.value) };
+      console.log('APIUrl', constant.APIUrl)
+      console.log('payload', payload);
+      const param = {
+        idno		    :payload.idno,
+        quono       :payload.quono,
+        mtype       :payload.mtype.typeid?payload.mtype.typeid:payload.mtype,
+        mmodel      :payload.mmodel,
+        currency    :payload.currency.currency?payload.currency.currency:payload.currency,
+        amount      :payload.amount,
+        commission  :payload.commission,
+        status      :payload.status,
+        contact     :payload.contact,
+        machineno   :payload.machineno,
+        rfqno       :payload.rfqno,
+        condate     :payload.condate,
+        shipdate    :payload.shipdate,
+        quodate     :payload.quodate,
+        rfqdate     :payload.rfqdate,
+        ranking     :payload.ranking.company?payload.ranking.company:payload.ranking,
+        address     :payload.address,
+        exrate      :payload.exrate.匯率?payload.exrate.匯率:payload.exrate,
+        daddress    :payload.daddress.工號?payload.daddress.工號:payload.daddress,
+        稅率        :payload.稅率,
+        價格條件    :payload.價格條件.條文編號?payload.價格條件.條文編號:payload.價格條件,
+        交貨方式    :payload.交貨方式.條文編號?payload.交貨方式.條文編號:payload.交貨方式,
+        付款方式    :payload.付款方式.條文編號?payload.付款方式.條文編號:payload.付款方式,
+        remark      :payload.remark,
+        交貨日期    :payload.交貨日期.條文編號?payload.交貨日期.條文編號:payload.交貨日期,
+        建檔        :payload.建檔,
+        修改        :payload.修改,
+        核准        :payload.核准,
+        建檔日      :payload.建檔日,
+        修改日      :payload.修改日,
+        核准日      :payload.核准日,
+        quotationDetailFormList:payload.quotationDetailFormList,
+      };
+      console.log('param', param);
+      const response = await axios.post(constant.APIUrl + 'api/SaveQuotation', param, {
+        headers: { 'Content-Type': 'application/json' }
+      });
+      return response;
+    },
+    async updateQuotation(form){
+      const constant = Constant();
+      const payload = { ...toRaw(form.value) };
+      console.log('APIUrl', constant.APIUrl)
+      console.log('payload', payload);
+      const param = {
+        idno		    :payload.idno,
+        quono       :payload.quono,
+        mtype       :payload.mtype.typeid?payload.mtype.typeid:payload.mtype,
+        mmodel      :payload.mmodel,
+        currency    :payload.currency.currency?payload.currency.currency:payload.currency,
+        amount      :payload.amount,
+        commission  :payload.commission,
+        status      :payload.status,
+        contact     :payload.contact,
+        machineno   :payload.machineno,
+        rfqno       :payload.rfqno,
+        condate     :payload.condate,
+        shipdate    :payload.shipdate,
+        quodate     :payload.quodate,
+        rfqdate     :payload.rfqdate,
+        ranking     :payload.ranking.company?payload.ranking.company:payload.ranking,
+        address     :payload.address,
+        exrate      :payload.exrate.匯率?payload.exrate.匯率:payload.exrate,
+        daddress    :payload.daddress.工號?payload.daddress.工號:payload.daddress,
+        價格條件    :payload.價格條件.條文編號?payload.價格條件.條文編號:payload.價格條件,
+        交貨方式    :payload.交貨方式.條文編號?payload.交貨方式.條文編號:payload.交貨方式,
+        付款方式    :payload.付款方式.條文編號?payload.付款方式.條文編號:payload.付款方式,
+        remark      :payload.remark,
+        交貨日期    :payload.交貨日期.條文編號?payload.交貨日期.條文編號:payload.交貨日期,
+        稅率        :payload.稅率,
+        建檔        :payload.建檔,
+        修改        :payload.修改,
+        核准        :payload.核准,
+        建檔日      :payload.建檔日,
+        修改日      :payload.修改日,
+        核准日      :payload.核准日,
+        quotationDetailFormList:payload.quotationDetailFormList,
+      };
+      console.log('param', param);
+      const response = await axios.post(constant.APIUrl + 'api/UpdateQuotation', param, {
+        headers: { 'Content-Type': 'application/json' }
+      });
+      return response;
+    },
+    async deleteQuotation(form){
+      console.log('delete form',form)
+      const constant = Constant()
+      const payload = { ...toRaw(form) };
+      console.log('payload',payload)
+      const response = await axios.get(constant.APIUrl+'api/DeleteQuotation?quono='+payload.quono)
+      if (response){
+        return response;
+      }
+      return null;
+    },
+    async getQuotationByNo(quono){
+      const constant = Constant()
+      const response = await axios.get(constant.APIUrl+'api/GetQuotation?quono='+quono)
+      console.log('response', response)
+      if (response){
+        return response.data.result;
+      }
+      return null;
+    },
+    async getQuotationByRfqNo(rfqno){
+      const constant = Constant()
+      const response = await axios.get(constant.APIUrl+'api/GetQuotationByRfqNo?rfqno='+rfqno)
+      console.log('response', response)
+      if (response){
+        return response.data.result;
+      }
+      return null;
+    },
+    async updateExpiryFlag(quono, account, type){
+        const constant = Constant()
+        const response =await axios.get(constant.APIUrl+'api/UpdateQuotationExpiry?quono='+quono+'&type='+type+'&account='+account)
+        console.log('response', response)
+        if (response){
+          return response.data.result;
+        }
+        return null;
+    },
+    async getRfq(rfqno){
+      const constant = Constant()
+        const response =await axios.get(constant.APIUrl+'api/GetRfq?rfqno='+rfqno)
+        console.log('response', response)
+        if (response){
+          return response.data.result;
+        }
+        return null;
+    },
+    async getCompany(company){
+      const constant = Constant()
+        const response =await axios.get(constant.APIUrl+'api/GetCompany?company='+company)
+        console.log('response', response)
+        if (response){
+          return response.data.result;
+        }
+        return null;
     }
   }
 })
