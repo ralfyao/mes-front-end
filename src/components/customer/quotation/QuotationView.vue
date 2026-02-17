@@ -221,6 +221,11 @@
             </div>
             <br>
           </div>
+          <q-card-actions align="right">
+            <h6>
+              總金額：{{ quotationForm.amount }}
+            </h6>
+          </q-card-actions>
           <br>
         </q-card-section>
       </q-form>
@@ -395,6 +400,10 @@ const init =async () =>{
     console.log('quono',quotationForm.value.quono)
     quotationForm.value.rfqno = props.form.rfqno;
     try{
+      if (quotationForm.value.quono == '')
+      {
+        quotationForm.value.quono = props.quono;
+      }
       await custStore.getQuotationByNo(quotationForm.value.quono).then((data1)=>{
         Object.assign(quotationForm.value, data1);
         quotationForm.value.付款方式 = quotationForm.value.付款方式.trim()
@@ -435,7 +444,11 @@ const init =async () =>{
 
   })
   console.log('salesList',props.salesList);
-
+  if (quotationForm.value.quono == '')
+  {
+    quotationForm.value.quono = props.quono;
+  }
+  sumAmount();
 }
 const changeSalesName = () =>{
   console.log('sales no',quotationForm.value.daddress)
@@ -522,9 +535,15 @@ const changeExRate = async (val) =>{
   exRateList.value = await custStore.getExRateList(val);
   quotationForm.value.exrate = exRateList.value[0];
 }
+const sumAmount = () =>{
+  quotationForm.value.amount = 0;
+  for(let i = 0; i <  quotationForm.value.quotationDetailFormList.length; i++) {
+    quotationForm.value.amount += quotationForm.value.quotationDetailFormList[i].金額;
+  }
+}
 const onBlur = (item) =>{
-  item.金額 = item.單價 * item.數量
-  quotationForm.value.amount += item.金額;
+  item.金額 = item.單價 * item.數量;
+  sumAmount();
 }
 const AddProductItem = () =>{
   console.log('quotationForm in AddProductItem:', quotationForm.value);
