@@ -137,6 +137,9 @@ const openCustomerDialog = (type) =>{
     const selectItem = selected.value[0];
     if (type == '預覽')
       preview.value = true;
+    else
+      preview.value = false;
+
     console.log('selectItem', selectItem);
     quotationForm.value = selectItem;
   }

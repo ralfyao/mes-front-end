@@ -459,6 +459,8 @@ const openCustomerDialog = (type) =>{
       errorMessage.value = "";
       if (type == '預覽')
         preview.value = true;
+      else
+        preview.value = false;
       showForm.value = true;
     }
     console.log('open type', type);

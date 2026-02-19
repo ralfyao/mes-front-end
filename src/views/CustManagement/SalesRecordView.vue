@@ -354,6 +354,8 @@ const openCustomerDialog = async (amode) => {
       if (mode.value == '預覽')
       {
         preview.value = true;
+      } else {
+        preview.value = false;
       }
       console.log('preview', preview.value)
       errorMessage.value = '';

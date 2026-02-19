@@ -484,7 +484,10 @@ const openCustomerDialog = (action) => {
       if (selectedCustomer.industrycode) {
         getIndustryName({ 中分類碼: selectedCustomer.industrycode });
       }
-      preview.value = true;
+      if (action == '預覽')
+        preview.value = true;
+      else
+        preview.value = false;
     } else {
       errorMessage.value = '找不到選取的客戶資料';
       return;
