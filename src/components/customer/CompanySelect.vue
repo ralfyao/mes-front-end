@@ -4,6 +4,7 @@
       :model-value="props.modelValue"
       :label="props.label"
       :options="props.companyList"
+      :readonly="props.readonly"
       option-value="company"
       option-label="company"
       @update:model-value="updateValue"
@@ -18,6 +19,7 @@ import { QSelect } from 'quasar';
 const props = defineProps({
   modelValue: String,
   label: String,
+  readonly:Boolean,
   companyList:[],
 })
 const emits = defineEmits(['update:modelValue']);

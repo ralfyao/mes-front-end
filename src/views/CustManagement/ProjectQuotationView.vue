@@ -1,7 +1,36 @@
 <template>
   <q-layout class="q-pa-md padding  q-gutter-sm">
-    <h5 class="text-left">
-      <q-icon name="play_circle" size="30px" >專案報價</q-icon>
+    <h5 class="no-wrap text-left">
+      <div class="row justify-start padding-top">
+        <div class="col-2 col-md-2">
+          <q-icon name="play_circle" size="30px" >專案報價</q-icon>
+        </div>
+        <div class="padding-right">
+          <q-btn color="primary" class="padding-right"
+            glossy @click="openCustomerDialog('新增')"
+            :loading="loading">新增報價單</q-btn>
+        </div>
+        <div class="padding-right">
+          <q-btn color="info" class="padding-right"
+            glossy @click="openCustomerDialog('修改')"
+            :loading="loading">修改報價單</q-btn>
+        </div>
+        <div class="padding-right">
+          <q-btn color="red" class="padding-right"
+            glossy @click="deleteQuotation"
+            :loading="loading">刪除報價單</q-btn>
+        </div>
+        <div class="padding-right">
+          <q-btn color="green" class="padding-right"
+            glossy @click="openCustomerDialog('預覽')"
+            :loading="loading">預覽報價單</q-btn>
+        </div>
+      </div>
+      <div class="row justify-start padding-top">
+        <div class="col-6 col-md-6"  style="max-width: 500px">
+          <div class="text-left text-red">{{ errorMessage }}</div>
+        </div>
+      </div>
     </h5>
     <q-page-container>
       <q-page>
@@ -19,28 +48,10 @@
                 class="rounded-borders"
                 :pagination="{ rowsPerPage: 5 }"
         ></q-table>
-        <div class="row justify-start padding-top">
-            <div class="padding-right">
-              <q-btn color="primary" class="padding-right"
-                       glossy @click="openCustomerDialog('新增')"
-                       :loading="loading">新增報價單</q-btn>
-            </div>
-            <div class="padding-right">
-              <q-btn color="info" class="padding-right"
-                       glossy @click="openCustomerDialog('修改')"
-                       :loading="loading">修改報價單</q-btn>
-            </div>
-            <div class="padding-right">
-              <q-btn color="red" class="padding-right"
-                       glossy @click="deleteQuotation"
-                       :loading="loading">刪除報價單</q-btn>
-            </div>
-        </div>
-        <h5 class="text-left text-red">{{ errorMessage }}</h5>
       </q-page>
     </q-page-container>
     <q-dialog v-model="showForm" persistent >
-      <QuotationView :form="quotationForm" :mode="mode" :quono="selected.length ? selected[0].quono : ''" v-model:showForm="showForm"/>
+      <QuotationView :form="quotationForm" :mode="mode" :preview="preview" :quono="selected.length ? selected[0].quono : ''" v-model:showForm="showForm"/>
     </q-dialog>
   </q-layout>
 </template>
@@ -54,6 +65,7 @@ import {
   , QTable
   , QBtn
   , QDialog
+  , QIcon
 } from 'quasar'
 import { ref, onMounted } from 'vue'
 import { useCustStore } from '@/composables/useCust';
@@ -62,6 +74,7 @@ import { useCustStore } from '@/composables/useCust';
 //variable block start
 const custStore = useCustStore();
 const showForm = ref(false);
+const preview = ref(false);
 const errorMessage = ref('');
 const selected = ref([]);
 const list = ref([]);
@@ -112,17 +125,32 @@ const quotationForm = ref({
 //function block start
 const openCustomerDialog = (type) =>{
   mode.value = type;
+  errorMessage.value = "";
   if (type == '新增'){
     console.log('type', type);
   } else {
     console.log('type', type);
+    if (selected.value.length == 0){
+      errorMessage.value = `請先選取要${type}的報價單`
+      return
+    }
     const selectItem = selected.value[0];
+    if (type == '預覽')
+      preview.value = true;
     console.log('selectItem', selectItem);
     quotationForm.value = selectItem;
   }
   showForm.value = true;
 }
 const deleteQuotation = async () =>{
+  if (selected.value.length == 0){
+    errorMessage.value = '請先選取要刪除的報價單'
+    return
+  }
+  errorMessage.value = ''
+  var result = confirm('確定要刪除此筆資料?');
+  if(!result)
+    return;
   await custStore.deleteQuotation(selected.value[0]).then((data)=>{
     if (data.data.errorMessage){
       alert(data.data.errorMessage)

@@ -518,6 +518,195 @@ export const useCustStore = defineStore('',  {
           return response.data.result;
         }
         return null;
+    },
+    async transferToSalesOrder(form){
+      const constant = Constant();
+      const payload = { ...toRaw(form.value) };
+      console.log('APIUrl', constant.APIUrl)
+      console.log('payload', payload);
+      const param = {
+        idno		    :payload.idno,
+        quono       :payload.quono,
+        mtype       :payload.mtype.typeid?payload.mtype.typeid:payload.mtype,
+        mmodel      :payload.mmodel,
+        currency    :payload.currency.currency?payload.currency.currency:payload.currency,
+        amount      :payload.amount,
+        commission  :payload.commission,
+        status      :payload.status,
+        contact     :payload.contact,
+        machineno   :payload.machineno,
+        rfqno       :payload.rfqno,
+        condate     :payload.condate,
+        shipdate    :payload.shipdate,
+        quodate     :payload.quodate,
+        rfqdate     :payload.rfqdate,
+        ranking     :payload.ranking.company?payload.ranking.company:payload.ranking,
+        address     :payload.address,
+        exrate      :payload.exrate.匯率?payload.exrate.匯率:payload.exrate,
+        daddress    :payload.daddress.工號?payload.daddress.工號:payload.daddress,
+        稅率        :payload.稅率,
+        價格條件    :payload.價格條件.條文編號?payload.價格條件.條文編號:payload.價格條件,
+        交貨方式    :payload.交貨方式.條文編號?payload.交貨方式.條文編號:payload.交貨方式,
+        付款方式    :payload.付款方式.條文編號?payload.付款方式.條文編號:payload.付款方式,
+        remark      :payload.remark,
+        交貨日期    :payload.交貨日期.條文編號?payload.交貨日期.條文編號:payload.交貨日期,
+        建檔        :payload.建檔,
+        修改        :payload.修改,
+        核准        :payload.核准,
+        建檔日      :payload.建檔日,
+        修改日      :payload.修改日,
+        核准日      :payload.核准日,
+        quotationDetailFormList:payload.quotationDetailFormList,
+      };
+      console.log('param', param);
+      const response = await axios.post(constant.APIUrl + 'api/TransferToSalesOrder', param, {
+        headers: { 'Content-Type': 'application/json' }
+      });
+      return response;
+    },
+    async getSalesOrderList(){
+      const constant = Constant();
+      console.log('APIUrl', constant.APIUrl)
+      const response =await axios.get(constant.APIUrl+'api/GetSalesOrderList')
+      console.log('response', response)
+      if (response){
+        return response.data.resultList;
+      }
+      return null;
+    },
+    async getCustNumberList(){
+      const constant = Constant();
+      console.log('APIUrl', constant.APIUrl)
+      const response =await axios.get(constant.APIUrl+'api/GetCustNumberList')
+      console.log('response', response)
+      if (response){
+        return response.data.resultList;
+      }
+      return null;
+    },
+    async updateCloseFlag(flag, salesOrderNo){
+      const constant = Constant();
+      console.log('APIUrl', constant.APIUrl)
+      const response =await axios.get(constant.APIUrl+'api/UpdateSalesOrderCloseFlag?flag='+flag+'&orderNo='+salesOrderNo)
+      console.log('response', response)
+      if (response){
+        return response.data.resultList;
+      }
+      return null;
+    },
+    async saveSalesOrder(form){
+      const constant = Constant();
+      console.log('APIUrl', constant.APIUrl)
+      const payload = { ...toRaw(form.value) };
+      console.log('APIUrl', constant.APIUrl)
+      console.log('payload', payload);
+      const param = {
+              識別:payload.識別,
+              日期:payload.日期,
+              單號:payload.單號,
+              客戶編號:payload.客戶編號,
+              業務員:payload.業務員,
+              幣別:payload.幣別,
+              稅別:payload.稅別,
+              稅率:payload.稅率,
+              總額:payload.總額,
+              佣金:payload.佣金,
+              // 結案:payload.,
+              要望日期:payload.要望日期,
+              交貨地址:payload.交貨地址,
+              指配國別:payload.指配國別,
+              目的港:payload.目的港,
+              價格條件:payload.價格條件,
+              交貨方式:payload.交貨方式,
+              付款方式:payload.付款方式,
+              交貨日期:payload.交貨日期,
+              MACHINENO:payload.mtype,
+              Remark:payload.remark,
+              建檔:payload.建檔,
+              修改:payload.修改,
+              核准:payload.核准,
+              建檔日:payload.建檔日,
+              修改日:payload.修改日,
+              核准日:payload.核准日,
+              orderListDetail:payload.orderListDetail,
+            }
+      console.log('param', param);
+      const response = await axios.post(constant.APIUrl + 'api/SaveSalesOrder', param, {
+        headers: { 'Content-Type': 'application/json' }
+      });
+      return response;
+    },
+    async updateSalesOrderForm (form) {
+      const constant = Constant();
+      console.log('APIUrl', constant.APIUrl)
+      const payload = { ...toRaw(form.value) };
+      console.log('APIUrl', constant.APIUrl)
+      console.log('payload', payload);
+      const param = {
+              識別:payload.識別,
+              日期:payload.日期,
+              單號:payload.單號,
+              客戶編號:payload.客戶編號,
+              業務員:payload.業務員,
+              幣別:payload.幣別,
+              稅別:payload.稅別,
+              稅率:payload.稅率,
+              總額:payload.總額,
+              佣金:payload.佣金,
+              // 結案:payload.,
+              要望日期:payload.要望日期,
+              交貨地址:payload.交貨地址,
+              指配國別:payload.指配國別,
+              目的港:payload.目的港,
+              價格條件:payload.價格條件,
+              交貨方式:payload.交貨方式,
+              付款方式:payload.付款方式,
+              交貨日期:payload.交貨日期,
+              MACHINENO:payload.mtype,
+              Remark:payload.remark,
+              建檔:payload.建檔,
+              修改:payload.修改,
+              核准:payload.核准,
+              建檔日:payload.建檔日,
+              修改日:payload.修改日,
+              核准日:payload.核准日,
+              orderListDetail:payload.orderListDetail,
+            }
+      console.log('param', param);
+      const response = await axios.post(constant.APIUrl + 'api/UpdateSalesOrder', param, {
+        headers: { 'Content-Type': 'application/json' }
+      });
+      return response;
+    },
+    async getSalesNo(){
+      const constant = Constant();
+      console.log('APIUrl', constant.APIUrl)
+      const response =await axios.get(constant.APIUrl+'api/GetSalesOrderNo')
+      console.log('response', response)
+      if (response){
+        return response.data.result;
+      }
+      return null;
+    },
+    async deleteSalesOrder (salesOrderNo) {
+      const constant = Constant();
+      console.log('APIUrl', constant.APIUrl)
+      const response =await axios.get(constant.APIUrl+'api/DeleteSalesOrderNo?salesOrderNo='+salesOrderNo)
+      console.log('response', response)
+      if (response){
+        return response;
+      }
+      return null;
+    },
+    async getTaxType(){
+      const constant = Constant();
+      console.log('APIUrl', constant.APIUrl)
+      const response =await axios.get(constant.APIUrl+'api/GetTaxType')
+      console.log('response', response)
+      if (response){
+        return response.data.resultList;
+      }
+      return null;
     }
   }
 })

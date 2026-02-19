@@ -1,7 +1,36 @@
 <template>
   <q-layout class="q-pa-md padding  q-gutter-sm">
-    <h5 class="text-left">
-      <q-icon name="play_circle" size="30px" >客戶維護</q-icon>
+    <h5 class="no-wrap text-left">
+      <div class="row justify-start padding-top">
+        <div class="col-2 col-md-2">
+          <q-icon name="play_circle" size="30px" >客戶維護</q-icon>
+        </div>
+        <!-- <div class="row justify-start padding-top"> -->
+          <div class="padding-right">
+            <q-btn color="primary" class="padding-right"
+              glossy @click="openCustomerDialog('新增')"
+                :loading="loading">新增客戶</q-btn>
+          </div>
+          <div class="padding-right">
+            <q-btn color="info" class="padding-right"
+              glossy @click="openCustomerDialog('修改')"
+              :loading="loading">修改客戶</q-btn>
+          </div>
+          <div class="padding-right">
+            <q-btn color="red" class="padding-right"
+              glossy @click="deleteCustomer"
+              :loading="loading">刪除客戶</q-btn>
+          </div>
+          <div class="padding-right">
+            <q-btn color="green" class="padding-right"
+              glossy @click="openCustomerDialog('預覽')"
+                :loading="loading">客戶預覽</q-btn>
+          </div>
+        <!-- </div> -->
+      </div>
+      <div class="row justify-start padding-top">
+        <div class="text-left text-red">{{ errorMessage }}</div>
+      </div>
     </h5>
     <q-page-container>
       <q-page>
@@ -19,24 +48,7 @@
                 class="rounded-borders"
                 :pagination="{ rowsPerPage: 5 }"
         ></q-table>
-        <div class="row justify-start padding-top">
-            <div class="padding-right">
-              <q-btn color="primary" class="padding-right"
-                       glossy @click="openCustomerDialog('新增')"
-                       :loading="loading">新增客戶</q-btn>
-            </div>
-            <div class="padding-right">
-              <q-btn color="info" class="padding-right"
-                       glossy @click="openCustomerDialog('修改')"
-                       :loading="loading">修改客戶</q-btn>
-            </div>
-            <div class="padding-right">
-              <q-btn color="red" class="padding-right"
-                       glossy @click="deleteCustomer"
-                       :loading="loading">刪除客戶</q-btn>
-            </div>
-        </div>
-        <h5 class="text-left text-red">{{ errorMessage }}</h5>
+
       </q-page>
     </q-page-container>
     <q-dialog v-model="showForm" persistent >
@@ -48,12 +60,12 @@
             <q-card-section>
                 <div class="row q-col-gutter-md">
                   <div class="col-12 col-md-12" style="max-width: 1000px">
-                    <q-input v-model="form.company" :readonly="readonly" label="客戶全稱" outlined dense :rules="[val => !!val || '客戶全稱為必填欄位']"/>
+                    <q-input v-model="form.company" :readonly="readonly || preview" label="客戶全稱" outlined dense :rules="[val => !!val || '客戶全稱為必填欄位']"/>
                   </div>
                   <div class="col-6 col-md-6" style="max-width: 500px">
-                    <q-input v-model="form.欄位2" :readonly="readonly" label="客戶簡稱" outlined dense :rules="[val => !!val || '客戶簡稱為必填欄位']"/>
+                    <q-input v-model="form.欄位2" :readonly="readonly || preview" label="客戶簡稱" outlined dense :rules="[val => !!val || '客戶簡稱為必填欄位']"/>
                     <div class="col-6 col-md-6" style="max-width: 500px">
-                          <q-select v-model="form.country" style="max-width: 500px" :readonly="readonly" label="國別" outlined dense
+                          <q-select v-model="form.country" style="max-width: 500px" :readonly="readonly || preview" label="國別" outlined dense
                           :options="countryList"
                           option-value="code"
                           option-label="國別"
@@ -68,59 +80,59 @@
                     </div>
                   </div>
                   <div class="col-6 col-md-6" style="max-width: 500px">
-                    <q-input v-model="form.正航編號" :readonly="readonly" label="客戶編號" outlined dense />
+                    <q-input v-model="form.正航編號" :readonly="readonly || preview" label="客戶編號" outlined dense />
                     <br>
-                    <q-input v-model="form.source" :readonly="readonly" label="開發來源" outlined dense />
+                    <q-input v-model="form.source" :readonly="readonly || preview" label="開發來源" outlined dense />
                     <br>
-                    <q-input v-model="form.position" :readonly="readonly" label="職位" outlined dense/>
+                    <q-input v-model="form.position" :readonly="readonly || preview" label="職位" outlined dense/>
                   </div>
                   <div class="col-6 col-md-6" style="max-width: 500px">
                   </div>
                   <div class="col-12 col-md-12" style="max-width: 1000px">
-                    <q-input v-model="form.address" :readonly="readonly" label="營業地址" outlined dense :rules="[val => !!val || '營業地址為必填欄位']"/>
-                    <q-input v-model="form.daddress" :readonly="readonly" label="寄件地址" outlined dense :rules="[val => !!val || '寄件地址為必填欄位']"/>
+                    <q-input v-model="form.address" :readonly="readonly || preview" label="營業地址" outlined dense :rules="[val => !!val || '營業地址為必填欄位']"/>
+                    <q-input v-model="form.daddress" :readonly="readonly || preview" label="寄件地址" outlined dense :rules="[val => !!val || '寄件地址為必填欄位']"/>
                   </div>
                   <div class="col-6 col-md-6" style="max-width: 500px">
-                    <q-input v-model="form.tel" :readonly="readonly" label="客戶電話" outlined dense/>
+                    <q-input v-model="form.tel" :readonly="readonly || preview" label="客戶電話" outlined dense/>
                     <br>
-                    <q-input v-model="form.website" :readonly="readonly" label="網址" outlined dense />
+                    <q-input v-model="form.website" :readonly="readonly || preview" label="網址" outlined dense />
                     <br>
-                    <q-input v-model="form.email" :readonly="readonly" label="電子信箱" outlined dense/>
+                    <q-input v-model="form.email" :readonly="readonly || preview" label="電子信箱" outlined dense/>
                     <br>
-                    <q-input v-model="form.industry" :readonly="readonly" label="配合代理" outlined dense/>
+                    <q-input v-model="form.industry" :readonly="readonly || preview" label="配合代理" outlined dense/>
                     <br>
                   </div>
                   <div class="col-6 col-md-6" style="max-width: 500px">
-                    <q-input v-model="form.zipcode" :readonly="readonly" label="手機" outlined dense/>
+                    <q-input v-model="form.zipcode" :readonly="readonly || preview" label="手機" outlined dense/>
                     <br>
-                    <q-input v-model="form.fax" :readonly="readonly" label="傳真" outlined dense/>
+                    <q-input v-model="form.fax" :readonly="readonly || preview" label="傳真" outlined dense/>
                     <br>
-                    <q-input v-model="form.ma" :readonly="readonly" label="型態分類" outlined dense/>
+                    <q-input v-model="form.ma" :readonly="readonly || preview" label="型態分類" outlined dense/>
                     <br>
-                    <q-input v-model="form.欄位1" :readonly="readonly" label="終端使用" outlined dense/>
+                    <q-input v-model="form.欄位1" :readonly="readonly || preview" label="終端使用" outlined dense/>
                     <br>
                   </div>
                   <div class="col-12 col-md-12" style="max-width: 1000px">
-                        <q-select v-model="form.industrycode" :readonly="readonly" label="所屬業別"
+                        <q-select v-model="form.industrycode" :readonly="readonly || preview" label="所屬業別"
                         outlined dense :options="industryList" @update:model-value="getIndustryName"
                             option-value="中分類碼"
                             option-label="中分類碼"></q-select>
                         <label class="text-red text-center" style=" font-size: 24px;">{{ industry }}</label>
                   </div>
                   <div class="col-12 col-md-12" style="max-width: 1000px">
-                    <q-input v-model="form.machineissue" :readonly="readonly" label="機台類別" outlined dense></q-input>
+                    <q-input v-model="form.machineissue" :readonly="readonly || preview" label="機台類別" outlined dense></q-input>
                   </div>
                   <div class="col-6 col-md-6" style="max-width: 500px">
-                    <q-select v-model="form.credibility" :readonly="readonly" label="收款帳戶" outlined dense
+                    <q-select v-model="form.credibility" :readonly="readonly || preview" label="收款帳戶" outlined dense
                     :options="bankList"
                             option-value="銀存編碼"
                             option-label="銀存編碼"></q-select>
                   </div>
-                  <div class="col-6 col-md-6" style="max-width: 500px">
+                  <div v-if="!preview" class="col-6 col-md-6" style="max-width: 500px">
                     <q-btn label="停用" v-if="form.停用日 === '' || form.停用日 === null" @click="setExpiry('Y')" color="negative"/>&nbsp;
                     <q-btn label="取消停用" v-if="form.停用日 !== '' && form.停用日 !== null"  color="primary" @click="setExpiry('N')"/>
                   </div>
-                  <div class="col-12 col-md-12" style="max-width: 1000px">
+                  <div :readonly="readonly || preview" class="col-12 col-md-12" style="max-width: 1000px">
                     <q-input v-model="form.memo" :readonly="readonly" label="備註" outlined dense></q-input>
                   </div>
                 </div>
@@ -128,24 +140,24 @@
                 <hr class="q-my-md justify-center">
                 <h6>
                   客戶聯絡人清單
-                  <q-btn size="sm" label="新增聯絡人" color="primary" @click="form.contactLists.push({識別: Date.now(), 姓名: '', 職稱: '', 電話: '', 分機: '', email: '', company:''})"/>
+                  <q-btn v-if="!preview" size="sm" label="新增聯絡人" color="primary" @click="form.contactLists.push({識別: Date.now(), 姓名: '', 職稱: '', 電話: '', 分機: '', email: '', company:''})"/>
                 </h6>
                 <div v-for="item in form.contactLists" :key="item.識別" class="q-mt-md">
                   <div class="row q-col-gutter-md">
                     <div class="col-3 col-md-3" style="max-width: 250px">
-                      <q-input v-model="item.姓名" :readonly="readonly" label="姓名" outlined dense/>
+                      <q-input v-model="item.姓名" :readonly="readonly || preview" label="姓名" outlined dense/>
                     </div>
                     <div class="col-2 col-md-2" style="max-width: 250px">
-                      <q-input v-model="item.職稱" :readonly="readonly" label="職稱" outlined dense/>
+                      <q-input v-model="item.職稱" :readonly="readonly || preview" label="職稱" outlined dense/>
                     </div>
                     <div class="col-2 col-md-2" style="max-width: 250px">
-                      <q-input v-model="item.email" :readonly="readonly" label="e-mail" outlined dense/>
+                      <q-input v-model="item.email" :readonly="readonly || preview" label="e-mail" outlined dense/>
                     </div>
                     <div class="col-3 col-md-3" style="max-width: 250px">
-                      <q-input v-model="item.電話" :readonly="readonly" label="電話" outlined dense/>
+                      <q-input v-model="item.電話" :readonly="readonly || preview" label="電話" outlined dense/>
                     </div>
                     <div class="col-2 col-md-2" style="max-width: 250px">
-                      <q-input v-model="item.分機" :readonly="readonly" label="分機" outlined dense/>
+                      <q-input v-model="item.分機" :readonly="readonly || preview" label="分機" outlined dense/>
                     </div>
                   </div>
                 </div>
@@ -154,18 +166,18 @@
                 <hr>
                 <h6>
                   客戶聯絡明細
-                  <q-btn size="sm" label="新增聯絡明細" color="primary" @click="form.contactDetails.push({ 日期: '', 註記: '', 業務人員: '', RFQNO: ''})"/>
+                  <q-btnn v-if="!preview" size="sm" label="新增聯絡明細" color="primary" @click="form.contactDetails.push({ 日期: '', 註記: '', 業務人員: '', RFQNO: '', showDatePopup:false})"/>
                 </h6>
                 <div v-for="item in form.contactDetails" :key="item.SERNO+'-'+item.COMPANY" class="q-mt-md">
                   <div class="row q-col-gutter-md">
                     <div class="col-2 col-md-2" style="max-width: 200px; max-height: 50px;">
-                      <q-input filled dense v-model="item.日期" label="洽談日期" mask="##/##/####" :rules="['item.日期']">
+                      <q-input filled dense :readonly="readonly || preview" v-model="item.日期" label="洽談日期" mask="##/##/####" :rules="['item.日期']">
                         <template v-slot:append>
                           <q-icon name="event" class="cursor-pointer">
-                            <q-popup-proxy cover v-model="showDatePopup" transition-show="scale" transition-hide="scale">
-                              <q-date v-model="item.日期" mask="DD/MM/YYYY" no-title>
+                            <q-popup-proxy cover v-model="item.showDatePopup" transition-show="scale" transition-hide="scale">
+                              <q-date :readonly="readonly || preview" v-model="item.日期" mask="DD/MM/YYYY" no-title>
                                 <div class="row items-center justify-end">
-                                  <q-btn v-close-popup label="Close" color="primary" flat @click="showDatePopup = false" />
+                                  <q-btn v-close-popup label="Close" color="primary" flat @click="item.showDatePopup = false" />
                                 </div>
                               </q-date>
                             </q-popup-proxy>
@@ -174,10 +186,10 @@
                       </q-input>
                     </div>
                     <div class="col-3 col-md-3" style="max-width: 200px">
-                      <q-input v-model="item.註記" label="註記" outlined dense/>
+                      <q-input :readonly="readonly || preview" v-model="item.註記" label="註記" outlined dense/>
                     </div>
                     <div class="col-3 col-md-3" style="max-width: 200px">
-                      <q-select v-model="item.業務人員" label="工號" outlined dense
+                      <q-select :readonly="readonly || preview" v-model="item.業務人員" label="工號" outlined dense
                         :options="salesList"
                         option-value="工號"
                         option-label="工號" @update:model-value="changeSalesName(item)"
@@ -192,15 +204,15 @@
                       />
                     </div>
                     <div class="col-2 col-md-2" style="max-width: 200px">
-                      <q-input v-model="item.rfqno" :readonly="readonly" label="RFQNO" outlined dense/>
+                      <q-input v-model="item.rfqno" :readonly="readonly || preview" label="RFQNO" outlined dense/>
                     </div>
                   </div>
                 </div>
             </q-card-section>
           </q-form>
           <q-card-actions align="right">
-            <q-btn flat label="取消" color="negative" @click="showForm = false" />
-            <q-btn label="送出" color="primary" @click="handleOtherAction" />
+            <q-btn flat label="取消" color="negative" @click="close()" />
+            <q-btn v-if="!preview" label="送出" color="primary" @click="handleOtherAction" />
           </q-card-actions>
       </q-card>
     </q-dialog>
@@ -238,9 +250,10 @@ const countryList = ref([]);
 const bankList = ref([]);
 const errorMessage = ref('');
 const showForm = ref(false)
-const showDatePopup = ref(false)
+// const showDatePopup = ref(false)
 const secondDialog = ref(false)
 const readonly = ref(false)
+const preview = ref(false);
 const countryname = ref('');
 const salesList = ref([]);
 const columns =
@@ -454,9 +467,10 @@ const getIndustryName = (code) => {
 };
 const openCustomerDialog = (action) => {
   console.log('開啟客戶表單，操作:', action);
-  if (action === '修改') {
+  errorMessage.value = "";
+  if (action === '修改' || action == '預覽') {
     if (selected.value.length === 0) {
-      errorMessage.value = '請先選擇要修改的客戶';
+      errorMessage.value = `請先選擇要${action}的客戶`;
       return;
     }
     const selectedCustomerId = selected.value[0];
@@ -470,6 +484,7 @@ const openCustomerDialog = (action) => {
       if (selectedCustomer.industrycode) {
         getIndustryName({ 中分類碼: selectedCustomer.industrycode });
       }
+      preview.value = true;
     } else {
       errorMessage.value = '找不到選取的客戶資料';
       return;
@@ -537,7 +552,7 @@ const deleteCustomer = () => {
   console.log('selected', selected.value);
   if (selected.value.length === 0) {
       console.log('No role selected for modification')
-      errorMessage.value = '請選擇要刪除的角色'
+      errorMessage.value = '請選擇要刪除的客戶'
       showForm.value = false
       return;
   }
@@ -567,6 +582,10 @@ const changeSalesName = (item) => {
         ?salesList.value.find(sales => sales.工號 == item.業務人員).姓名
         :'';
   console.log('name:', item.業務人員姓名)
+}
+const close = () =>{
+  showForm.value = false;
+  preview.value = false;
 }
 //function block end
 </script>

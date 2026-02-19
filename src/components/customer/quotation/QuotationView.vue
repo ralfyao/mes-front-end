@@ -4,7 +4,7 @@
         <div class="text-h4">{{props.mode!=''&&props.mode!=''?props.mode:'新增'}}報價單</div>
         <div v-if="props.mode=='修改'">
           <q-btn  dense outlined label="複製" color="warning" @click="copy" />&nbsp;
-          <q-btn  dense outlined label="轉開訂單" color="primary" />&nbsp;
+          <q-btn  dense outlined label="轉開訂單" color="primary" @click="transferToSalesOrder" />&nbsp;
           <q-btn  dense outlined label="取消停用" color="green" v-if="!quotationForm.核准 || quotationForm.核准 == ''" @click="updateExpiryFlag('Y')" />
           <q-btn  dense outlined label="停用" color="negative" v-if="quotationForm.核准 && quotationForm.核准 != ''" @click="updateExpiryFlag('N')" />
         </div>
@@ -14,13 +14,13 @@
           <!--日期、報價單號-->
           <div class="row q-col-gutter-md">
             <div class="col-6 col-md-6" style="max-width: 500px">
-              <q-input outlined dense v-model="quotationForm.quodate" :readonly="props.mode!=''" label="日期" mask="####/##/##" :rules="[val => !!val || '日期為必填欄位']">
+              <q-input outlined dense v-model="quotationForm.quodate" :readonly="readonly || props.preview" label="日期" mask="####/##/##" :rules="[val => ! props.preview && !!val || '日期為必填欄位']">
                 <template v-slot:append>
                   <q-icon name="event" class="cursor-pointer">
                     <q-popup-proxy cover v-model="showDatePopup" transition-show="scale" transition-hide="scale">
                       <q-date v-model="quotationForm.quodate" mask="YYYYMMDD" no-title>
                         <div class="row items-center justify-end">
-                          <q-btn v-close-popup label="Close" color="primary" flat @click="showDatePopup = false" />
+                          <q-btn v-close-popup label="Close" :readonly="readonly || props.preview" color="primary" flat @click="showDatePopup = false" />
                         </div>
                       </q-date>
                     </q-popup-proxy>
@@ -29,17 +29,17 @@
               </q-input>
             </div>
             <div class="col-6 col-md-6" style="max-width: 500px">
-              <q-input outlined dense v-model="quotationForm.quono" label="報價單號"/>
+              <q-input outlined dense v-model="quotationForm.quono" :readonly="readonly || props.preview" label="報價單號"/>
             </div>
           </div>
           <!--報價有效日期、詢問單號-->
           <div class="row q-col-gutter-md">
             <div class="col-6 col-md-6" style="max-width: 500px">
-              <q-input outlined dense v-model="quotationForm.condate" label="報價有效日期" mask="####/##/##" :rules="[val => !!val || '日期為必填欄位']">
+              <q-input outlined dense v-model="quotationForm.condate" :readonly="readonly || props.preview" label="報價有效日期" mask="####/##/##" :rules="[ val =>!props.preview &&  !!val || '日期為必填欄位']">
                 <template v-slot:append>
                   <q-icon name="event" class="cursor-pointer">
                     <q-popup-proxy cover v-model="showConDatePopup" transition-show="scale" transition-hide="scale">
-                      <q-date v-model="quotationForm.condate" mask="YYYY/MM/DD" no-title>
+                      <q-date v-model="quotationForm.condate" :readonly="readonly || props.preview" mask="YYYY/MM/DD" no-title>
                         <div class="row items-center justify-end">
                           <q-btn v-close-popup label="Close" color="primary" flat @click="showConDatePopup = false" />
                         </div>
@@ -50,13 +50,13 @@
               </q-input>
             </div>
             <div class="col-6 col-md-6" style="max-width: 500px">
-              <q-input outlined dense v-model="quotationForm.rfqno" :readonly="props.form" label="詢價單號"/>
+              <q-input outlined dense v-model="quotationForm.rfqno" :readonly="readonly || props.preview" label="詢價單號"/>
             </div>
           </div>
           <!--業務人員-->
           <div class="row q-col-gutter-md">
             <div class="col-6 col-md-6" style="max-width: 500px">
-              <q-select v-model="quotationForm.daddress" :readonly="readonly" label="業務人員" outlined dense
+              <q-select v-model="quotationForm.daddress" :readonly="readonly || props.preview" label="業務人員" outlined dense
                     :options="salesList"
                             option-value="工號" emit-value map-options
                             option-label="工號" @update:model-value="changeSalesName"
@@ -72,18 +72,18 @@
           <!--客戶編號、客戶簡稱-->
           <div class="row q-col-gutter-md">
             <div class="col-6 col-md-6" style="max-width: 500px">
-              <q-input outlined dense v-model="companyNo" :readonly="props.form" label="公司編號"/>
+              <q-input outlined dense v-model="companyNo" :readonly="readonly || props.preview" label="公司編號"/>
             </div>
 
             <div class="col-6 col-md-6" style="max-width: 500px">
-              <q-input outlined dense v-model="companyAlias" :readonly="props.form" label="公司簡稱"/>
+              <q-input outlined dense v-model="companyAlias" :readonly="readonly || props.preview" label="公司簡稱"/>
             </div>
           </div>
           <br>
           <!--客戶全名-->
           <div class="row q-col-gutter-md">
             <div class="col-12 col-md-12" style="max-width: 1000px">
-              <q-input outlined dense v-model="companyName" :readonly="props.form" label="客戶全名"/>
+              <q-input outlined dense v-model="companyName" :readonly="readonly || props.preview" label="客戶全名"/>
             </div>
           </div>
           <br>
@@ -94,17 +94,17 @@
                 v-model="quotationForm.currency"
                 :options="currencyList"
                 option-value="currency"
-                option-label="currency"
+                option-label="currency" :readonly="readonly || props.preview"
                 @update:model-value="changeExRate" emit-value map-options
-                 :rules="[val => !!val || '幣別為必填欄位']"/>
+                 :rules="[val => !props.preview && !!val || '幣別為必填欄位']"/>
             </div>
             <div class="col-6 col-md-6" style="max-width: 500px">
               <q-select outlined dense  label="匯率"
                 :options="exRateList"
                 v-model="quotationForm.exrate"
-                option-label="匯率"
+                option-label="匯率" :readonly="readonly || props.preview"
                 option-value="匯率"  emit-value map-options
-                :rules="[val => !!val || '匯率為必填欄位']"
+                :rules="[val => !props.preview && !!val || '匯率為必填欄位']"
                 />
             </div>
           </div>
@@ -112,36 +112,36 @@
           <!--聯絡人、機台類別--><!--聯絡人[RANKING]> dbo_C客戶聯絡人清單--><!--機台類型[MTYPE]> dbo_A機台類型-->
           <div class="row q-col-gutter-md">
             <div class="col-6 col-md-6" style="max-width: 500px">
-              <q-select  outlined dense v-model="quotationForm.ranking" emit-value map-options
+              <q-select  outlined dense v-model="quotationForm.ranking" emit-value map-options :readonly="readonly || props.preview"
               :options="contactList" option-label="姓名" option-value="姓名"  label="聯絡人"/>
             </div>
             <div class="col-6 col-md-6" style="max-width: 500px">
-              <q-select  outlined dense v-model="quotationForm.mtype"  label="機台類別"
+              <q-select  outlined dense :readonly="readonly || props.preview" v-model="quotationForm.mtype"  label="機台類別"
                 :options="eqpTypeList"
                 option-value="typeid"
                 option-label="type" emit-value map-options
-                :rules="[val => !!val || '機台類別為必填欄位']"/>
+                :rules="[val => !props.preview && !!val || '機台類別為必填欄位']"/>
             </div>
           </div>
           <br>
           <!--交貨地址-->
           <div class="row q-col-gutter-md">
             <div class="col-12 col-md-12" style="max-width: 1000px">
-              <q-input outlined dense v-model="quotationForm.address" label="交貨地址"/>
+              <q-input outlined dense v-model="quotationForm.address" label="交貨地址" :readonly="readonly || props.preview"/>
             </div>
           </div>
           <br>
           <!--稅率、價格條件--><!--稅率> 選單直接寫入5%,0兩個選項-->
           <div class="row q-col-gutter-md">
             <div class="col-6 col-md-6" style="max-width: 500px">
-              <q-select  outlined dense v-model="quotationForm.稅率"  label="稅率"
-                :rules="[val => !!val || '稅率為必填欄位']"  emit-value map-options
+              <q-select  outlined dense v-model="quotationForm.稅率"  label="稅率" :readonly="readonly || props.preview"
+                :rules="[val => !props.preview && !!val || '稅率為必填欄位']"  emit-value map-options
                 :options="taxRateList"/>
             </div>
             <div class="col-6 col-md-6" style="max-width: 500px">
-              <q-select  outlined dense v-model="quotationForm.價格條件"  label="價格條件"
+              <q-select  outlined dense v-model="quotationForm.價格條件"  label="價格條件" :readonly="readonly || props.preview"
                 :options="priceCondList"
-                :rules="[val => !!val || '價格條件為必填欄位']"  emit-value map-options
+                :rules="[val => !props.preview && !!val || '價格條件為必填欄位']"  emit-value map-options
                 option-value="條文編號"
                 option-label="條文名稱"/>
             </div>
@@ -150,8 +150,8 @@
           <!--交期要求、報價總額-->
           <div class="row q-col-gutter-md">
             <div class="col-6 col-md-6" style="max-width: 500px">
-              <q-select  outlined dense  label="交期要求" :options="dueDateTerm" v-model="quotationForm.交貨日期"
-                :rules="[val => !!val || '交期要求為必填欄位']"  emit-value map-options
+              <q-select  outlined dense  label="交期要求" :options="dueDateTerm" :readonly="readonly || props.preview" v-model="quotationForm.交貨日期"
+                :rules="[val => !props.preview && !!val || '交期要求為必填欄位']"  emit-value map-options
                 option-value="條文編號"
                 option-label="條文名稱"/>
             </div>
@@ -166,8 +166,8 @@
             <div class="col-6 col-md-6" style="max-width: 500px">
               <q-select  outlined v-model="quotationForm.交貨方式" dense  label="交貨方式"
                 :options="handMethod"
-                :rules="[val => !!val || '交貨方式為必填欄位']"
-                option-value="條文編號"
+                :rules="[val => !props.preview && !!val || '交貨方式為必填欄位']"
+                option-value="條文編號" :readonly="readonly || props.preview"
                 option-label="條文名稱"
                 emit-value map-options
               />
@@ -175,8 +175,8 @@
             <div class="col-6 col-md-6" style="max-width: 500px">
               <q-select  outlined v-model="quotationForm.付款方式" dense  label="付款方式"
                 :options="paymentTerm"
-                :rules="[val => !!val || '付款方式為必填欄位']"
-                emit-value map-options
+                :rules="[val => !props.preview && ! props.preview && !!val || '付款方式為必填欄位']"
+                emit-value map-options :readonly="readonly || props.preview"
                 option-value="條文編號"
                 option-label="條文名稱"/>
             </div>
@@ -185,7 +185,7 @@
           <!--備註-->
           <div class="row q-col-gutter-md">
             <div class="col-12 col-md-12" style="max-width: 1000px">
-              <q-input outlined dense v-model="quotationForm.remark" label="備註"/>
+              <q-input outlined dense v-model="quotationForm.remark" :readonly="readonly || props.preview" label="備註"/>
             </div>
           </div>
           <br>
@@ -193,30 +193,30 @@
           <!--產品列表-->
           <h6>
             產品列表
-            <q-btn size="sm" label="新增產品" color="primary" @click="AddProductItem"/>
+            <q-btn v-if="!props.preview" size="sm" label="新增產品" color="primary" @click="AddProductItem"/>
           </h6>
           <div v-for="item in quotationForm.quotationDetailFormList" :key="item.識別">
             <div class="row q-col-gutter-md">
               <div class="col-2 col-md-2" style="max-width: 166px">
-                <q-input outlined dense v-model="item.產品編號" label="產品編號"/>
+                <q-input outlined dense v-model="item.產品編號" :readonly="readonly || props.preview" label="產品編號"/>
               </div>
               <div class="col-2 col-md-2" style="max-width: 166px">
-                <q-input outlined dense v-model="item.品名規格" label="品名規格"/>
+                <q-input outlined dense v-model="item.品名規格" :readonly="readonly || props.preview" label="品名規格"/>
               </div>
               <div class="col-1 col-md-1" style="max-width: 116px">
-                <q-input type="number" min="0" outlined dense v-model="item.數量" label="數量"/>
+                <q-input type="number" min="0" outlined dense v-model="item.數量" :readonly="readonly || props.preview" label="數量"/>
               </div>
               <div class="col-1 col-md-1" style="max-width: 116px">
-                <q-input outlined dense v-model="item.單位" label="單位"/>
+                <q-input outlined dense v-model="item.單位" :readonly="readonly || props.preview" label="單位"/>
               </div>
               <div class="col-2 col-md-2" style="max-width: 166px">
-                <q-input type="number" min="0" outlined dense v-model="item.單價" @blur="onBlur(item)" label="單價"/>
+                <q-input type="number" min="0" outlined dense v-model="item.單價" :readonly="readonly || props.preview" @blur="onBlur(item)" label="單價"/>
               </div>
               <div class="col-2 col-md-2" style="max-width: 166px">
-                <q-input type="number" min="0" outlined dense readonly v-model="item.金額" label="金額"/>
+                <q-input type="number" min="0" outlined dense  :readonly="readonly || props.preview" v-model="item.金額" label="金額"/>
               </div>
               <div class="col-2 col-md-2" style="max-width: 166px">
-                <q-input outlined dense v-model="item.描述" label="描述"/>
+                <q-input outlined dense v-model="item.描述" :readonly="readonly || props.preview" label="描述"/>
               </div>
             </div>
             <br>
@@ -230,8 +230,8 @@
         </q-card-section>
       </q-form>
       <q-card-actions align="right">
-          <q-btn flat label="取消" color="negative" @click="close" />
-          <q-btn label="送出" color="primary" @click="handleOtherAction"/>
+        <q-btn flat label="取消" color="negative" @click="close" />
+        <q-btn v-if="!preview" label="送出" color="primary" @click="handleOtherAction" />
       </q-card-actions>
   </q-card>
 </template>
@@ -267,6 +267,10 @@ const props = defineProps({
   mode:{
     type:String,
     default:() =>''
+  },
+  preview:{
+    type:Boolean,
+    default:() =>false
   },
   quono:{
     type:String,
@@ -378,11 +382,13 @@ const init =async () =>{
   // console.log('exRateList',exRateList.value);
   contactList.value   = await custStore.getContactList(props.form.company);
   console.log('contactList', contactList.value);
-  priceCondList.value = await custStore.getTxConditionList('T');
+  priceCondList.value = await custStore.getTxConditionList('T');//價格條件
   // console.log('priceCondList',priceCondList.value);
-  dueDateTerm.value   = await custStore.getTxConditionList('R');
-  handMethod.value    = await custStore.getTxConditionList('D');
-  paymentTerm.value   = await custStore.getTxConditionList('Y');
+  dueDateTerm.value   = await custStore.getTxConditionList('R');//交貨要求
+  handMethod.value    = await custStore.getTxConditionList('D');//
+  paymentTerm.value  = await custStore.getTxConditionList('P,Y');//付款方式
+  // let pt2   = await custStore.getTxConditionList('P');//付款方式
+  // paymentTerm.value.push(pt2);
   console.log('paymentTerm.value',paymentTerm.value);
   if (!props.salesList || props.salesList.length == 0)
   {
@@ -404,16 +410,17 @@ const init =async () =>{
       {
         quotationForm.value.quono = props.quono;
       }
-      await custStore.getQuotationByNo(quotationForm.value.quono).then((data1)=>{
-        Object.assign(quotationForm.value, data1);
-        quotationForm.value.付款方式 = quotationForm.value.付款方式.trim()
-        changeSalesName();
-        changeExRate(quotationForm.value.currency)
+      if (quotationForm.value.quono !== '') {
+        await custStore.getQuotationByNo(quotationForm.value.quono).then((data1)=>{
+          Object.assign(quotationForm.value, data1);
+          quotationForm.value.付款方式 = quotationForm.value.付款方式.trim()
+          changeSalesName();
+          changeExRate(quotationForm.value.currency)
 
-      });
-
-    } catch(e) {console.log(e)}
-    await custStore.getRfq(props.form.rfqno).then((data2)=>{
+        });
+      }
+      if (props.form.rfqno !== '') {
+        await custStore.getRfq(props.form.rfqno).then((data2)=>{
           console.log('rfq obj', data2)
           console.log('data2.company', data2.company)
           companyName.value = data2.company;
@@ -423,6 +430,9 @@ const init =async () =>{
             companyAlias.value = data3.欄位2;
           })
         });
+      }
+    } catch(e) {console.log(e)}
+
 
 
     console.log('quotationForm', quotationForm)
@@ -532,8 +542,10 @@ const handleOtherAction = async () => {
 }
 const changeExRate = async (val) =>{
   console.log('val.currency', val);
+  try{
   exRateList.value = await custStore.getExRateList(val);
   quotationForm.value.exrate = exRateList.value[0];
+  }catch(e){console.log(e)}
 }
 const sumAmount = () =>{
   quotationForm.value.amount = 0;
@@ -575,6 +587,17 @@ const updateExpiryFlag = async (type) =>{
   else
     quotationForm.value.核准 = '';
   await custStore.updateExpiryFlag(quotationForm.value.quono, quotationForm.value.核准, type);
+}
+const transferToSalesOrder = async () =>{
+  await custStore.transferToSalesOrder(quotationForm).then((data)=>{
+    if (!data.data.errorMessage || data.data.errorMessage == ''){
+      alert('轉開成功');
+      emit("update:showForm", false);
+      init();
+    } else {
+      alert(data.data.errorMessage);
+    }
+  })
 }
 // function block
 </script>
