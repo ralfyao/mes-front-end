@@ -17,7 +17,7 @@
         </div>
         <div class="padding-right">
           <q-btn color="red" class="padding-right"
-                       glossy @click="deleteCustomer"
+                       glossy @click="deleteShippingOrder"
                        :loading="loading">刪除出貨單</q-btn>
         </div>
         <div class="padding-right">
@@ -36,7 +36,7 @@
       <q-page>
         <q-table
                 :columns="columns"
-                row-key="rfqno"
+                row-key="識別"
                 :rows="list"
                 flat
                 bordered
@@ -55,7 +55,7 @@
         <q-card-section>
           <div class="text-h4">
             {{mode}}出貨單
-            <q-btn outlined dense glossy color="primary" label="訂單分配" @click="showSODistributionForm"/>
+            <q-btn outlined dense glossy color="primary" v-if="!preview" label="訂單分配" @click="showSODistributionForm"/>
           </div>
         </q-card-section>
         <q-form ref="myForm" >
@@ -158,7 +158,7 @@
               </div>
               <div class="col-6 col-md-6" style="max-width: 500px">
                 <q-input v-model="form.收款帳號" outlined dense label="收款帳號" />
-                <q-btn outlined dense glossy color="green" label="核對" @click="openBankInfo"/>
+                <q-btn outlined dense glossy color="green"  v-if="!preview" label="核對" @click="openBankInfo"/>
               </div>
             </div>
             <!--收貨地址-->
@@ -237,7 +237,7 @@
               <q-btn v-if="!preview" dense outlined  label="新增明細" color="primary" glossy @click="AddShipOrderDetail"/>
             </h6>
             <div style="min-width: 1500px">
-              <div v-for="item in form.shipOrderDetail"  v-bind:key="item.識別碼" class="row no-wrap q-col-gutter-md">
+              <div v-for="item in form.shipOrderLists"  v-bind:key="item.識別碼" class="row no-wrap q-col-gutter-md">
                 <div class="col-1 col-md-1" style="max-width: 200px">
                   <q-input outlined dense v-model="item.產品編號" :readonly="readonly || preview" label="產品編號"
                   :rules="[val => !!val || '產品編號為必填欄位']"/>
@@ -271,18 +271,19 @@
                   :rules="[val => !!val || '樣品別為必填欄位']"/>
                 </div>
                 <div class="col-2 col-md-2" style="max-width: 300px">
-                  <q-select  outlined v-model="form.倉庫別" dense :readonly="readonly || preview"  label="倉庫別"
+                  <q-select  outlined v-model="item.倉庫別" dense :readonly="readonly || preview"  label="倉庫別"
                   :options="warehouseList"
                   :rules="[val => !!val || '倉庫別為必填欄位']"
                   emit-value map-options
-                  option-value="條文編號"
-                  option-label="條文名稱"/>
+                  option-value="倉庫"
+                  option-label="倉庫"/>
                 </div>
               </div>
             </div>
           </q-card-section>
         </q-form>
         <q-card-actions align="right">
+          <label class="q-pa-md">建檔：{{ form.建檔 }} &nbsp;&nbsp;&nbsp;&nbsp;修改：{{ form.修改 }} &nbsp;&nbsp;&nbsp;&nbsp; 金額總計：{{ form.總額 }}</label>
           <q-btn flat label="取消" color="negative" @click="close" />
           <q-btn v-if="!preview" label="送出" color="primary" @click="handleOtherAction" />
         </q-card-actions>
@@ -316,9 +317,11 @@ import {
   , QDate
   , QPopupProxy
   , QSelect
-  , QCardActions
+  , QCardActions,
+  SessionStorage
 } from 'quasar';
 import { ref, onMounted } from 'vue';
+import dayjs from 'dayjs'
 //import block end
 
 //variable block start
@@ -355,7 +358,7 @@ const columns = [
 ];
 const custStore = useCustStore();
 const form = ref({
-  識別:'',
+  識別:0,
   日期:'',
   單號:'',
   客戶編號:'',
@@ -375,7 +378,9 @@ const form = ref({
   remark:'',
   總額:0.0,
   收款帳號:'',
-  shipOrderDetail:[],
+  建檔:'',
+  修改:'',
+  shipOrderLists:[],
 })
 const bankAccountCheckForm = ref({
   銀存編碼:'',
@@ -389,10 +394,54 @@ const bankAccountCheckForm = ref({
 //variable block end
 
 //function block start
-const openCustomDialog = (type) => {
+const openCustomDialog = async (type) => {
   console.log('type', type)
   mode.value = type;
   showForm.value = true;
+  form.value = {
+      識別:0,
+      日期:'',
+      單號:'',
+      客戶編號:'',
+      業務員:'',
+      幣別:'',
+      匯率:0.0,
+      稅別:'',
+      稅率:'',
+      佣金:0.0,
+      原定交貨日期:'',
+      交貨地址:'',
+      指配國別:'',
+      目的港:'',
+      價格條件:'',
+      交貨方式:'',
+      付款方式:'',
+      remark:'',
+      總額:0.0,
+      收款帳號:'',
+      建檔:'',
+      修改:'',
+      shipOrderLists:[],
+    };
+  if (type == '新增') {
+    await custStore.getShippingOrderNo().then((data)=>{
+      form.value.單號 = data;
+    });
+    console.log('form', form)
+  } else if (type == '修改'|| type == '預覽') {
+    form.value =  selected.value[0];
+    console.log(type+'form', form.value)
+    changeSalesName();
+    changeCustCompany();
+    await changeExRate(form.value.幣別)
+    form.value.日期 = dayjs(form.value.日期, "MM/DD/YYYY HH:mm:ss").format("YYYY/MM/DD")
+    form.value.原定交貨日期 = dayjs(form.value.原定交貨日期, "MM/DD/YYYY HH:mm:ss").format("YYYY/MM/DD")
+    if (type == '預覽') {
+      preview.value = true;
+    } else {
+      preview.value = false;
+    }
+  }
 }
 const onSelection = () =>{
 
@@ -436,13 +485,15 @@ const changeExRate = async (val) =>{
   console.log('val.currency', val);
   try{
   exRateList.value = await custStore.getExRateList(val);
-  form.value.匯率 = exRateList.value[0];
+  form.value.匯率 = exRateList.value[0].匯率;
   }catch(e){console.log(e)}
 }
 const changeCustCompany = () =>{
   console.log('salesOrderForm.value.客戶編號', form.value.客戶編號);
-  companyName.value = custNumberList.value.find((x)=>x.正航編號==form.value.客戶編號).company;
-  companyFullName.value = custNumberList.value.find((x)=>x.正航編號==form.value.客戶編號).companyfullname;
+  let cust = custNumberList.value.find((x)=>x.正航編號==form.value.客戶編號);
+  companyName.value = cust?.company;
+  companyFullName.value = cust?.companyfullname;
+  form.value.指配國別 =  cust?.country;
   // 收款帳號.value = custNumberList.value.find((x)=>x.正航編號==form.value.客戶編號).credibility;
   // salesOrderForm.value.指配國別 = custNumberList.value.find((x)=>x.正航編號==form.value.客戶編號).country;
 }
@@ -470,8 +521,9 @@ const openBankInfo = async () =>{
   })
 }
 const AddShipOrderDetail = () =>{
-  form.value.shipOrderDetail.push({
-    識別碼:'',
+  console.log('form.value.shipOrderLists', form.value.shipOrderLists)
+  form.value.shipOrderLists.push({
+    識別碼:0,
     單號:'',
     產品編號:'',
     品名規格:'',
@@ -485,8 +537,31 @@ const AddShipOrderDetail = () =>{
     倉庫別:'',
   });
 }
-const submitForm = () =>{
-
+const submitForm = async () =>{
+  console.log('submit form', form)
+  if (mode.value == '新增'){
+    form.value.建檔 = SessionStorage.getItem('Account').account;
+    await custStore.saveShipOrder(form).then((data)=>{
+      if (data.data.errorMessage){
+        alert(data.data.errorMessage);
+      } else {
+        alert(mode.value+'成功');
+      }
+      showForm.value = false;
+      getData();
+    })
+  } else if (mode.value == '修改') {
+    form.value.修改 = SessionStorage.getItem('Account').account;
+    await custStore.updateShipOrder(form).then((data)=>{
+      if (data.data.errorMessage){
+        alert(data.data.errorMessage);
+      } else {
+        alert(mode.value+'成功');
+      }
+      showForm.value = false;
+      getData();
+    })
+  }
 }
 
 const showSODistributionForm = () =>{
@@ -494,7 +569,39 @@ const showSODistributionForm = () =>{
 }
 
 const changeSalesName = () =>{
+  console.log('form.value.業務員',form.value.業務員);
   salesname.value = salesList.value.find((x)=>x.工號==form.value.業務員).姓名;
+}
+const onBlur = (item) =>{
+  item.金額2 = item.單價2 * item.數量2;
+  sumAmount();
+}
+const sumAmount = () =>{
+  form.value.amount = 0;
+  for(let i = 0; i <  form.value.shipOrderLists.length; i++) {
+    form.value.總額 += form.value.shipOrderLists[i].金額2;
+  }
+}
+
+const getData = async () =>{
+  await custStore.getShipOrderList().then((data)=>{
+    list.value = data;
+  });
+}
+
+const deleteShippingOrder = async () =>{
+  var result = confirm('您確定刪除?');
+  if (!result)
+    return;
+  const delForm = selected.value[0]
+  await custStore.deleteShippingOrder(delForm).then((data)=>{
+    if (data.data.errorMessage){
+      alert(data.data.errorMessage)
+    } else {
+      alert('刪除成功');
+      getData();
+    }
+  });
 }
 //function block end
 </script>

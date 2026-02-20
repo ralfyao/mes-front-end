@@ -805,6 +805,97 @@ export const useCustStore = defineStore('',  {
         return response.data.resultList;
       }
       return null;
+    },
+    async updateShipOrder(form){
+      const constant = Constant();
+      const payload = { ...toRaw(form.value) };
+      console.log('APIUrl', constant.APIUrl)
+      console.log('payload', payload);
+      const param = {
+        識別:payload.識別,
+        日期:payload.日期,
+        單號:payload.單號,
+        客戶編號:payload.客戶編號,
+        業務員:payload.業務員,
+        幣別:payload.幣別,
+        匯率:payload.匯率,
+        稅別:payload.稅別,
+        稅率:payload.稅率,
+        佣金:payload.佣金,
+        原定交貨日期:payload.原定交貨日期,
+        交貨地址:payload.交貨地址,
+        指配國別:payload.指配國別,
+        目的港:payload.目的港,
+        價格條件:payload.價格條件,
+        交貨方式:payload.交貨方式,
+        付款方式:payload.付款方式,
+        remark:payload.remark,
+        總額:payload.總額,
+        收款帳號:payload.收款帳號,
+        shipOrderLists:payload.shipOrderLists,
+      }
+      console.log('param', param);
+      const response = await axios.post(constant.APIUrl + 'api/UpdateShippingOrder', param, {
+        headers: { 'Content-Type': 'application/json' }
+      });
+      return response;
+    },
+    async saveShipOrder(form){
+      const constant = Constant();
+      const payload = { ...toRaw(form.value) };
+      console.log('APIUrl', constant.APIUrl)
+      console.log('payload', payload);
+      const param = {
+        識別:parseInt(payload.識別),
+        日期:payload.日期,
+        單號:payload.單號,
+        客戶編號:payload.客戶編號,
+        業務員:payload.業務員,
+        幣別:payload.幣別,
+        匯率:payload.匯率,
+        稅別:payload.稅別,
+        稅率:payload.稅率,
+        佣金:payload.佣金,
+        原定交貨日期:payload.原定交貨日期,
+        交貨地址:payload.交貨地址,
+        指配國別:payload.指配國別,
+        目的港:payload.目的港,
+        價格條件:payload.價格條件,
+        交貨方式:payload.交貨方式,
+        付款方式:payload.付款方式,
+        remark:payload.remark,
+        總額:payload.總額,
+        收款帳號:payload.收款帳號,
+        建檔:payload.建檔,
+        修改:payload.修改,
+        shipOrderLists:payload.shipOrderLists,
+      }
+      console.log('param', param);
+      const response = await axios.post(constant.APIUrl + 'api/SaveShippingOrder', param, {
+        headers: { 'Content-Type': 'application/json' }
+      });
+      return response;
+    },
+    async getShippingOrderNo(){
+      const constant = Constant();
+      console.log('APIUrl', constant.APIUrl)
+      const response =await axios.get(constant.APIUrl+'api/GetShippingOrderNo')
+      console.log('response', response)
+      if (response){
+        return response.data.result;
+      }
+      return null;
+    },
+    async deleteShippingOrder(form){
+      console.log('delete form',form)
+      const constant = Constant()
+      const payload = { ...toRaw(form) };
+      console.log('payload',payload)
+      const response = await axios.get(constant.APIUrl+'api/DeleteShippingOrder?shippingOrderNo='+payload.單號)
+      if (response){
+        return response;
+      }
+      return null;
     }
   }
 })

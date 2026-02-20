@@ -98,7 +98,8 @@ watch(
   () => props.bankAccountCheckForm,
   (newVal) => {
     console.log('資料更新了', newVal)
-    bankForm.value = newVal;
+    if(newVal)
+      bankForm.value = newVal;
   },
   { deep: true, immediate: true }
 )
