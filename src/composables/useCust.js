@@ -590,7 +590,7 @@ export const useCustStore = defineStore('',  {
       const response =await axios.get(constant.APIUrl+'api/UpdateSalesOrderCloseFlag?flag='+flag+'&orderNo='+salesOrderNo)
       console.log('response', response)
       if (response){
-        return response.data.resultList;
+        return response;
       }
       return null;
     },
@@ -601,6 +601,7 @@ export const useCustStore = defineStore('',  {
       console.log('APIUrl', constant.APIUrl)
       console.log('payload', payload);
       const param = {
+              account:payload.account,
               識別:payload.識別,
               日期:payload.日期,
               單號:payload.單號,
@@ -620,15 +621,16 @@ export const useCustStore = defineStore('',  {
               交貨方式:payload.交貨方式,
               付款方式:payload.付款方式,
               交貨日期:payload.交貨日期,
-              MACHINENO:payload.mtype,
-              Remark:payload.remark,
-              建檔:payload.建檔,
+              machineno:payload.mtype,
+              remark:payload.remark,
+              建檔:payload.account,
               修改:payload.修改,
               核准:payload.核准,
               建檔日:payload.建檔日,
               修改日:payload.修改日,
               核准日:payload.核准日,
               orderListDetail:payload.orderListDetail,
+              arListDetail:payload.arListDetail,
             }
       console.log('param', param);
       const response = await axios.post(constant.APIUrl + 'api/SaveSalesOrder', param, {
@@ -662,15 +664,16 @@ export const useCustStore = defineStore('',  {
               交貨方式:payload.交貨方式,
               付款方式:payload.付款方式,
               交貨日期:payload.交貨日期,
-              MACHINENO:payload.mtype,
-              Remark:payload.remark,
+              machineno:payload.mtype,
+              remark:payload.remark,
               建檔:payload.建檔,
-              修改:payload.修改,
+              修改:payload.account,
               核准:payload.核准,
               建檔日:payload.建檔日,
               修改日:payload.修改日,
               核准日:payload.核准日,
               orderListDetail:payload.orderListDetail,
+              arListDetail:payload.arListDetail,
             }
       console.log('param', param);
       const response = await axios.post(constant.APIUrl + 'api/UpdateSalesOrder', param, {
@@ -702,6 +705,101 @@ export const useCustStore = defineStore('',  {
       const constant = Constant();
       console.log('APIUrl', constant.APIUrl)
       const response =await axios.get(constant.APIUrl+'api/GetTaxType')
+      console.log('response', response)
+      if (response){
+        return response.data.resultList;
+      }
+      return null;
+    },
+    async getInstallmentType(){
+      const constant = Constant();
+      console.log('APIUrl', constant.APIUrl)
+      const response =await axios.get(constant.APIUrl+'api/GetInstallmentType')
+      console.log('response', response)
+      if (response){
+        return response.data.resultList;
+      }
+      return null;
+    },
+    async getBankInfo(account){
+      const constant = Constant();
+      console.log('APIUrl', constant.APIUrl)
+      const response =await axios.get(constant.APIUrl+'api/GetBankInfo?bankAccount='+account);
+      console.log('response', response)
+      if (response){
+        return response.data.result;
+      }
+      return null;
+    },
+    async getQuotationDistributionList(custNo, orderDate){
+      console.log('custNo', custNo, 'orderDate', orderDate)
+      const constant = Constant();
+      console.log('APIUrl', constant.APIUrl)
+      const response =await axios.get(constant.APIUrl+'api/GetQuotationDistributionList?custNo='+custNo+"&orderDate="+orderDate);
+      console.log('response', response)
+      if (response){
+        return response.data.resultList;
+      }
+      return null;
+    },
+    async transferToShipOrder (form){
+      const constant = Constant();
+      console.log('APIUrl', constant.APIUrl)
+      const payload = { ...toRaw(form.value) };
+      console.log('APIUrl', constant.APIUrl)
+      console.log('payload', payload);
+      const param = {
+              account:payload.account,
+              識別:payload.識別,
+              日期:payload.日期,
+              單號:payload.單號,
+              客戶編號:payload.客戶編號,
+              業務員:payload.業務員,
+              幣別:payload.幣別,
+              稅別:payload.稅別,
+              稅率:payload.稅率,
+              總額:payload.總額,
+              佣金:payload.佣金,
+              // 結案:payload.,
+              要望日期:payload.要望日期,
+              交貨地址:payload.交貨地址,
+              指配國別:payload.指配國別,
+              目的港:payload.目的港,
+              價格條件:payload.價格條件,
+              交貨方式:payload.交貨方式,
+              付款方式:payload.付款方式,
+              交貨日期:payload.交貨日期,
+              machineno:payload.mtype,
+              remark:payload.remark,
+              建檔:payload.建檔,
+              修改:payload.修改,
+              核准:payload.核准,
+              建檔日:payload.建檔日,
+              修改日:payload.修改日,
+              核准日:payload.核准日,
+              orderListDetail:payload.orderListDetail,
+              arListDetail:payload.arListDetail,
+            }
+      console.log('param', param);
+      const response = await axios.post(constant.APIUrl + 'api/TransferToShipOrder', param, {
+        headers: { 'Content-Type': 'application/json' }
+      });
+      return response;
+    },
+    async getShipOrderList(){
+      const constant = Constant();
+      console.log('APIUrl', constant.APIUrl)
+      const response =await axios.get(constant.APIUrl+'api/GetShippingOrderList')
+      console.log('response', response)
+      if (response){
+        return response.data.resultList;
+      }
+      return null;
+    },
+    async getWarehouseList(){
+      const constant = Constant();
+      console.log('APIUrl', constant.APIUrl)
+      const response =await axios.get(constant.APIUrl+'api/GetWarehouseList')
       console.log('response', response)
       if (response){
         return response.data.resultList;

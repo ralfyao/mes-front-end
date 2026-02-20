@@ -1,13 +1,500 @@
 <template>
   <q-layout class="q-pa-md padding  q-gutter-sm">
-        <h5 class="text-left">
-            <q-icon name="play_circle" size="30px" >銷貨出庫</q-icon>
-        </h5>
+    <h5 class="no-wrap text-left">
+      <div class="row justify-start padding-top">
+        <div class="col-2 col-md-2">
+          <q-icon name="play_circle" size="30px" >銷貨出庫</q-icon>
+        </div>
+        <div class="padding-right">
+          <q-btn color="primary" class="padding-right"
+                       glossy @click="openCustomDialog('新增')"
+                       :loading="loading">新增出貨單</q-btn>
+        </div>
+        <div class="padding-right">
+          <q-btn color="info" class="padding-right"
+                       glossy @click="openCustomDialog('修改')"
+                       :loading="loading">修改出貨單</q-btn>
+        </div>
+        <div class="padding-right">
+          <q-btn color="red" class="padding-right"
+                       glossy @click="deleteCustomer"
+                       :loading="loading">刪除出貨單</q-btn>
+        </div>
+        <div class="padding-right">
+          <q-btn color="green" class="padding-right"
+                       glossy @click="openCustomDialog('預覽')"
+                       :loading="loading">預覽出貨單</q-btn>
+        </div>
+      </div>
+      <div class="row justify-start padding-top">
+        <div class="col-6 col-md-6"  style="max-width: 500px">
+          <div class="text-left text-red">{{ errorMessage }}</div>
+        </div>
+      </div>
+    </h5>
+    <q-page-container>
+      <q-page>
+        <q-table
+                :columns="columns"
+                row-key="rfqno"
+                :rows="list"
+                flat
+                bordered
+                virtual-scroll
+                style="max-height: 500px"
+                selection="single"
+                v-model:selected="selected"
+                @selection="onSelection"
+                class="rounded-borders"
+                :pagination="{ rowsPerPage: 5 }"
+        ></q-table>
+      </q-page>
+    </q-page-container>
+    <q-dialog v-model="showForm" persistent >
+      <q-card class="q-pa-md"  style="width: 1000px; max-width: 80vw;">
+        <q-card-section>
+          <div class="text-h4">
+            {{mode}}出貨單
+            <q-btn outlined dense glossy color="primary" label="訂單分配" @click="showSODistributionForm"/>
+          </div>
+        </q-card-section>
+        <q-form ref="myForm" >
+          <q-card-section>
+            <!--日期、客戶編號-->
+            <div class="row q-col-gutter-md">
+              <div class="col-6 col-md-6" style="max-width: 500px">
+                <q-input  outlined dense :readonly="preview" v-model="form.日期" label="日期" mask="####/##/##" :rules="[val => !!val || '日期為必填欄位']">
+                  <template v-slot:append>
+                    <q-icon name="event" class="cursor-pointer">
+                      <q-popup-proxy cover v-model="showDatePopup" transition-show="scale" transition-hide="scale">
+                        <q-date v-model="form.日期" :readonly="preview" mask="YYYY/MM/DD" no-title>
+                          <div class="row items-center justify-end">
+                            <q-btn v-close-popup label="Close" color="primary" flat @click="showDatePopup = false" />
+                          </div>
+                        </q-date>
+                      </q-popup-proxy>
+                    </q-icon>
+                  </template>
+                </q-input>
+              </div>
+              <div class="col-6 col-md-6" style="max-width: 500px">
+                 <q-select v-model="form.客戶編號" :readonly="readonly || preview" outlined dense label="客戶編號"
+                :options="custNumberList"
+                option-label="正航編號"
+                option-value="正航編號"
+                emit-value map-options
+                @update:model-value="changeCustCompany"
+                />
+                <label class="text-red text-center" style=" font-size: 24px;">{{ companyName }}</label>
+              </div>
+            </div>
+            <!--佣金、原定交貨日期-->
+            <div class="row q-col-gutter-md">
+              <div class="col-6 col-md-6" style="max-width: 500px">
+                <q-input outlined dense v-model="form.佣金" :readonly="preview" label="應付佣金"/>
+              </div>
+              <div class="col-6 col-md-6" style="max-width: 500px">
+                <q-input  outlined dense :readonly="preview" v-model="form.原定交貨日期" label="原定交貨日" mask="####/##/##" :rules="[val => !!val || '日期為必填欄位']">
+                  <template v-slot:append>
+                    <q-icon name="event" class="cursor-pointer">
+                      <q-popup-proxy cover v-model="showShipDatePopup" transition-show="scale" transition-hide="scale">
+                        <q-date v-model="form.原定交貨日期" :readonly="preview" mask="YYYY/MM/DD" no-title>
+                          <div class="row items-center justify-end">
+                            <q-btn v-close-popup label="Close" color="primary" flat @click="showShipDatePopup = false" />
+                          </div>
+                        </q-date>
+                      </q-popup-proxy>
+                    </q-icon>
+                  </template>
+                </q-input>
+              </div>
+            </div>
+            <!--稅別、稅率-->
+            <div class="row q-col-gutter-md">
+              <div class="col-6 col-md-6" style="max-width: 500px">
+                <q-select v-model="form.稅別" outlined dense :readonly="readonly || preview" label="稅別"
+                :options="taxTypeList"
+                emit-value map-options
+                />
+              </div>
+              <div class="col-6 col-md-6" style="max-width: 500px">
+                <q-select  outlined dense v-model="form.稅率"  label="稅率" :readonly="readonly || preview"
+                :rules="[val => !!val || '稅率為必填欄位']"  emit-value map-options
+                :options="taxRateList"/>
+              </div>
+            </div>
+            <!--客戶全名-->
+            <div class="row q-col-gutter-md">
+              <div class="col-12 col-md-12" style="max-width: 1000px">
+                <q-input  :readonly="readonly || preview" v-model="companyFullName" outlined dense label="客戶全名"></q-input>
+              </div>
+            </div>
+            <br>
+            <!--幣別、匯率-->
+            <div class="row q-col-gutter-md">
+              <div class="col-6 col-md-6" style="max-width: 500px">
+                <q-select v-model="form.幣別" :readonly="readonly || preview" outlined dense label="幣別"
+                :options="currencyList"
+                option-label="currency"
+                option-value="currency"
+                @update:model-value="changeExRate"
+                emit-value map-options
+                />
+              </div>
+              <div class="col-6 col-md-6" style="max-width: 500px">
+                <q-select outlined dense  label="匯率"
+                  :options="exRateList"
+                  v-model="form.匯率"
+                  option-label="匯率" :readonly="readonly || preview"
+                  option-value="匯率"  emit-value map-options
+                  :rules="[val => !preview && !!val || '匯率為必填欄位']"
+                  />
+              </div>
+            </div>
+            <!--訂單總額、收款帳號-->
+            <div class="row q-col-gutter-md">
+              <div class="col-6 col-md-6" style="max-width: 500px">
+                <q-input v-model="form.總額" outlined dense label="訂單總額" readonly />
+              </div>
+              <div class="col-6 col-md-6" style="max-width: 500px">
+                <q-input v-model="form.收款帳號" outlined dense label="收款帳號" />
+                <q-btn outlined dense glossy color="green" label="核對" @click="openBankInfo"/>
+              </div>
+            </div>
+            <!--收貨地址-->
+            <div class="row q-col-gutter-md">
+              <div class="col-12 col-md-12" style="max-width: 1000px">
+                <q-input v-model="form.交貨地址" outlined dense :readonly="preview" label="收貨地址"/>
+              </div>
+            </div>
+            <br>
+            <!--指配國別、目的港-->
+            <div class="row q-col-gutter-md">
+              <div class="col-6 col-md-6" style="max-width: 500px">
+                <q-input v-model="form.指配國別" outlined dense :readonly="preview" label="指配國別" />
+              </div>
+              <div class="col-6 col-md-6" style="max-width: 500px">
+                <q-input v-model="form.目的港" outlined dense :readonly="preview" label="目的地"/>
+              </div>
+            </div>
+            <br>
+            <!--交貨方式、貿易條件-->
+            <div class="row q-col-gutter-md">
+              <div class="col-6 col-md-6" style="max-width: 500px">
+                <q-select  outlined v-model="form.交貨方式" dense :readonly="readonly || preview"  label="交貨方式"
+                    :options="handMethod"
+                    :rules="[val => !!val || '交貨方式為必填欄位']"
+                    option-value="條文編號"
+                    option-label="條文名稱"
+                    emit-value map-options
+                  />
+              </div>
+              <div class="col-6 col-md-6" style="max-width: 500px">
+                <q-select  outlined dense v-model="form.價格條件"  label="貿易條件"
+                :options="priceCondList" :readonly="readonly || preview"
+                :rules="[val => !!val || '價格條件為必填欄位']"  emit-value map-options
+                option-value="條文編號"
+                option-label="條文名稱"/>
+              </div>
+            </div>
+            <!--業務員、付款方式-->
+            <div class="row q-col-gutter-md">
+              <div class="col-6 col-md-6" style="max-width: 500px">
+                <q-select v-model="form.業務員" :readonly="readonly || preview" outlined dense label="業務人員"
+                :options="salesList"
+                option-label="工號"
+                option-value="工號"
+                emit-value map-options
+                @update:model-value="changeSalesName"
+                />
+                <label class="text-red text-center" style=" font-size: 24px;">
+                  {{ salesname }}
+                </label>
+              </div>
+              <div class="col-6 col-md-6" style="max-width: 500px">
+                <q-select  outlined v-model="form.付款方式" dense :readonly="readonly || preview"  label="付款方式"
+                :options="paymentTerm"
+                :rules="[val => !!val || '付款方式為必填欄位']"
+                emit-value map-options
+                option-value="條文編號"
+                option-label="條文名稱"/>
+              </div>
+            </div>
+            <br>
+            <div class="row q-col-gutter-md">
+              <div class="col-12 col-md-12" style="max-width: 1000px">
+                <q-input v-model="form.remark" outlined dense :readonly="preview" label="備註"/>
+              </div>
+            </div>
+          </q-card-section>
+          <!--出貨明細-->
+          <q-card-section style="
+                            max-height: 70vh;
+                            overflow: auto;
+                          ">
+            <h6>
+              出貨明細
+              <q-btn v-if="!preview" dense outlined  label="新增明細" color="primary" glossy @click="AddShipOrderDetail"/>
+            </h6>
+            <div style="min-width: 1500px">
+              <div v-for="item in form.shipOrderDetail"  v-bind:key="item.識別碼" class="row no-wrap q-col-gutter-md">
+                <div class="col-1 col-md-1" style="max-width: 200px">
+                  <q-input outlined dense v-model="item.產品編號" :readonly="readonly || preview" label="產品編號"
+                  :rules="[val => !!val || '產品編號為必填欄位']"/>
+                </div>
+                <div class="col-2 col-md-2" style="max-width: 300px">
+                  <q-input outlined dense v-model="item.品名規格" :readonly="readonly || preview" label="品名規格"
+                  :rules="[val => !!val || '品名規格為必填欄位']"/>
+                </div>
+                <div class="col-1 col-md-1" style="max-width: 180px">
+                  <q-input outlined dense v-model="item.單位" :readonly="readonly || preview" label="銷售單位"
+                  :rules="[val => !!val || '銷售單位為必填欄位']"/>
+                </div>
+                <div class="col-1 col-md-1" style="max-width: 180px">
+                  <q-input type="number" min="0" outlined dense :readonly="readonly || preview" v-model="item.數量2" label="數量"
+                  :rules="[val => !!val || '數量為必填欄位']"/>
+                </div>
+                <div class="col-1 col-md-1" style="max-width: 180px">
+                  <q-input type="number" min="0" outlined dense :readonly="readonly || preview" v-model="item.單價2" label="訂單單價" @blur="onBlur(item)"
+                  :rules="[val => !!val || '單價為必填欄位']"/>
+                </div>
+                <div class="col-1 col-md-1" style="max-width: 180px">
+                  <q-input type="number" min="0" outlined dense :readonly="readonly || preview" v-model="item.金額2" label="未稅金額"
+                  :rules="[val => !!val || '金額為必填欄位']"/>
+                </div>
+                <div class="col-2 col-md-2" style="max-width: 300px">
+                  <q-input outlined dense v-model="item.描述" :readonly="readonly || preview" label="註記"
+                  :rules="[val => !!val || '描述為必填欄位']"/>
+                </div>
+                <div class="col-2 col-md-2" style="max-width: 300px">
+                  <q-input outlined dense v-model="item.樣品別" :readonly="readonly || preview" label="專案序號"
+                  :rules="[val => !!val || '樣品別為必填欄位']"/>
+                </div>
+                <div class="col-2 col-md-2" style="max-width: 300px">
+                  <q-select  outlined v-model="form.倉庫別" dense :readonly="readonly || preview"  label="倉庫別"
+                  :options="warehouseList"
+                  :rules="[val => !!val || '倉庫別為必填欄位']"
+                  emit-value map-options
+                  option-value="條文編號"
+                  option-label="條文名稱"/>
+                </div>
+              </div>
+            </div>
+          </q-card-section>
+        </q-form>
+        <q-card-actions align="right">
+          <q-btn flat label="取消" color="negative" @click="close" />
+          <q-btn v-if="!preview" label="送出" color="primary" @click="handleOtherAction" />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
+    <q-dialog v-model="showBankInfo" persistent>
+      <BankInfoView v-model:showForm="showBankInfo" :bankAccountCheckForm="bankAccountCheckForm"/>
+    </q-dialog>
+    <q-dialog v-model="showSODistribution" persistent>
+      <SalesOrderDistributionView />
+    </q-dialog>
   </q-layout>
 </template>
 <script setup>
+//import block start
+import { useCustStore } from '@/composables/useCust';
+import BankInfoView from '@/components/customer/salesorder/BankInfoView.vue';
+import SalesOrderDistributionView from '@/components/customer/salesorder/SalesOrderDistributionView.vue';
 import {
     QIcon
   , QLayout
+  , QBtn
+  , QPageContainer
+  , QPage
+  , QTable
+  , QDialog
+  , QCard
+  , QCardSection
+  , QForm
+  , QInput
+  , QDate
+  , QPopupProxy
+  , QSelect
+  , QCardActions
 } from 'quasar';
+import { ref, onMounted } from 'vue';
+//import block end
+
+//variable block start
+const exRateList    = ref([]);
+const companyFullName = ref('');
+const taxTypeList = ref([]);
+const taxRateList   = ref([]);
+const currencyList  = ref([]);
+const warehouseList = ref([]);
+const showShipDatePopup = ref(false);
+const salesname = ref('');
+const preview = ref(false);
+const showSODistribution = ref(false);
+const showDatePopup = ref(false);
+const custNumberList = ref([]);
+const companyName = ref('');
+const myForm = ref(null);
+const errorMessage = ref('');
+const list = ref([]);
+const selected = ref([]);
+const priceCondList = ref([]);
+const dueDateTerm = ref([]);
+const handMethod = ref([]);
+const paymentTerm = ref([]);
+const salesList = ref([]);
+const showForm = ref(false);
+const showBankInfo = ref(false);
+const mode = ref('');
+const columns = [
+  { name: '日期', label: '出貨單日期', align: 'left', field: '日期', sortable: true },
+  { name: '單號', label: '出貨單號', align: 'left', field: '單號', sortable: true },
+  { name: '原定交貨日', label: '原定交貨日', align: 'left', field: '原定交貨日', sortable: true },
+  { name: '客戶編號', label: '客戶編號', align: 'left', field: '客戶編號', sortable: true },
+];
+const custStore = useCustStore();
+const form = ref({
+  識別:'',
+  日期:'',
+  單號:'',
+  客戶編號:'',
+  業務員:'',
+  幣別:'',
+  匯率:0.0,
+  稅別:'',
+  稅率:'',
+  佣金:0.0,
+  原定交貨日期:'',
+  交貨地址:'',
+  指配國別:'',
+  目的港:'',
+  價格條件:'',
+  交貨方式:'',
+  付款方式:'',
+  remark:'',
+  總額:0.0,
+  收款帳號:'',
+  shipOrderDetail:[],
+})
+const bankAccountCheckForm = ref({
+  銀存編碼:'',
+  銀行名稱:'',
+  Bankname:'',
+  銀行地址:'',
+  帳號:'',
+  SwiftCode:'',
+  電話:'',
+});
+//variable block end
+
+//function block start
+const openCustomDialog = (type) => {
+  console.log('type', type)
+  mode.value = type;
+  showForm.value = true;
+}
+const onSelection = () =>{
+
+}
+onMounted(async ()=>{
+  await custStore.getShipOrderList().then((data)=>{
+    list.value = data;
+  });
+  await custStore.getCustNumberList().then((data)=>{
+    console.log('custNumberList', data);
+    custNumberList.value = data;
+  });
+  await custStore.getTaxType().then((data)=>{
+    console.log('tax type', data)
+    taxTypeList.value = data;
+  })//稅別
+  await custStore.getTaxRateList().then((data)=>{
+    console.log('taxRateList', data);
+    taxRateList.value  = data;
+  });
+  await custStore.getCurrencyList().then((data)=>{
+    console.log('currencyList', data);
+    currencyList.value  = data;
+  });
+
+  priceCondList.value = await custStore.getTxConditionList('T');//價格條件
+  // console.log('priceCondList',priceCondList.value);
+  dueDateTerm.value   = await custStore.getTxConditionList('R');//交貨要求
+  handMethod.value    = await custStore.getTxConditionList('D');//
+  paymentTerm.value  = await custStore.getTxConditionList('P,Y');//付款方式
+  await custStore.getSalesList().then((data)=>{
+    console.log('salesList', data);
+    salesList.value = data;
+  });
+  await custStore.getWarehouseList().then((data)=>{
+    warehouseList.value = data;
+  })//倉庫別
+  // let pt2   = await custStore.getTxConditionList('P');//付款方式
+})
+const changeExRate = async (val) =>{
+  console.log('val.currency', val);
+  try{
+  exRateList.value = await custStore.getExRateList(val);
+  form.value.匯率 = exRateList.value[0];
+  }catch(e){console.log(e)}
+}
+const changeCustCompany = () =>{
+  console.log('salesOrderForm.value.客戶編號', form.value.客戶編號);
+  companyName.value = custNumberList.value.find((x)=>x.正航編號==form.value.客戶編號).company;
+  companyFullName.value = custNumberList.value.find((x)=>x.正航編號==form.value.客戶編號).companyfullname;
+  // 收款帳號.value = custNumberList.value.find((x)=>x.正航編號==form.value.客戶編號).credibility;
+  // salesOrderForm.value.指配國別 = custNumberList.value.find((x)=>x.正航編號==form.value.客戶編號).country;
+}
+const close = () =>{
+  showForm.value = false;
+}
+const handleOtherAction = async () =>{
+  const success = await myForm.value.validate()
+  if (success) {
+    submitForm();
+  } else {
+    return;
+  }
+}
+const openBankInfo = async () =>{
+  if (form.value.收款帳號 == '')
+  {
+    alert('請輸入收款帳號');
+    return;
+  }
+  await custStore.getBankInfo(form.value.收款帳號).then((data)=>{
+    console.log('bank data',data)
+    bankAccountCheckForm.value = data;
+    showBankInfo.value = true;
+  })
+}
+const AddShipOrderDetail = () =>{
+  form.value.shipOrderDetail.push({
+    識別碼:'',
+    單號:'',
+    產品編號:'',
+    品名規格:'',
+    數量2:0.0,
+    單位:'',
+    單價2:0.0,
+    金額2:0.0,
+    樣品別:'',
+    描述:'',
+    ORDNO:'',
+    倉庫別:'',
+  });
+}
+const submitForm = () =>{
+
+}
+
+const showSODistributionForm = () =>{
+
+}
+
+const changeSalesName = () =>{
+  salesname.value = salesList.value.find((x)=>x.工號==form.value.業務員).姓名;
+}
+//function block end
 </script>
