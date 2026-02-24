@@ -54,7 +54,13 @@
     <q-dialog v-model="showForm" persistent >
       <q-card  class="q-pa-md"  style="width: 1000px; max-width: 80vw;">
           <q-card-section>
-            <div class="text-h4">{{mode}}客戶</div>
+            <div class="text-h4">
+              {{mode}}客戶
+              <div v-if="mode == '修改' && !preview">
+                <q-btn label="詢問履歷" color="orange" @click="openRfqList"/>
+                <q-btn label="報價歷程" color="brown" @click="openQuotationList"/>
+              </div>
+            </div>
           </q-card-section>
           <q-form ref="myForm" >
             <q-card-section>
@@ -216,6 +222,12 @@
           </q-card-actions>
       </q-card>
     </q-dialog>
+    <q-dialog v-model="showQuotationListForm">
+      <QuotationListQueryView v-model:modelValue="showQuotationListForm" :custid="companyId"/>
+    </q-dialog>
+    <q-dialog v-model="showRfqList">
+      <RFQListView v-model:showForm="showRfqList" :companyId="form.識別"/>
+    </q-dialog>
     <LoadingComponent v-model="secondDialog"/>
   </q-layout>
 </template>
@@ -242,6 +254,8 @@ import {
 // import  { CustomerForm } from '@/components/customer/CustomerForm.vue';
 import { useCustStore } from '@/composables/useCust';
 import { ref, onMounted,  } from 'vue';
+import QuotationListQueryView from '@/components/customer/query/QuotationListQueryView.vue';
+import RFQListView from '@/components/customer/rfq/RFQListView.vue';
 //import block end
 
 //variable block start
@@ -250,6 +264,8 @@ const countryList = ref([]);
 const bankList = ref([]);
 const errorMessage = ref('');
 const showForm = ref(false)
+const showRfqList = ref(false);
+const companyId = ref(0);
 // const showDatePopup = ref(false)
 const secondDialog = ref(false)
 const readonly = ref(false)
@@ -304,6 +320,7 @@ const form = ref({
   contactDetails:[]
 })
 const myForm = ref(null)
+const showQuotationListForm = ref(false);
 //variable block end
 
 //function block start
@@ -366,6 +383,18 @@ const init = async () =>{
   contactDetails:[]};
   console.log('銀行列表:', bankList.value);
   selected.value = [];
+}
+
+const openRfqList = () =>{
+  companyId.value = form.value.識別;
+  console.log('companyId.value', companyId.value);
+  showRfqList.value = true;
+}
+
+const openQuotationList = () =>{
+  companyId.value = form.value.識別;
+  console.log('companyId.value', companyId.value);
+  showQuotationListForm.value = true;
 }
 
 const submitForm = async () => {
@@ -590,5 +619,6 @@ const close = () =>{
   showForm.value = false;
   preview.value = false;
 }
+
 //function block end
 </script>

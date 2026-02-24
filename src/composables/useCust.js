@@ -256,6 +256,7 @@ export const useCustStore = defineStore('',  {
         rfqdate:payload.rfqdate,
         sales:payload.sales.工號,
         company:payload.company,
+        companyid:payload.companyid,
         contact:payload.contact,
         commission:payload.commission,
         ma:payload.ma,
@@ -291,6 +292,7 @@ export const useCustStore = defineStore('',  {
         rfqdate: payload.rfqdate ?? '',
         sales: payload.sales.工號?payload.sales.工號 :payload.sales,
         company: payload.company ?? '',
+        companyid:payload.companyid ?? 0,
         contact:payload.contact,
         commission:payload.commission,
         ma: payload.ma ?? '',
@@ -439,7 +441,7 @@ export const useCustStore = defineStore('',  {
         shipdate    :payload.shipdate,
         quodate     :payload.quodate,
         rfqdate     :payload.rfqdate,
-        ranking     :payload.ranking.company?payload.ranking.company:payload.ranking,
+        ranking     :payload.ranking?.company?payload.ranking?.company:payload.ranking,
         address     :payload.address,
         exrate      :payload.exrate.匯率?payload.exrate.匯率:payload.exrate,
         daddress    :payload.daddress.工號?payload.daddress.工號:payload.daddress,
@@ -894,6 +896,25 @@ export const useCustStore = defineStore('',  {
       const response = await axios.get(constant.APIUrl+'api/DeleteShippingOrder?shippingOrderNo='+payload.單號)
       if (response){
         return response;
+      }
+      return null;
+    },
+    async getQuotationListByCustid(custid){
+      const constant = Constant();
+      console.log('APIUrl', constant.APIUrl)
+      const response =await axios.get(constant.APIUrl+'api/GetQuotationListByCustid?custid='+custid)
+      console.log('response', response)
+      if (response){
+        return response.data.resultList;
+      }
+      return null;
+    },
+    async getRfqListByCust(custid){
+      const constant = Constant()
+      const response =await axios.get(constant.APIUrl+'api/GetRfqListByCust?custid='+custid)
+      console.log('response', response)
+      if (response){
+        return response.data.resultList;
       }
       return null;
     }

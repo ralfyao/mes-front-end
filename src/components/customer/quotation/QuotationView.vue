@@ -50,7 +50,7 @@
               </q-input>
             </div>
             <div class="col-6 col-md-6" style="max-width: 500px">
-              <q-input outlined dense v-model="quotationForm.rfqno" :readonly="readonly || props.preview" label="詢價單號"/>
+              <q-input outlined dense v-model="quotationForm.rfqno" :readonly="readonly || props.preview" label="詢價單號" :rules="[val => !props.preview && !!val || '詢價單為必填欄位']"/>
             </div>
           </div>
           <!--業務人員-->
@@ -280,6 +280,7 @@ const props = defineProps({
     type:Object,
     default: () => ({
       rfqno: '',
+      companyid:0,
       rfqdate: '',
       sales: '',
       company: '',
@@ -331,6 +332,7 @@ const paymentTerm   = ref([]);
 const quotationForm = ref({
   idno		:'',
   quono       :'',
+  companyid   :0,
   mtype       :'',
   mmodel      :'',
   currency    :'',
@@ -497,6 +499,7 @@ const submitForm = async () =>{
   // props.showForm = false;
   quotationForm.value = {
     idno		:'',
+    companyid:0,
     quono       :'',
     mtype       :'',
     mmodel      :'',

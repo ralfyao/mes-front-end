@@ -66,7 +66,7 @@
                 <q-input v-model="form.rfqno" :readonly="true" label="詢問函號" outlined dense/>
               </div>
               <div class="col-6 col-md-6" style="max-width: 500px">
-                <q-input filled dense :readonly="preview" v-model="form.rfqdate" label="洽談日期" mask="##/##/####" :rules="[val => !!val || '洽談日期為必填欄位']">
+                <q-input filled dense :readonly="preview" v-model="form.rfqdate" label="洽談日期" mask="####/##/##" :rules="[val => !!val || '洽談日期為必填欄位']">
                   <template v-slot:append>
                     <q-icon name="event" class="cursor-pointer">
                       <q-popup-proxy cover v-model="showDatePopup" transition-show="scale" transition-hide="scale">
@@ -238,6 +238,7 @@ import IndustrySelect from '@/components/customer/IndustrySelect.vue';
 import QuotationList from '@/components/customer/QuotationList.vue';
 import SalesWorkRecordList from '@/components/customer/SalesWorkRecordList.vue';
 import QuotationView from '@/components/customer/quotation/QuotationView.vue';
+import dayjs  from 'dayjs';
 //變數
 const myForm = ref(null);
 const secondDialog = ref(false)
@@ -319,6 +320,7 @@ const openCustomerDialog = async (amode) => {
       rfqdate: '',
       sales: '',
       company: '',
+      companyid:0,
       ma:'',
       tel:'',
       contact:'',
@@ -341,7 +343,7 @@ const openCustomerDialog = async (amode) => {
       console.log('data',data)
       form.value.rfqno = data;
       showForm.value = true;
-      form.value.rfqdate = new Date().toLocaleDateString('en-GB');
+      form.value.rfqdate = dayjs(new Date(), "MM/DD/YYYY HH:mm:ss").format("YYYY/MM/DD")
     });
 
   } else if (mode.value === '修改' || mode.value == '預覽') {
@@ -435,6 +437,8 @@ const getSelectedCustomer = async () => {
       alias.value = selectedCompany.value.欄位2 || '';
       form.value.欄位2 = alias.value;
       form.value.正航編號=selectedCompany.value.正航編號;
+      form.value.companyid = selectedCompany.value.識別;
+      console.log('form.value.companyid:'+form.value.companyid);
       console.log('form.value.正航編號', form.value.正航編號);
       await custStore.getContactList(form.value.company).then((contacts) => {
         contactList.value = contacts;
@@ -502,7 +506,7 @@ const submitForm = async () => {
     console.log('新增客戶資料:', form.value);
     await custStore.saveRfq(form).then((data) =>{
       console.log('data add',data);
-      if (!data.errorMessage){
+      if (!data.data.errorMessage){
         alert('新增完成')
         init();
       } else if (data.data.errorMessage){

@@ -128,6 +128,40 @@ const openCustomerDialog = (type) =>{
   errorMessage.value = "";
   if (type == '新增'){
     console.log('type', type);
+    quotationForm.value = {
+      idno		:'',
+      quono       :'',
+      mtype       :'',
+      mmodel      :'',
+      currency    :'',
+      amount      :0,
+      commission  :'',
+      status      :'',
+      contact     :'',
+      machineno   :'',
+      rfqno       :'',
+      condate     :'',
+      shipdate    :'',
+      quodate     :'',
+      rfqdate     :'',
+      ranking     :'',
+      address     :'',
+      exrate      :0,
+      daddress    :'',
+      價格條件    :'',
+      交貨方式    :'',
+      付款方式    :'',
+      remark      :'',
+      交貨日期    :'',
+      稅率        :0.0,
+      建檔        :'',
+      修改        :'',
+      核准        :'',
+      建檔日      :'',
+      修改日      :'',
+      核准日      :'',
+      quotationDetailFormList:[],
+    };
   } else {
     console.log('type', type);
     if (selected.value.length == 0){
