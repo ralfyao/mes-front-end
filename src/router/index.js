@@ -42,6 +42,7 @@ const routes = [
       { path: 'custmanagement/repairtest', component: () => import('@/views/CustManagement/RepairTestView.vue') },//維修測試
       //應收應付
       { path: 'accounts/receivable', component: () => import('@/views/Accounts/AccountsReceivableView.vue') },
+      { path: 'accounts/otherincome', component: () => import('@/views/Accounts/OtherIncomeView.vue') },
       // 404 → 回首頁
       { path: '/:catchAll(.*)*', redirect: '/' },
       // { path: 'product', component: () => import('@/views/ProductView.vue') }

@@ -134,7 +134,7 @@
                 <q-input  :readonly="readonly || preview" v-model="form.發票號碼" outlined dense label="發票號碼"/>
               </div>
               <div class="col-2 col-md-2" style="max-width: 166px">
-                <q-input  :readonly="readonly || preview" v-model="form.收票金額" outlined dense label="稅額"/>
+                <q-input  :readonly="readonly || preview" v-model="form.收票金額" outlined dense label="稅額" @blur="calculateTax()"/>
               </div>
               <div class="col-2 col-md-2" style="max-width: 166px">
                 <q-input  :readonly="readonly || preview" v-model="form.傳票" outlined dense label="會計傳票"/>
@@ -201,7 +201,7 @@
                   :rules="[val => !preview && !!val || '沖帳碼為必填欄位']"/>
                 </div>
                 <div class="col-2 col-md-2" style="max-width: 166px">
-                  <q-input type="number" :readonly="readonly || preview" v-model="item.原幣收帳金額" outlined dense label="原幣收帳金額"/>
+                  <q-input type="number" :readonly="readonly || preview" v-model="item.原幣收帳金額" outlined dense label="原幣收帳金額" @blur="calcExRateAmount(item)"/>
                 </div>
                 <div class="col-2 col-md-2" style="max-width: 166px">
                   <q-input type="number"  :readonly="readonly || preview" v-model="item.台幣換算金額" outlined dense label="台幣換算金額"/>
@@ -524,6 +524,29 @@ const init = async () =>{
     console.log('arList:', data);
     list.value = data;
   })
+}
+
+const calcExRateAmount = (item) =>{
+  console.log('exrate item', item);
+  console.log('form.value.匯率', form.value.匯率.匯率);
+  if (form.value.匯率 && form.value.匯率.匯率 > 0){
+    item.台幣換算金額 = Math.round(item.原幣收帳金額 * form.value.匯率.匯率);
+  }
+  form.value.銀轉金額 = 0.0;
+  form.value.收款總額 = 0.0;
+  for(var i = 0; i < form.value.arListDetail.length; i++){
+    form.value.銀轉金額 += Math.round(form.value.arListDetail[i].台幣換算金額)
+    form.value.收款總額 += Math.round(form.value.arListDetail[i].台幣換算金額)
+  }
+  form.value.銀轉金額 -= Math.round(form.value.收票金額);
+}
+
+const calculateTax = () =>{
+  console.log('calculateTax');
+  console.log('calculateTax 銀轉金額', form.value.銀轉金額, )
+  console.log('calculateTax 收款總額', form.value.收款總額, )
+  console.log('calculateTax 收票金額', form.value.收票金額, )
+  form.value.銀轉金額 = Math.round(form.value.收款總額) - Math.round(form.value.收票金額);
 }
 //function block end
 </script>
