@@ -52,7 +52,7 @@
       </q-page>
     </q-page-container>
     <q-dialog v-model="showForm" persistent >
-      <q-card  class="q-pa-md"  style="width: 1500px; max-width: 80vw;">
+      <q-card  class="q-pa-md"  style="width: 1500px; max-width: 95vw;">
         <q-card-section>
           <div class="text-h4">
             {{mode}}立帳單

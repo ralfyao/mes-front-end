@@ -53,7 +53,7 @@
     </q-page-container>
     <!--主表單-->
     <q-dialog v-model="showForm" persistent >
-      <q-card  class="q-pa-md"  style="width: 1000px; max-width: 80vw;">
+      <q-card  class="q-pa-md"  style="width: 1500px; max-width: 95vw;">
         <q-card-section>
           <div class="text-h4">
             {{mode}}訂單
@@ -366,7 +366,7 @@
     </q-dialog>
     <!--報價單分配-->
     <q-dialog v-model="showQuotationDistributionForm">
-      <q-card  class="q-pa-md"  style="width: 1500px; max-width: 80vw;">
+      <q-card  class="q-pa-md"  style="width: 1500px; max-width: 95vw;">
         <q-card-section>
           <div class="text-h4">料號選擇</div>
         </q-card-section>

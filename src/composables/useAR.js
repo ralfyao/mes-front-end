@@ -84,6 +84,75 @@ export const useARStore = defineStore('ar',  {
         return response;
       }
       return null;
+    },
+    async getItemNumberList() {
+      const constant = Constant()
+      console.log('APIUrl', constant.APIUrl)
+      const response = await axios.get(constant.APIUrl + 'api/GetItemNumberList');
+      if (response.data.resultList) {
+        return response.data.resultList
+      }
+      return null;
+    },
+    async getOtherIncomeNo(){
+      const constant = Constant()
+      console.log('APIUrl', constant.APIUrl)
+      const response = await axios.get(constant.APIUrl + 'api/GetOtherIncomeNo');
+      if (response.data.resultList) {
+        return response.data.result
+      }
+      return null;
+    },
+    async saveOtherIncome(form){
+      const constant = Constant();
+      const payload = { ...toRaw(form.value) };
+      console.log('APIUrl', constant.APIUrl)
+      console.log('payload', payload);
+      // payload.匯率 = payload.匯率.匯率;
+      const param = {...payload}
+      console.log('param', param);
+      const response = await axios.post(constant.APIUrl + 'api/SaveOtherIncome', JSON.stringify(param), {
+        headers: { 'Content-Type': 'application/json' }
+      });
+      return response;
+    },
+    async updateOtherIncome(form){
+      const constant = Constant();
+      const payload = { ...toRaw(form.value) };
+      console.log('APIUrl', constant.APIUrl)
+      console.log('payload', payload);
+      // payload.匯率 = payload.匯率.匯率;
+      const param = {...payload}
+      console.log('param', param);
+      const response = await axios.post(constant.APIUrl + 'api/UpdateOtherIncome', JSON.stringify(param), {
+        headers: { 'Content-Type': 'application/json' }
+      });
+      return response;
+    },
+    async getOtherIncomeList(){
+      const constant = Constant()
+      console.log('APIUrl', constant.APIUrl)
+      const response = await axios.get(constant.APIUrl + 'api/GetOtherIncomeList');
+      if (response.data.resultList) {
+        return response.data.resultList
+      }
+      return null;
+    },
+    async deleteOtherIncome(form){
+      const constant = Constant();
+      const payload = { ...toRaw(form.value) };
+      console.log('APIUrl', constant.APIUrl)
+      console.log('payload', payload);
+      if (payload.匯率.匯率){
+        payload.匯率 = payload.匯率.匯率;
+      }
+      // payload.匯率 = payload.匯率.匯率;
+      const param = {...payload}
+      console.log('param', param);
+      const response = await axios.post(constant.APIUrl + 'api/DeleteOtherIncome', JSON.stringify(param), {
+        headers: { 'Content-Type': 'application/json' }
+      });
+      return response;
     }
   }
 });

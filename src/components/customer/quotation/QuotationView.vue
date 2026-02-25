@@ -1,5 +1,5 @@
 <template>
-  <q-card class="q-pa-md"  style="width: 1000px; max-width: 80vw;">
+  <q-card class="q-pa-md"  style="width: 1500px; max-width: 95vw;">
       <q-card-section>
         <div class="text-h4">{{props.mode!=''&&props.mode!=''?props.mode:'新增'}}報價單</div>
         <div v-if="props.mode=='修改'">
