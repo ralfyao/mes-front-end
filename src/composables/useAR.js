@@ -14,10 +14,10 @@ export const useARStore = defineStore('ar',  {
       }
       return null;
     },
-    async getAccSourceList(){
+    async getAccSourceList(custNo){
       const constant = Constant();
       console.log('APIUrl', constant.APIUrl)
-      const response =await axios.get(constant.APIUrl+'api/GetAccountSourceAndCode')
+      const response =await axios.get(constant.APIUrl+'api/GetARAccountSourceAndCode?custNo='+custNo)
       console.log('response', response)
       if (response){
         return response.data.resultList;
@@ -55,6 +55,9 @@ export const useARStore = defineStore('ar',  {
       const payload = { ...toRaw(form.value) };
       console.log('APIUrl', constant.APIUrl)
       console.log('payload', payload);
+      if (payload.匯率.匯率){
+        payload.匯率 = payload.匯率.匯率;
+      }
       // payload.匯率 = payload.匯率.匯率;
       const param = {...payload}
       console.log('param', param);

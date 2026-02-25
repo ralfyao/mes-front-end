@@ -356,6 +356,11 @@ const openARDialog = async (type) =>{
       preview.value = true;
     } else {
       preview.value = false;
+      // 到了要修改的時候，Load 客戶的帳款應收資料
+      await arStore.getAccSourceList(form.value.客戶編號).then((data)=>{
+        console.log('AccSourceList', data);
+        accSourceList.value = data;
+      });
     }
   }
   showForm.value = true;
@@ -405,12 +410,16 @@ const changeAccSource = (item) =>{
 const onSelection = () =>{
 
 }
-const changeCustCompany = () => {
+const changeCustCompany = async () => {
   const selectedCust = custNumberList.value.find(
     x => x.正航編號?.trim() === form.value.客戶編號?.trim()
   )
   console.log('selectedCust', selectedCust)
   companyName.value = selectedCust?.company || ''
+  await arStore.getAccSourceList(form.value.客戶編號).then((data)=>{
+    console.log('AccSourceList', data);
+    accSourceList.value = data;
+  });
 }
 
 const quotationDistribution = () =>{
@@ -516,10 +525,7 @@ const init = async () =>{
   await custStore.getCurrencyList().then((data)=>{
     currencyList.value  = data;
   });
-  await arStore.getAccSourceList().then((data)=>{
-    console.log('AccSourceList', data);
-    accSourceList.value = data;
-  });
+
   await arStore.getArList().then((data)=>{
     console.log('arList:', data);
     list.value = data;

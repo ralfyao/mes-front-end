@@ -279,10 +279,10 @@
                   <q-input dense outlined
                     v-model="item.請款單號"
                     label="立帳單號"
-                    :readonly="readonly || preview"/>
+                    readonly/>
                 </div>
                 <div class="col-1 col-md-1" style="max-width: 200px">
-                  <q-btn label="轉立帳單" color="green" glossy v-if="!preview" />
+                  <q-btn label="轉立帳單" color="green" glossy v-if="!preview && (item.請款單號 == '')" @click="transferReceivable(item)" />
                 </div>
               </div>
               <br>
@@ -947,6 +947,34 @@ const transferToShipOrder = async () => {
       showForm.value = false;
     }
   });
+}
+
+const transferReceivable = async (item) =>{
+  console.log('transferReceivable item', item);
+  console.log('transferReceivable salesOrderForm.value', salesOrderForm.value);
+  const transferForm = structuredClone(salesOrderForm.value);
+  transferForm.arListDetail = [];
+  transferForm.arListDetail.push({
+    "識別": 0,
+    "單號": salesOrderForm.value.單號,
+    "款項期別": item.款項期別,
+    "成數": item.成數,
+    "金額": item.金額,
+    "請款單號": ""
+  });
+  transferForm.建檔 = SessionStorage.getItem('Account').account;
+  transferForm.orderListDetail = [];
+  console.log('transferReceivable transferForm.value', transferForm);
+  console.log('transferReceivable salesOrderForm.value after', salesOrderForm.value);
+  await custStore.transferReceivable(transferForm).then((data)=>{
+    console.log(data);
+    if (data.data.errorMessage){
+      alert(data.data.errorMessage);
+    } else {
+      alert('轉單成功!');
+      item.請款單號 = data.data.result;
+    }
+  })
 }
 //function block end
 </script>

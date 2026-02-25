@@ -917,6 +917,16 @@ export const useCustStore = defineStore('',  {
         return response.data.resultList;
       }
       return null;
-    }
+    },
+    async transferReceivable(form){
+      const constant = Constant();
+      const payload = { ...toRaw(form) };
+      console.log('APIUrl', constant.APIUrl)
+      console.log('payload', payload);
+      const response = await axios.post(constant.APIUrl + 'api/TransferReceivable', payload, {
+        headers: { 'Content-Type': 'application/json' }
+      });
+      return response;
+    },
   }
 })

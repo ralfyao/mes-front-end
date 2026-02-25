@@ -218,7 +218,7 @@
           </q-form>
           <q-card-actions align="right">
             <q-btn flat label="取消" color="negative" @click="close()" />
-            <q-btn v-if="!preview" label="送出" color="primary" @click="handleOtherAction" />
+            <q-btn v-if="!preview" label="送出" color="primary" :loading="loading" @click="handleOtherAction" />
           </q-card-actions>
       </q-card>
     </q-dialog>
@@ -259,6 +259,7 @@ import RFQListView from '@/components/customer/rfq/RFQListView.vue';
 //import block end
 
 //variable block start
+const loading = ref(false);
 const selected = ref([]);
 const countryList = ref([]);
 const bankList = ref([]);
@@ -383,6 +384,7 @@ const init = async () =>{
   contactDetails:[]};
   console.log('銀行列表:', bankList.value);
   selected.value = [];
+  loading.value = false;
 }
 
 const openRfqList = () =>{
@@ -408,6 +410,7 @@ const submitForm = async () => {
   const Account = SessionStorage.getItem('Account');
   form.value.account = Account.account;
   secondDialog.value = true;
+  loading.value = true;
   if (mode.value == '新增') {
     console.log('新增客戶資料:', form.value);
     form.value.建檔 = Account.account;
@@ -480,6 +483,8 @@ const submitForm = async () => {
   showForm.value = false;
   countryname.value = '';
   industry.value = '';
+
+  loading.value = false;
 };
 function onSelection({ rows, added }) {
   if (added) {
@@ -593,6 +598,7 @@ const deleteCustomer = () => {
   let result = confirm(`確定要刪除客戶 ${custToDelete.company} 嗎？`);
   if (result) {
     secondDialog.value = true;
+    loading.value = true;
     custStore.deleteCustomer(custToDelete.識別).then((res) => {
       console.log('API回傳結果:', res);
       if (res.data.errorMessage == '') {
