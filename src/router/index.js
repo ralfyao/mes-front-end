@@ -43,6 +43,7 @@ const routes = [
       //應收應付
       { path: 'accounts/receivable', component: () => import('@/views/Accounts/AccountsReceivableView.vue') },
       { path: 'accounts/otherincome', component: () => import('@/views/Accounts/OtherIncomeView.vue') },
+      { path: 'accounts/custar', component:() => import('@/views/Accounts/CustARQueryView.vue')},
       // 404 → 回首頁
       { path: '/:catchAll(.*)*', redirect: '/' },
       // { path: 'product', component: () => import('@/views/ProductView.vue') }

@@ -153,6 +153,15 @@ export const useARStore = defineStore('ar',  {
         headers: { 'Content-Type': 'application/json' }
       });
       return response;
+    },
+    async getUnclosedARList(){
+      const constant = Constant()
+      console.log('APIUrl', constant.APIUrl)
+      const response = await axios.get(constant.APIUrl + 'api/UnclosedARList');
+      if (response.data.resultList) {
+        return response.data.resultList
+      }
+      return null;
     }
   }
 });
