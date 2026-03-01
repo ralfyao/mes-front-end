@@ -10,3 +10,10 @@
 .border-rounded{
     border-radius: 30px;
 }   
+
+.my-sticky-header-table thead tr th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: white;
+}

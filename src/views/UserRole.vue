@@ -5,7 +5,7 @@
       </h5>
       <q-page-container>
         <q-page>
-          <q-table
+          <q-table  class="rounded-borders my-sticky-header-table"
             :columns="columns"
             :rows="rows"
             flat
@@ -30,7 +30,7 @@
                 </q-btn>
               </q-td>
             </template>
-          </q-table>
+          </q-table >
         </q-page>
       </q-page-container>
       <q-dialog v-model="showEditDialog" persistent >

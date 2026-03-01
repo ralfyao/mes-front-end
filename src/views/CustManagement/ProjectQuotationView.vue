@@ -34,7 +34,7 @@
     </h5>
     <q-page-container>
       <q-page>
-        <q-table
+        <q-table  class="rounded-borders my-sticky-header-table"
                 :columns="columns"
                 row-key="quono"
                 :rows="list"
@@ -45,9 +45,8 @@
                 selection="single"
                 v-model:selected="selected"
                 @selection="onSelection"
-                class="rounded-borders"
                 :pagination="{ rowsPerPage: 5 }"
-        ></q-table>
+        ></q-table >
       </q-page>
     </q-page-container>
     <q-dialog v-model="showForm" persistent >

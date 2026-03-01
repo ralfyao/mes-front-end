@@ -40,6 +40,7 @@ const routes = [
       { path: 'custmanagement/projquotation', component: () => import('@/views/CustManagement/ProjectQuotationView.vue') },//專案報價
       { path: 'custmanagement/ordercontract', component: () => import('@/views/CustManagement/OrderContractView.vue') },//訂單合約
       { path: 'custmanagement/repairtest', component: () => import('@/views/CustManagement/RepairTestView.vue') },//維修測試
+      { path: 'custmanagement/car', component: () => import('@/views/CustManagement/CorrectiveActionRequestView.vue') },//維修測試
       //應收應付
       { path: 'accounts/receivable', component: () => import('@/views/Accounts/AccountsReceivableView.vue') },
       { path: 'accounts/otherincome', component: () => import('@/views/Accounts/OtherIncomeView.vue') },

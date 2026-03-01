@@ -19,7 +19,7 @@
       </div>
     </q-card-section>
     <q-card-section>
-      <q-table
+      <q-table  class="rounded-borders my-sticky-header-table"
                 :columns="columns"
                 row-key="識別"
                 :rows="list"
@@ -27,9 +27,8 @@
                 bordered
                 virtual-scroll
                 style="max-height: 500px"
-                class="rounded-borders"
                 :pagination="{ rowsPerPage: 5 }"
-        ></q-table>
+        ></q-table >
     </q-card-section>
     <q-card-actions align="right">
       <q-btn flat label="取消" color="negative" @click="close"/>

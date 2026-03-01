@@ -13,6 +13,15 @@ export const useCustStore = defineStore('',  {
       }
       return null;
     },
+    async getProjectSerial(custNo){
+      const constant = Constant()
+      console.log('APIUrl', constant.APIUrl)
+      const response = await axios.get(constant.APIUrl + 'api/GetProjectSerialList?custNo='+custNo);
+      if (response.data.resultList) {
+        return response.data.resultList
+      }
+      return null;
+    },
     async getUniqueCust(companyName){
       const constant = Constant()
       console.log('APIUrl', constant.APIUrl)

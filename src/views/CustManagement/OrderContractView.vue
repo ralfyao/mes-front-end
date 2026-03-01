@@ -34,7 +34,7 @@
     </h5>
     <q-page-container>
       <q-page>
-        <q-table
+        <q-table  class="rounded-borders my-sticky-header-table"
                 :columns="columns"
                 row-key="識別"
                 :rows="list"
@@ -45,9 +45,8 @@
                 selection="single"
                 v-model:selected="selected"
                 @selection="onSelection"
-                class="rounded-borders"
                 :pagination="{ rowsPerPage: 5 }"
-        ></q-table>
+        ></q-table >
 
       </q-page>
     </q-page-container>
@@ -371,7 +370,7 @@
           <div class="text-h4">料號選擇</div>
         </q-card-section>
         <q-card-section>
-          <q-table
+          <q-table  class="rounded-borders my-sticky-header-table"
                 :columns="quotColumns"
                 row-key="識別碼"
                 :rows="quotationDistributionList"
@@ -382,9 +381,8 @@
                 style="max-height: 500px"
                 v-model:selected="selectedQuotation"
                 @selection="onSelection"
-                class="rounded-borders"
                 :pagination="{ rowsPerPage: 5 }"
-          ></q-table>
+          ></q-table >
         </q-card-section>
         <q-card-actions align="right">
 

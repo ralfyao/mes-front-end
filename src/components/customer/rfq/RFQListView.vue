@@ -17,14 +17,13 @@
       </div>
     </q-card-section>
     <q-card-section>
-      <q-table
+      <q-table  class="rounded-borders my-sticky-header-table"
         :columns="columns"
         :rows="lists"
         flat
         bordered
         virtual-scroll
         style="max-height: 500px"
-        class="rounded-borders"
         :pagination="{ rowsPerPage: 5 }"
       />
     </q-card-section>

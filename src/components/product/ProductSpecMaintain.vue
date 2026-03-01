@@ -1,6 +1,6 @@
 <template>
 <div>
-  <q-table
+  <q-table  class="rounded-borders my-sticky-header-table"
     :columns="columns"
     :rows="productSpecList"
     flat
@@ -11,7 +11,7 @@
     v-model:selected="selected"
     @update:selected="log"
   >
-  </q-table>
+  </q-table >
   <div class="row justify-start padding-top">
     <div class="padding-right">
       <q-btn color="primary" class="padding-right" glossy

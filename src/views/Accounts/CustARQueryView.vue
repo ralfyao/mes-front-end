@@ -19,7 +19,7 @@
     </h5>
     <q-page-container>
       <q-page>
-        <q-table
+        <q-table  class="rounded-borders my-sticky-header-table"
                 :columns="columns"
                 row-key="識別"
                 :rows="list"
@@ -29,9 +29,8 @@
                 style="max-height: 500px"
                 selection="single"
                 v-model:selected="selected"
-                class="rounded-borders"
                 :pagination="{ rowsPerPage: 5 }"
-        ></q-table>
+        ></q-table >
       </q-page>
     </q-page-container>
     <q-dialog v-model="showForm" persistent >
@@ -43,7 +42,7 @@
         </q-card-section>
         <q-form ref="myForm" >
           <q-card-section>
-            <q-table
+            <q-table  class="rounded-borders my-sticky-header-table"
                     :columns="columnsAll"
                     row-key="識別"
                     :rows="selected"
@@ -52,16 +51,15 @@
                     virtual-scroll
                     style="max-height: 500px"
                     v-model:selected="selected"
-                    class="rounded-borders"
                     :pagination="{ rowsPerPage: 5 }"
-            ></q-table>
+            ></q-table >
           </q-card-section>
           <hr>
           <div class="text-h5">
             未收帳明細
           </div>
           <q-card-section>
-            <q-table
+            <q-table  class="rounded-borders my-sticky-header-table"
                     :columns="columnsAllData"
                     row-key="識別"
                     :rows="data.detailList"
@@ -70,9 +68,8 @@
                     virtual-scroll
                     style="max-height: 500px"
                     v-model:selected="selected"
-                    class="rounded-borders"
                     :pagination="{ rowsPerPage: 5 }"
-            ></q-table>
+            ></q-table >
             <!-- <div v-for=" item in data.detailList" :key="item.識別">
               <div class="row q-col-gutter-md">
                 <div class="col-1 col-md-1" style="max-width: 300px">

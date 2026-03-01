@@ -5,7 +5,7 @@
       </h5>
       <q-page-container>
         <q-page>
-          <q-table :columns="columns"
+          <q-table  class="rounded-borders my-sticky-header-table"  :columns="columns"
                 row-key="privilegeDesc"
                 :rows="privRoles"
                 flat
@@ -13,9 +13,8 @@
                 virtual-scroll
                 selection="single"
                 v-model:selected="selected"
-                @selection="onSelection"
-                class="rounded-borders">
-          </q-table>
+                @selection="onSelection">
+          </q-table >
           <div class="row justify-start padding-top">
             <div class="padding-right">
               <q-btn color="primary" class="padding-right"
