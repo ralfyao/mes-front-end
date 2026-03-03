@@ -4,6 +4,15 @@ import { Constant } from './Constant';
 import { toRaw } from "vue";
 export const useCustStore = defineStore('',  {
   actions:{
+    async getUserCompany(){
+      const constant = Constant()
+      console.log('APIUrl', constant.APIUrl)
+      const response = await axios.get(constant.APIUrl + 'api/GetUserCompany');
+      if (response.data.resultList) {
+        return response.data.result
+      }
+      return null;
+    },
     async getCustList(){
       const constant = Constant()
       console.log('APIUrl', constant.APIUrl)
@@ -13,12 +22,42 @@ export const useCustStore = defineStore('',  {
       }
       return null;
     },
+    async getCustListByCondition(param){
+      const constant = Constant();
+      const payload = { ...toRaw(param.value) };
+      console.log('APIUrl', constant.APIUrl)
+      console.log('payload', payload);
+      const paramA = {
+        company:payload.company,
+        companyAlias:payload.companyAlias,
+        custNo:payload.custNo,
+        country:payload.country?.國別 ? payload.country?.國別 : payload.country,
+        industryCode:payload.industryCode?.中分類碼 ? payload.industryCode?.中分類碼 : payload.industryCode,
+        eqpType:payload.eqpType,
+        custType:payload.custType,
+        remark:payload.remark,
+      }
+      console.log('paramA', paramA);
+      const response = await axios.post(constant.APIUrl + 'api/QueryCustListByCondition', JSON.stringify(paramA), {
+        headers: { 'Content-Type': 'application/json' }
+      });
+      return response;
+    },
     async getProjectSerial(custNo){
       const constant = Constant()
       console.log('APIUrl', constant.APIUrl)
       const response = await axios.get(constant.APIUrl + 'api/GetProjectSerialList?custNo='+custNo);
       if (response.data.resultList) {
         return response.data.resultList
+      }
+      return null;
+    },
+    async getCARNo(){
+      const constant = Constant()
+      console.log('APIUrl', constant.APIUrl)
+      const response = await axios.get(constant.APIUrl + 'api/GetCARNo');
+      if (response.data.result) {
+        return response.data.result
       }
       return null;
     },

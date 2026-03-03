@@ -92,7 +92,8 @@
                 <q-input v-model="alias" :readonly="preview" label="客戶簡稱" outlined dense/>
               </div>
               <div class="col-6 col-md-6" style="max-width: 500px">
-                <IndustrySelect v-model="form.industrycode" :readonly="preview" :industryList="industryList" :label="'產業別'" outlined dense/>
+                <IndustryCodeSelect v-model:industrycode="form.industrycode" :readonly="preview"/>
+                <!-- <IndustrySelect v-model="form.industrycode" :readonly="preview" :industryList="industryList" :label="'產業別'" outlined dense/> -->
               </div>
             </div>
             <br>
@@ -233,11 +234,12 @@ import { ref, onMounted, readonly } from 'vue';
 import LoadingComponent from '@/components/LoadingComponent.vue';
 import { useCustStore } from '@/composables/useCust';
 import  CompanySelect  from '@/components/customer/CompanySelect.vue';
-import IndustrySelect from '@/components/customer/IndustrySelect.vue';
+// import IndustrySelect from '@/components/customer/IndustrySelect.vue';
 import QuotationList from '@/components/customer/QuotationList.vue';
 import SalesWorkRecordList from '@/components/customer/SalesWorkRecordList.vue';
 import QuotationView from '@/components/customer/quotation/QuotationView.vue';
 import dayjs  from 'dayjs';
+import IndustryCodeSelect from '@/components/customer/IndustryCodeSelect.vue';
 //變數
 const myForm = ref(null);
 const secondDialog = ref(false)

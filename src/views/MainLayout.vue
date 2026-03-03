@@ -10,7 +10,7 @@
               </q-item-section>
             </q-btn>
           </div>
-          <div class="col-9">Dashboard</div>
+          <div class="col-9">{{ theCompany?.公司名稱 }}</div>
           <div class="col-2">{{ Account?.accountName }}，你好!
           <q-btn flat rounded @click="logout"><h6>登出</h6></q-btn>
           </div>
@@ -37,9 +37,10 @@ import {
   QItemSection, QIcon, SessionStorage, QFooter
 } from 'quasar'
 import { matMenu } from '@quasar/extras/material-icons'
-import { ref} from 'vue'
+import { onMounted, ref} from 'vue'
 import { useRouter } from 'vue-router'
 import SideMenu from '../components/SideMenu.vue'
+import { useCustStore } from '@/composables/useCust';
 
 export default {
   name: 'MainLayout',
@@ -74,6 +75,15 @@ export default {
       router.push('/login')
     }
     const leftDrawerOpen = ref(true)
+    const theCompany = ref({});
+
+    const custStore = useCustStore();
+
+    onMounted(async () =>{
+      await custStore.getUserCompany().then((data)=>{
+        theCompany.value = data;
+      })
+    })
 
     function logout () {
       try {
@@ -91,6 +101,7 @@ export default {
     }
 
     return {
+      theCompany,
       Account,
       leftDrawerOpen,
       toggleLeftDrawer,

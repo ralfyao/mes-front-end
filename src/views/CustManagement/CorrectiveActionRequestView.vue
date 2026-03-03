@@ -72,10 +72,10 @@
                 </q-input>
               </div>
               <div class="col-4 col-md-4" style="max-width: 500px">
-                <q-input v-model="form.單號" label="單號" :readonly="readonly||preview" outlined dense></q-input>
+                <q-input v-model="form.單號" label="單號" :readonly="true" outlined dense></q-input>
               </div>
               <div class="col-4 col-md-4" style="max-width: 500px">
-                <q-input v-model="form.機台型號" label="機台型號" :readonly="readonly||preview" outlined dense></q-input>
+                <q-input v-model="form.機台型號" label="機台型號" :readonly="true" outlined dense></q-input>
               </div>
             </div>
             <!--客戶簡稱、專案序號、機台類型、機台名稱、聯絡窗口、訴願類別-->
@@ -102,7 +102,7 @@
                       @update:model-value="onPrjSrialSelec"/>
                   </div>
                   <div class="col-4">
-                    <q-input v-model="form.機台類型" label="機台類型" :readonly="readonly||preview" outlined dense></q-input>
+                    <q-input v-model="form.機台類型" label="機台類型" :readonly="true" outlined dense></q-input>
                   </div>
                 </div>
 
@@ -115,10 +115,11 @@
                 <!--聯絡窗口、訴願類別-->
                 <div class="row q-col-gutter-md q-mt-md">
                   <div class="col-6 col-md-6" style="max-width: 500px">
-                    <q-input v-model="form.訴願聯絡窗口" label="聯絡窗口" :readonly="readonly||preview" outlined dense />
+                    <q-input v-model="form.訴願聯絡窗口" label="聯絡窗口" :readonly="readonly||preview" outlined dense/>
                   </div>
                   <div class="col-6 col-md-6" style="max-width: 600px">
-                    <q-select v-model="form.訴願類別" label="訴願類別" :readonly="readonly||preview" outlined dense />
+                    <q-select v-model="form.訴願類別" label="訴願類別" :readonly="readonly||preview" outlined dense emit-value
+                      map-options/>
                   </div>
                 </div>
               </div>
@@ -128,7 +129,7 @@
                 <q-input
                   class="col"
                   type="textarea"
-                  v-model="form.機台名稱"
+                  v-model="form.機台名稱" :readonly="true"
                   label="機台名稱"
                   outlined
                 />
@@ -146,7 +147,18 @@
               <div class="col-3">
                 <div class="row q-col-gutter-md q-mt-md">
                   <div class="col-12">
-                    <q-select v-model="form.業務人員" label="業務人員" outlined dense class="" :readonly="readonly||preview"/>
+                    <q-select v-model="form.業務人員"
+                              label="業務人員"
+                              outlined dense class=""
+                              :readonly="readonly||preview"
+                              :options="salesList"
+                              option-label="工號"
+                              option-value="工號"
+                              emit-value map-options
+                              @update:model-value="changeSalesName"/>
+                    <label class="text-red text-center" style=" font-size: 24px;">
+                      {{ salesname }}
+                    </label>
                   </div>
                 </div>
                 <div class="row q-col-gutter-md q-mt-md">
@@ -254,9 +266,12 @@ import {
   SessionStorage
 } from 'quasar'
 import { ref, onMounted, } from 'vue';
+import dayjs  from 'dayjs';
 // import block end
 
 // variable block start
+const salesname = ref([]);
+const salesList = ref([]);
 const projectSerial = ref([]);
 const theWorkOrder = ref({});
 const workOrderList = ref([]);
@@ -308,6 +323,15 @@ const showForm = ref(false);
 // variable block end
 
 // function block start
+const changeSalesName = () =>{
+  console.log('sales no',form.value.業務人員)
+  let salesFound = salesList.value.find(sales => sales.工號 == form.value.業務人員);
+  console.log('salesFound',salesFound)
+  salesname.value = salesList.value.find(sales => sales.工號 == form.value.業務人員)
+        ?salesList.value.find(sales => sales.工號 == form.value.業務人員).姓名
+        :'';
+  console.log('name:',salesname.value)
+}
 const handleOtherAction =  async () =>{
   const success = await myForm.value.validate()
   if (success) {
@@ -326,7 +350,7 @@ const deleteCAR = () =>{
 
 }
 
-const openCARDialog = (type) =>{
+const openCARDialog = async (type) =>{
   console.log('type',type);
   mode.value = type;
   showForm.value = true;
@@ -360,6 +384,10 @@ const openCARDialog = (type) =>{
       建檔:Account.account,
       修改:'',
     }
+    form.value.日期 = dayjs(new Date(), "MM/DD/YYYY HH:mm:ss").format("YYYY/MM/DD")
+    await custStore.getCARNo().then((data)=>{
+      form.value.單號 = data;
+    })
   }
   else if (type == '修改' || type == '預覽')
   {
@@ -376,6 +404,7 @@ const onPrjSrialSelec = (val) =>{
   console.log('theWorkOrder', theWorkOrder.value);
   form.value.機台名稱 = theWorkOrder.value.機台名稱;
   form.value.機台類型 = theWorkOrder.value.機台類型;
+  form.value.機台型號 = theWorkOrder.value.機台型號;
 }
 
 const onSelection = async (val) =>{
@@ -383,6 +412,12 @@ const onSelection = async (val) =>{
   theCust.value = custAliasList.value.find((x)=>x.正航編號 == val);
   console.log('theCust',theCust.value);
   form.value.客戶名稱 = theCust.value.company;
+  workOrderList.value = [];
+  projectSerial.value = [];
+  form.value.機台名稱 = '';
+  form.value.機台類型 = '';
+  form.value.專案序號 = '';
+  form.value.機台型號 = '';
   await custStore.getProjectSerial(val).then((data)=>{
     for(var i = 0; i < data.length; i++){
       console.log('data[i]',data[i]);
@@ -398,11 +433,15 @@ onMounted(async ()=>{
         custAliasList.value.push(data[i]);
     }
   });
+  await custStore.getSalesList().then((data)=>{
+    salesList.value = data;
+  })
   custAliasList.value = custAliasList.value.sort((x, y)=>x.正航編號 - y.正航編號);
   // await custStore.getProjectSerial().then((data)=>{
   //   projectSerial.value = data;
   // })
   console.log('custList', custAliasList.value);
+  console.log('salesList', salesList.value);
 })
 // function block end
 
