@@ -307,6 +307,7 @@ const form = ref({
 const openARDialog = async (type) =>{
   console.log(type)
   mode.value = type;
+  errorMessage.value = "";
   if (type == '新增'){
     console.log('新增')
     const d = new Date()
@@ -347,6 +348,10 @@ const openARDialog = async (type) =>{
     form.value.單號 = newArNo.value;
   } else if (type == '修改' || type == '預覽') {
     console.log('修改或預覽')
+    if (selected.value.length == 0){
+      errorMessage.value = "請選取一筆資料做"+type+"!";
+      return;
+    }
     form.value = selected.value[0];
     // form.value.匯率 = form.value.匯率.匯率;
     changeCustCompany();

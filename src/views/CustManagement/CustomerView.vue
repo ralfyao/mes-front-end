@@ -55,6 +55,7 @@
 
       </q-page>
     </q-page-container>
+    <!--客戶維護主畫面-->
     <q-dialog v-model="showForm" persistent >
       <q-card  class="q-pa-md"  style="width: 1500px; max-width: 95vw;">
           <q-card-section>
@@ -85,7 +86,7 @@
                     <q-input v-model="form.company" :readonly="readonly || preview" label="客戶全稱" outlined dense :rules="[val => !!val || '客戶全稱為必填欄位']"/>
                   </div>
                   <div class="col-1 col-md-1" style="max-width: 500px">
-                    <q-btn label="全稱更名" glossy color="brown"/>
+                    <q-btn label="全稱更名" glossy color="brown" @click="changeCustName"/>
                   </div>
                   <div class="col-3 col-md-3" style="max-width: 500px">
                     <q-input v-model="form.欄位2" :readonly="readonly || preview" label="客戶簡稱" outlined dense :rules="[val => !!val || '客戶簡稱為必填欄位']"/>
@@ -94,7 +95,7 @@
                     <q-input v-model="form.正航編號" :readonly="readonly || preview" label="客戶編號" outlined dense />
                   </div>
                   <div class="col-1 col-md-1" style="max-width: 500px">
-                    <q-btn label="取號" glossy color="orange"/>
+                    <q-btn v-if="form.正航編號 == ''" label="取號" glossy color="orange" @click="getCustNo(form.country)"/>
                   </div>
                 </div>
                 <div class="row q-col-gutter-md">
@@ -155,7 +156,7 @@
                     <IndustryCodeSelect v-model:industrycode="form.industrycode"/>
                   </div>
                   <div class="col-1 col-md-1" style="max-width: 750px">
-                    <q-btn color="orange" glossy label="業別管理" />
+                    <q-btn color="orange" glossy label="業別管理" @click="openIndustryForm" />
                   </div>
                 </div>
                 <div class="row q-col-gutter-md">
@@ -266,14 +267,25 @@
           </q-form>
       </q-card>
     </q-dialog>
+    <!--客戶報價清單-->
     <q-dialog v-model="showQuotationListForm">
       <QuotationListQueryView v-model:modelValue="showQuotationListForm" :custid="companyId"/>
     </q-dialog>
+    <!--客戶詢價清單-->
     <q-dialog v-model="showRfqList">
       <RFQListView v-model:showForm="showRfqList" :companyId="form.識別"/>
     </q-dialog>
+    <!--客戶搜尋-->
     <q-dialog v-model="showSearchForm" persistent>
       <CustSearchForm v-model:showForm="showSearchForm" v-model:list="list"/>
+    </q-dialog>
+    <!--客戶更名-->
+    <q-dialog v-model="showChangeNameForm" persistent>
+      <ChangeNameForm v-model:showForm="showChangeNameForm" v-model:識別="form.識別"/>
+    </q-dialog>
+    <!--業別管理-->
+    <q-dialog v-model="showIndustryListForm" persistent>
+      <IndustryListForm v-model:showForm="showIndustryListForm"/>
     </q-dialog>
     <LoadingComponent v-model="secondDialog"/>
   </q-layout>
@@ -298,7 +310,6 @@ import {
   , QDate
   , QPopupProxy
 } from 'quasar';
-// import  { CustomerForm } from '@/components/customer/CustomerForm.vue';
 import { useCustStore } from '@/composables/useCust';
 import { ref, onMounted,  } from 'vue';
 import QuotationListQueryView from '@/components/customer/query/QuotationListQueryView.vue';
@@ -307,9 +318,12 @@ import CustSearchForm from '@/components/customer/CustSearchForm.vue';
 import IndustryCodeSelect from '@/components/customer/IndustryCodeSelect.vue';
 import BankCodeSelect from '@/components/customer/BankCodeSelect.vue';
 import CountryCodeSelect from '@/components/customer/CountryCodeSelect.vue';
+import ChangeNameForm from '@/components/customer/ChangeNameForm.vue';
+import IndustryListForm from '@/components/customer/IndustryListForm.vue';
 //import block end
 
 //variable block start
+const showChangeNameForm = ref(false);
 const showSearchForm = ref(false);
 const loading = ref(false);
 const selected = ref([]);
@@ -327,7 +341,6 @@ const countryname = ref('');
 const salesList = ref([]);
 const columns =
 [
-
   { name: 'company', label: '客戶名稱', align: 'left', field: 'company', sortable: true },
   { name: 'contactperson', label: '主要聯絡人', align: 'left', field: 'contactperson', sortable: true },
   { name: '欄位2', label: '客戶簡稱', align: 'left', field: '欄位2', sortable: true },
@@ -339,15 +352,6 @@ const columns =
   { name: 'machineissue', label: '機台類別', align: 'left', field: 'machineissue', sortable: true },
   { name: 'ma', label: '客戶型態', align: 'left', field: 'ma', sortable: true },
   { name: 'memo', label: '備註', align: 'left', field: 'memo', sortable: true },
-  { name: 'credate', label: '啟用日期', align: 'left', field: 'credate', sortable: true },
-  // { name: 'customerId', label: '客戶識別碼', align: 'left', field: '識別', sortable: true },
-  // { name: 'customerNo', label: '客戶編號', align: 'left', field: '正航編號', sortable: true },
-  // { name: 'customerName', label: '客戶全稱', align: 'left', field: 'company', sortable: true },
-  // { name: 'customerAddress', label: '客戶地址', align: 'left', field: 'address', sortable: true },
-  // { name: 'customerEmail', label: '客戶電子信箱', align: 'left', field: 'email', sortable: true },
-  // { name: 'customerContact', label: '聯絡人', align: 'left', field: 'contactperson', sortable: true },
-  // { name: 'customerCountry', label: '客戶國家', align: 'left', field: 'country', sortable: true },
-
 ];
 const custStore = useCustStore();
 const list = ref([]);
@@ -387,6 +391,7 @@ const form = ref({
 })
 const myForm = ref(null)
 const showQuotationListForm = ref(false);
+const showIndustryListForm = ref(false);
 //variable block end
 
 //function block start
@@ -467,6 +472,17 @@ const openQuotationList = () =>{
   companyId.value = form.value.識別;
   console.log('companyId.value', companyId.value);
   showQuotationListForm.value = true;
+}
+
+const getCustNo = async (country) =>{
+  console.log('country', country.國別)
+  await custStore.getCustNo(country.國別).then((data)=>{
+    if (data.data.errorMessage){
+      alert(data.data.errorMessage);
+    } else {
+      form.value.正航編號 = data.data.result;
+    }
+  })
 }
 
 const submitForm = async () => {
@@ -700,6 +716,11 @@ const close = () =>{
   showForm.value = false;
   preview.value = false;
 }
-
+const changeCustName = () =>{
+  showChangeNameForm.value = true;
+}
+const openIndustryForm = () =>{
+  showIndustryListForm.value = true;
+}
 //function block end
 </script>

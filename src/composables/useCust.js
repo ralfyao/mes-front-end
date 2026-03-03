@@ -79,6 +79,35 @@ export const useCustStore = defineStore('',  {
       }
       return null;
     },
+    async getCustNo(country){
+      const constant = Constant()
+      console.log('APIUrl', constant.APIUrl)
+      const response = await axios.get(constant.APIUrl + 'api/CustNo?country='+country);
+      if (response) {
+        return response
+      }
+      return null;
+    },
+    async updateIndustryList(list){
+      const constant = Constant();
+      const payload = toRaw(list.value) ;
+      console.log('APIUrl', constant.APIUrl)
+      console.log('payload', payload);
+      const param = payload.map(item=>({
+        大分類碼:item.大分類碼,
+        大分類名稱:item.大分類名稱,
+        中分類碼:item.中分類碼,
+        中分類名稱:item.中分類名稱,
+        英文:item.英文,
+        內容:item.內容,
+        其他:item.其他,
+      }));
+      console.log('param', param);
+      const response = await axios.post(constant.APIUrl + 'api/UpdateIndustryList', JSON.stringify(param), {
+        headers: { 'Content-Type': 'application/json' }
+      });
+      return response;
+    },
     async getIndustryList(){
       const constant = Constant()
       console.log('APIUrl', constant.APIUrl)
@@ -127,7 +156,7 @@ export const useCustStore = defineStore('',  {
         memo:payload.memo,
         account:payload.account,
         contactDetails: payload.contactDetails,
-        contactLists: payload.contactLists
+        contactLists: payload.contactLists,
       };
       console.log('param', param);
       const response = await axios.post(constant.APIUrl + 'api/SaveCustomer', JSON.stringify(param), {
@@ -142,7 +171,7 @@ export const useCustStore = defineStore('',  {
       const param = {
         識別: payload.識別,
         company: payload.company,
-        country: payload.country,
+        country: payload.country?.code ? payload.country?.code : payload.country,
         ma:payload.ma,
         tel:payload.tel,
         fax:payload.fax,
@@ -164,13 +193,23 @@ export const useCustStore = defineStore('',  {
         memo:payload.memo,
         account:payload.account,
         contactDetails: payload.contactDetails,
-        contactLists: payload.contactLists
+        contactLists: payload.contactLists,
+        修改:payload.account
       };
       console.log('param', param);
       const response = await axios.post(constant.APIUrl + 'api/UpdateCustomer', JSON.stringify(param), {
         headers: { 'Content-Type': 'application/json' }
       });
       return response;
+    },
+    async updateCompanyName(originalName, changeToName){
+      const constant = Constant()
+      console.log('APIUrl', constant.APIUrl)
+      const response = await axios.get(constant.APIUrl + 'api/UpdateCompanyName?originalName='+originalName+'&changeToName='+changeToName);
+      if (response) {
+        return response
+      }
+      return null;
     },
     async deleteCustomer(form){
       const constant = Constant();

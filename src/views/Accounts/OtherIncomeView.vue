@@ -357,6 +357,7 @@ const AddOtherIncomeItem = () =>{
 const openARDialog = (type) =>{
   console.log(type);
   preview.value = false;
+  errorMessage.value = "";
   if(type == '新增') {
     form.value = {
       單號:'',
@@ -388,6 +389,10 @@ const openARDialog = (type) =>{
     form.value.單號 = 單號.value;
     console.log(' form.value.單號',  form.value.單號);
   } else if (type == '修改' || type == '預覽') {
+    if (selected.value.length == 0){
+      errorMessage.value = "請選取一筆資料做"+type+"!";
+      return;
+    }
     form.value = selected.value[0];
     changeCustCompany();
     changeExRate();

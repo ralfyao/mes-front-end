@@ -397,6 +397,8 @@ const openCustomDialog = async (type) => {
   console.log('type', type)
   mode.value = type;
   showForm.value = true;
+  errorMessage.value = "";
+  companyName.value = "";
   form.value = {
       識別:0,
       日期:'',
@@ -428,6 +430,11 @@ const openCustomDialog = async (type) => {
     });
     console.log('form', form)
   } else if (type == '修改'|| type == '預覽') {
+    if (selected.value.length == 0){
+      showForm.value = false;
+      errorMessage.value = "請選取一筆資料做"+type+"!";
+      return;
+    }
     form.value =  selected.value[0];
     console.log(type+'form', form.value)
     changeSalesName();
