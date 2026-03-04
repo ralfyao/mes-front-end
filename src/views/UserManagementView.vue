@@ -55,6 +55,7 @@
                         </template>
                     </q-input>
                     <q-checkbox label="啟用" v-model="form.isActivate"  :readonly="readonly"  outlined dense/>
+                    <q-checkbox label="寄件允許" v-model="form.isEmail"  :readonly="readonly"  outlined dense/>
                 </div>
                 </q-card-section>
                 <q-card-actions align="right">
@@ -109,7 +110,7 @@ const columns = ref([
 ])
 const mode = ref('')
 const showForm = ref(false)
-const form = ref({ account: '', accountName: '', name: '', password: '', lastModifier: '', isActivate:false, })
+const form = ref({ account: '', accountName: '', name: '', password: '', lastModifier: '', isActivate:false, isEmail:false })
 const modifier = SessionStorage.getItem('Account').account
 // 刪除使用者
 const deleteUser = async () => {
@@ -158,12 +159,14 @@ const openUserDialog = (type) => {
     form.value.name = user.accountName
     form.value.password = user.password
     form.value.isActivate = user.isActivate
+    form.value.isEmail = user.isEmail;
   } else {
     readonly.value = false
     form.value.account = ''
     form.value.name = ''
     form.value.password = ''
-    form.value.isActivate = false;
+    form.value.isActivate = true;
+    form.value.isEmail = false;
   }
 }
 // 送出新增或修改使用者的表單
@@ -185,6 +188,7 @@ async function submitForm () {
     name: form.value.name,
     lastModifier: modifier,
     isActivate:form.value.isActivate,
+    isEmail:form.value.isEmail,
   }
   if (mode.value == '新增') {
     const msg = await userStore.addUser(user)

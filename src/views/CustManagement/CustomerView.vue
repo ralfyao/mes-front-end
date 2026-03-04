@@ -45,7 +45,7 @@
                 :rows="list"
                 flat
                 bordered
-                style="height: 500px"
+                style="height: 400px"
                 virtual-scroll
                 selection="single"
                 v-model:selected="selected"

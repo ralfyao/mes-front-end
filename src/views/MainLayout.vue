@@ -48,11 +48,13 @@
               <br>
               <div class="q-gutter-md" style="max-width: 400px">
                 <q-input v-model="newPassword" label="新密碼" :type="isPwd ? 'password' : 'text'" outlined dense :rules="[val => !!val || '新密碼為必填欄位']">
-                  <q-icon
-                    :name="isPwd ? 'visibility_off' : 'visibility'"
-                    class="cursor-pointer"
-                    @click="isPwd = !isPwd"
-                  />
+                  <template v-slot:append>
+                    <q-icon
+                      :name="isPwd ? 'visibility_off' : 'visibility'"
+                      class="cursor-pointer"
+                      @click="isPwd = !isPwd"
+                    />
+                  </template>
                 </q-input>
               </div>
               <div class="q-gutter-md" style="max-width: 400px">
@@ -60,11 +62,13 @@
                                                                                                           val => !!val || '新密碼確認為必填欄位',
                                                                                                           val => val === newPassword || '兩次輸入的密碼不一致'
                                                                                                         ]" >
-                  <q-icon
-                    :name="isPwdConfirm ? 'visibility_off' : 'visibility'"
-                    class="cursor-pointer"
-                    @click="isPwdConfirm = !isPwdConfirm"
-                  />
+                  <template v-slot:append>
+                    <q-icon
+                      :name="isPwdConfirm ? 'visibility_off' : 'visibility'"
+                      class="cursor-pointer"
+                      @click="isPwdConfirm = !isPwdConfirm"
+                    />
+                  </template>
                 </q-input>
               </div>
             </q-card-section>
