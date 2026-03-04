@@ -171,7 +171,7 @@ export const useCustStore = defineStore('',  {
       const param = {
         識別: payload.識別,
         company: payload.company,
-        country: payload.country?.code ? payload.country?.code : payload.country,
+        country: payload.country?.國別 ? payload.country?.國別 : payload.country,
         ma:payload.ma,
         tel:payload.tel,
         fax:payload.fax,

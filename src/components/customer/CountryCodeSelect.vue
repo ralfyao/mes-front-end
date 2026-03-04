@@ -33,7 +33,11 @@ const props =  defineProps({
   country:{
     type:[String, Object],
     default:()=>'',
-  }
+  },
+  readonly:{
+    type:Boolean,
+    default:false,
+  },
 });
 const emits = defineEmits(['update:country']);
 // variable block end

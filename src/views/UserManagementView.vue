@@ -54,6 +54,7 @@
                             />
                         </template>
                     </q-input>
+                    <q-checkbox label="停用" v-model="form.isActivate"  :readonly="readonly"  outlined dense/>
                 </div>
                 </q-card-section>
                 <q-card-actions align="right">
@@ -78,6 +79,7 @@ import {
   , QCard
   , QCardSection
   , QCardActions
+  , QCheckbox
   // , QInnerLoading
   , QInput,
   SessionStorage
@@ -107,7 +109,7 @@ const columns = ref([
 ])
 const mode = ref('')
 const showForm = ref(false)
-const form = ref({ account: '', accountName: '', name: '', password: '', lastModifier: '' })
+const form = ref({ account: '', accountName: '', name: '', password: '', lastModifier: '', isActivate:false, })
 const modifier = SessionStorage.getItem('Account').account
 // 刪除使用者
 const deleteUser = async () => {
@@ -179,21 +181,26 @@ async function submitForm () {
     username: form.value.account,
     password: form.value.password,
     name: form.value.name,
-    lastModifier: modifier
+    lastModifier: modifier,
+    isActivate:form.value.isActivate,
   }
   if (mode.value == '新增') {
     const msg = await userStore.addUser(user)
     if (msg !== 'OK') {
       errorMessage.value = msg
+      alert(msg);
     } else {
       errorMessage.value = ''
+      alert('新增完成')
     }
   } else if (mode.value == '修改') {
     const msg = await userStore.updateUser(user)
     if (msg !== 'OK') {
       errorMessage.value = msg
+      alert(msg);
     } else {
       errorMessage.value = ''
+      alert('修改完成')
     }
   }
   loading.value = false

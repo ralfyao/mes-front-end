@@ -10,9 +10,11 @@
               </q-item-section>
             </q-btn>
           </div>
-          <div class="col-9">{{ theCompany?.公司名稱 }}</div>
-          <div class="col-2">{{ Account?.accountName }}，你好!
-          <q-btn flat rounded @click="logout"><h6>登出</h6></q-btn>
+          <div class="col-3"></div>
+          <div class="col-6">{{ theCompany?.公司名稱 }}</div>
+          <div class="col-3"><h7>{{ Account?.accountName }}，你好!</h7>
+          <q-btn flat color="blue" rounded @click="openChangePasswordForm"><h7>變更密碼</h7></q-btn>
+          <q-btn flat rounded @click="logout"><h7>登出</h7></q-btn>
           </div>
         </q-toolbar>
       </q-header>
@@ -28,19 +30,65 @@
           2025 &copy; 營運管理系統
         </q-footer>
       </q-page-container>
+      <q-dialog v-model="showChangePasswordForm" persistent >
+        <q-card  class="q-pa-md"  style="width: 400px; max-width: 80vw;">
+          <q-card-section>
+            <div class="text-h4">變更密碼</div>
+          </q-card-section>
+          <q-form ref="myForm">
+            <q-card-section>
+              <div class="q-gutter-md" style="max-width: 400px">
+                <q-input v-model="Account.accountName" label="登入者" outlined dense readonly />
+              </div>
+              <br>
+              <div class="q-gutter-md" style="max-width: 400px">
+                <q-input v-model="Account.password" label="原有密碼" type="password" outlined dense readonly />
+              </div>
+              <br>
+              <div class="q-gutter-md" style="max-width: 400px">
+                <q-input v-model="newPassword" label="新密碼" :type="isPwd ? 'password' : 'text'" outlined dense :rules="[val => !!val || '新密碼為必填欄位']">
+                  <q-icon
+                    :name="isPwd ? 'visibility_off' : 'visibility'"
+                    class="cursor-pointer"
+                    @click="isPwd = !isPwd"
+                  />
+                </q-input>
+              </div>
+              <div class="q-gutter-md" style="max-width: 400px">
+                <q-input v-model="newPasswordConfirm" label="新密碼確認" :type="isPwdConfirm ? 'password' : 'text'" outlined dense :rules="[
+                                                                                                          val => !!val || '新密碼確認為必填欄位',
+                                                                                                          val => val === newPassword || '兩次輸入的密碼不一致'
+                                                                                                        ]" >
+                  <q-icon
+                    :name="isPwdConfirm ? 'visibility_off' : 'visibility'"
+                    class="cursor-pointer"
+                    @click="isPwdConfirm = !isPwdConfirm"
+                  />
+                </q-input>
+              </div>
+            </q-card-section>
+          </q-form>
+          <q-card-actions align="right">
+            <q-btn flat label="取消" color="negative" @click="closeForm" />
+            <q-btn flat label="送出" color="primary" @click="handleOtherAction" />
+          </q-card-actions>
+        </q-card>
+      </q-dialog>
   </q-layout>
 </template>
 
 <script>
 import {
   QLayout, QHeader, QToolbar, QBtn, QPageContainer,
-  QItemSection, QIcon, SessionStorage, QFooter
+  QItemSection, QIcon, SessionStorage, QFooter,QDialog,
+  QCard,QCardSection,QCardActions,QInput,QForm,
 } from 'quasar'
 import { matMenu } from '@quasar/extras/material-icons'
 import { onMounted, ref} from 'vue'
 import { useRouter } from 'vue-router'
 import SideMenu from '../components/SideMenu.vue'
 import { useCustStore } from '@/composables/useCust';
+import { useUserStore } from '@/composables/useUser'
 
 export default {
   name: 'MainLayout',
@@ -53,7 +101,9 @@ export default {
     QItemSection,
     QIcon,
     SideMenu,
-    QFooter
+    QFooter,
+    QDialog,
+    QCard,QCardSection,QCardActions,QInput,QForm,
   },
   setup () {
     const Account = SessionStorage.getItem('Account')
@@ -71,19 +121,60 @@ export default {
       }
     };
     const router = useRouter()
+    const isPwd = ref(true)
+    const isPwdConfirm = ref(true)
     if (!Account) {
       router.push('/login')
     }
     const leftDrawerOpen = ref(true)
     const theCompany = ref({});
-
+    const showChangePasswordForm = ref(false);
+    const myForm = ref(null);
     const custStore = useCustStore();
+    const userStore = useUserStore();
+    const newPasswordConfirm = ref('');
+    const newPassword = ref('');
+
+    const handleOtherAction = async () => {
+      const success = await myForm.value.validate()
+      if (success) {
+        submitForm();
+      } else {
+        return;
+      }
+    }
 
     onMounted(async () =>{
       await custStore.getUserCompany().then((data)=>{
         theCompany.value = data;
+        isPwdConfirm.value = true;
+        isPwd.value = true;
       })
     })
+
+    const closeForm = () =>{
+      showChangePasswordForm.value = false;
+    }
+
+    const submitForm = async () =>{
+      await userStore.changePassword(Account.account, newPassword.value).then((data)=>{
+        if (data.data.errorMessage){
+          alert(data.data.errorMessage);
+        } else {
+          alert('變更完成!');
+          Account.password = newPasswordConfirm.value;
+          newPasswordConfirm.value = '';
+          newPassword.value = '';
+          isPwdConfirm.value = true;
+          isPwd.value = true;
+          closeForm();
+        }
+      });
+    }
+
+    const openChangePasswordForm = () =>{
+      showChangePasswordForm.value = true;
+    }
 
     function logout () {
       try {
@@ -107,7 +198,18 @@ export default {
       toggleLeftDrawer,
       useRouter,
       matMenu,
-      logout
+      logout,
+      // changePassword,
+      openChangePasswordForm,
+      showChangePasswordForm,
+      submitForm,
+      closeForm,
+      myForm,
+      handleOtherAction,
+      newPasswordConfirm,
+      newPassword,
+      isPwd,
+      isPwdConfirm,
     }
   },
 }

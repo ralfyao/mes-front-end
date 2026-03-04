@@ -111,6 +111,16 @@ export const useUserStore = defineStore('user', {
         }
       }
     },
+    async changePassword(account, password){
+      const constant = Constant()
+      console.log('APIUrl', constant.APIUrl)
+      // console.log('user', user)
+      const response = await axios.get(constant.APIUrl + 'api/UpdatePassword?account='+account+'&password='+password)
+      if (response !== null) {
+        return response;
+      }
+      return null;
+    },
     logout () {
       this.username = ''
       this.password = ''

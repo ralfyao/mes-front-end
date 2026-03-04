@@ -43,7 +43,7 @@
     </div>
   </div>
   <div v-if="!props.showHorizon">
-    <q-select v-model="industrycode" :readonly="readonly || preview" label="所屬業別"
+    <q-select v-model="industrycode" :readonly="props.readonly" label="所屬業別"
     outlined dense :options="industryList" @update:model-value="getIndustryName" emit-value map-options
         option-label="中分類碼"
         option-value="中分類碼">
@@ -105,7 +105,12 @@ const props = defineProps({
   showHorizon:{
     type:Boolean,
     default:false,
-  }
+  },
+  readonly:{
+    type:Boolean,
+    default:false,
+  },
+
 });
 const custStore = useCustStore();
 const industry = ref('');

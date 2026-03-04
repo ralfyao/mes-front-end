@@ -7,38 +7,40 @@
         <q-card-actions align="right">
           <q-btn flat color="green" label="增加一筆資料" @click="add"/>
           <q-btn flat color="red" label="EXIT" @click="close"/>
-          <q-btn flat color="blue" label="送出" @click="submitForm"/>
+          <q-btn flat color="blue" label="送出" @click="handleOtherAction"/>
         </q-card-actions>
       </div>
     </q-card-section>
-      <q-card-section style="height: 400px;
-          max-height: 70vh; overflow: auto;">
-        <q-scroll-area ref="myScrollArea" style="height: 100%;">
-          <div v-for="item in list" :key="item.中分類碼" class="row q-col-gutter-md">
-            <div class="col-1 col-md-1">
-              <q-input ref="detailDateInput" v-model="item.大分類碼" label="大分類" :title="item.大分類" outlined dense />
+      <q-form ref="myForm">
+        <q-card-section style="height: 400px;
+            max-height: 70vh; overflow: auto;">
+          <q-scroll-area ref="myScrollArea" style="height: 100%;">
+            <div v-for="item in list" :key="item.中分類碼" class="row q-col-gutter-md">
+              <div class="col-1 col-md-1">
+                <q-input ref="detailDateInput" v-model="item.大分類碼" label="大分類" :title="item.大分類" outlined dense :rules="[val => !!val || '大分類為必填欄位']" />
+              </div>
+              <div class="col-2 col-md-2">
+                <q-input v-model="item.大分類名稱" label="大分類名稱" :title="item.大分類名稱" outlined dense :rules="[val => !!val || '大分類名稱為必填欄位']"  />
+              </div>
+              <div class="col-1 col-md-1">
+                <q-input v-model="item.中分類碼" label="中分類" :title="item.中分類碼" outlined dense readonly  />
+              </div>
+              <div class="col-2 col-md-2">
+                <q-input v-model="item.中分類名稱" label="中分類名稱" :title="item.中分類名稱" outlined dense :rules="[val => !!val || '中分類名稱為必填欄位']" />
+              </div>
+              <div class="col-2 col-md-2">
+                <q-input v-model="item.英文" label="英文" :title="item.英文" outlined dense />
+              </div>
+              <div class="col-1 col-md-1">
+                <q-input v-model="item.內容" label="內容" :title="item.內容" outlined dense />
+              </div>
+              <div class="col-2 col-md-2">
+                <q-input v-model="item.其他" label="其他" :title="item.其他" outlined dense />
+              </div>
             </div>
-            <div class="col-2 col-md-2">
-              <q-input v-model="item.大分類名稱" label="大分類名稱" :title="item.大分類名稱" outlined dense  />
-            </div>
-            <div class="col-1 col-md-1">
-              <q-input v-model="item.中分類碼" label="中分類" :title="item.中分類碼" outlined dense readonly  />
-            </div>
-            <div class="col-2 col-md-2">
-              <q-input v-model="item.中分類名稱" label="中分類名稱" :title="item.中分類名稱" outlined dense  />
-            </div>
-            <div class="col-2 col-md-2">
-              <q-input v-model="item.英文" label="英文" :title="item.英文" outlined dense  />
-            </div>
-            <div class="col-1 col-md-1">
-              <q-input v-model="item.內容" label="內容" :title="item.內容" outlined dense  />
-            </div>
-            <div class="col-2 col-md-2">
-              <q-input v-model="item.其他" label="其他" :title="item.其他" outlined dense  />
-            </div>
-          </div>
-        </q-scroll-area>
-    </q-card-section>
+          </q-scroll-area>
+        </q-card-section>
+      </q-form>
   </q-card>
 </template>
 <script setup>
@@ -50,7 +52,8 @@ import {
   QCardActions,
   QBtn,
   QInput,
-  QScrollArea
+  QScrollArea,
+  QForm
 } from 'quasar'
 import {
   ref,
@@ -61,6 +64,7 @@ import {
 // import block end
 
 // variable block start
+const myForm = ref(null);
 const custStore = useCustStore();
 const list = ref([]);
 const emits = defineEmits(['update:showForm']);
@@ -75,6 +79,14 @@ onMounted(async ()=>{
     list.value = data;
   })
 })
+const handleOtherAction = async () => {
+  const success = await myForm.value.validate()
+  if (success) {
+    submitForm();
+  } else {
+    return;
+  }
+}
 
 const close = () =>{
   emits("update:showForm", false);

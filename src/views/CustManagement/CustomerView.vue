@@ -86,7 +86,7 @@
                     <q-input v-model="form.company" :readonly="readonly || preview" label="客戶全稱" outlined dense :rules="[val => !!val || '客戶全稱為必填欄位']"/>
                   </div>
                   <div class="col-1 col-md-1" style="max-width: 500px">
-                    <q-btn label="全稱更名" glossy color="brown" @click="changeCustName"/>
+                    <q-btn label="全稱更名" v-if="!(readonly || preview)" glossy color="brown" @click="changeCustName"/>
                   </div>
                   <div class="col-3 col-md-3" style="max-width: 500px">
                     <q-input v-model="form.欄位2" :readonly="readonly || preview" label="客戶簡稱" outlined dense :rules="[val => !!val || '客戶簡稱為必填欄位']"/>
@@ -95,7 +95,7 @@
                     <q-input v-model="form.正航編號" :readonly="readonly || preview" label="客戶編號" outlined dense />
                   </div>
                   <div class="col-1 col-md-1" style="max-width: 500px">
-                    <q-btn v-if="form.正航編號 == ''" label="取號" glossy color="orange" @click="getCustNo(form.country)"/>
+                    <q-btn v-if="form.正航編號 == '' && !(readonly || preview)" label="取號" glossy color="orange" @click="getCustNo(form.country)"/>
                   </div>
                 </div>
                 <div class="row q-col-gutter-md">
@@ -153,10 +153,10 @@
                     <q-input v-model="form.machineissue" :readonly="readonly || preview" label="機台類別" outlined dense></q-input>
                   </div>
                   <div class="col-5 col-md-5" style="max-width: 750px">
-                    <IndustryCodeSelect v-model:industrycode="form.industrycode"/>
+                    <IndustryCodeSelect :readonly="readonly || preview" v-model:industrycode="form.industrycode"/>
                   </div>
                   <div class="col-1 col-md-1" style="max-width: 750px">
-                    <q-btn color="orange" glossy label="業別管理" @click="openIndustryForm" />
+                    <q-btn color="orange" v-if="!(readonly || preview)" glossy label="業別管理" @click="openIndustryForm" />
                   </div>
                 </div>
                 <div class="row q-col-gutter-md">
@@ -183,7 +183,7 @@
                 </div>
                 <div class="row q-col-gutter-md">
                   <div class="col-8 col-md-8" style="max-width: 1000px">
-                    <q-input v-model="form.memo" outlined dense label="備註"/>
+                    <q-input v-model="form.memo" outlined dense label="備註" :readonly="readonly || preview"/>
                   </div>
                   <div class="col-2 col-md-2" style="max-width: 250px">
                     <q-input v-model="form.修改" outlined dense label="修改" readonly/>
