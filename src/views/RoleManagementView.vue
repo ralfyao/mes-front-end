@@ -250,6 +250,8 @@ function onSubMenuCheck(menu, menuSub, val) {
 
 const deleteRole = async() =>{
   console.log('selected', selected.value[0].privilegeDesc);
+  loading.value = true;
+  secondDialog.value = true
   if (selected.value.length === 0) {
       console.log('No role selected for modification')
       errorMessage.value = '請選擇要刪除的角色'
@@ -269,6 +271,8 @@ const deleteRole = async() =>{
     console.log('.value', privRoles.value);
     selected.value = [];
   }
+  loading.value = false;
+  secondDialog.value = false
 }
 const openRoleDialog = async (type) => {
   mode.value = type;
@@ -320,6 +324,9 @@ const submitForm = async () =>{
   console.log('mode', mode.value);
   form.value.selectedMenu = selectedMenu.value;
   form.value.selectedSub = selectedSub.value;
+
+  secondDialog.value = true
+  loading.value = true;
   if (mode.value == '新增') {
     const msg = await userPriv.saveRolePrivilege(form);
     if (msg !== 'OK') {
@@ -335,7 +342,9 @@ const submitForm = async () =>{
       alert(mode.value + '成功');
     }
     selected.value = [];
+    loading.value = false;
   }
+  secondDialog.value = false
   showForm.value = false;
   const res = await userPriv.getAllPrivileges()
   privRoles.value = res

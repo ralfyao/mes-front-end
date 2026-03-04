@@ -222,6 +222,7 @@
       </q-card>
     </q-dialog>
   </q-layout>
+  <LoadingComponent v-model="secondDialog"/>
 </template>
 <script setup>
 // import block start
@@ -267,6 +268,7 @@ const selected = ref([]);
 const list = ref([]);
 const companyName = ref('');
 const custNumberList = ref([]);
+const secondDialog = ref(false);
 const categoryList = ref([
   "訂金","期約","裝機","驗機","出貨","交機","售後","零件","服務","其他"
 ]);
@@ -374,6 +376,7 @@ const deleteAR = async () =>{
   if (result){
     console.log('刪除');
     form.value = selected.value[0];
+    secondDialog.value = true;
     await arStore.deleteAR(form).then((data)=>{
       console.log('response', data);
       if (data.data.errorMessage){
@@ -431,6 +434,7 @@ const quotationDistribution = () =>{
 }
 
 const updateCloseFlag = async () =>{
+  secondDialog.value = true;
   await arStore.updateCloseFlag(form.value.單號).then((data)=>{
     console.log('response', data);
     if (data.data.errorMessage){
@@ -438,6 +442,7 @@ const updateCloseFlag = async () =>{
     } else {
       alert('停用成功');
     }
+    secondDialog.value = false;
   })
 }
 
@@ -460,6 +465,7 @@ console.log('account receivable form:', form);
   if (mode.value == '新增'){
     console.log('mode', mode.value)
     form.value.建檔 = Account.account;
+    secondDialog.value = true;
     await arStore.saveAR(form).then((data)=>{
       console.log('response', data);
       if (data.data.errorMessage){
@@ -467,6 +473,7 @@ console.log('account receivable form:', form);
       } else {
         alert('寫入成功');
       }
+      secondDialog.value = false;
     })
   } else if (mode.value == '修改') {
     console.log('mode', mode.value)
@@ -534,6 +541,7 @@ const init = async () =>{
     console.log('arList:', data);
     list.value = data;
   })
+  secondDialog.value = false;
 }
 
 const calcExRateAmount = (item) =>{

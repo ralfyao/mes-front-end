@@ -68,6 +68,7 @@
       <q-dialog v-model="showAuthorizeDialog" persistent>
         <UserAuthorization />
       </q-dialog>
+      <LoadingComponent v-model="secondDialog"/>
     </q-layout>
 </template>
 <script setup>
@@ -104,6 +105,7 @@ const columns = ref([
   { name: 'actions', label: '操作', align: 'center' },
 ]);
 const rows = ref([]);
+const secondDialog = ref(false);
 const selectedUser = ref(null);
 const roleList = ref([]);
 const userRoleList = ref([]);
@@ -122,6 +124,7 @@ const saveRoles = async () => {
   console.log('選中的使用者:', selectedUser.value);
   console.log('當前登入帳號:', SessionStorage.getItem('Account').account);
   if (!selectedUser.value) return;
+  secondDialog.value = true;
   try {
     await userPriv.updateUserPrivileges(
       SessionStorage.getItem('Account').account,
@@ -130,6 +133,7 @@ const saveRoles = async () => {
     );
     alert('使用者角色保存成功');
     showEditDialog.value = false;
+    secondDialog.value = false;
   } catch (error) {
     console.error('保存使用者角色時出錯:', error);
   }

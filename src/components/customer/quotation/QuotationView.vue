@@ -234,10 +234,12 @@
         <q-btn v-if="!preview" label="送出" color="primary" @click="handleOtherAction" />
       </q-card-actions>
   </q-card>
+  <LoadingComponent v-model="secondDialog"/>
 </template>
 <script setup>
 // import block
 import { useCustStore } from '@/composables/useCust';
+import LoadingComponent from '@/components/LoadingComponent.vue'
 import {
   QCard
   , QCardSection
@@ -255,6 +257,7 @@ import {ref, defineProps, defineEmits, onMounted} from 'vue';
 // import block
 
 // variable block
+const secondDialog = ref(false);
 const myForm = ref(null);
 const mode = ref('');
 const custStore = useCustStore();
@@ -461,6 +464,7 @@ const init =async () =>{
     quotationForm.value.quono = props.quono;
   }
   sumAmount();
+  secondDialog.value = false;
 }
 const changeSalesName = () =>{
   console.log('sales no',quotationForm.value.daddress)
@@ -472,6 +476,7 @@ const changeSalesName = () =>{
 const submitForm = async () =>{
   console.log('quotationForm',quotationForm.value)
   const Account = SessionStorage.getItem('Account');
+  secondDialog.value = true;
   if (mode.value == '新增'){
     console.log('mode', mode.value)
     quotationForm.value.建檔 = Account.account;
@@ -589,16 +594,24 @@ const updateExpiryFlag = async (type) =>{
     quotationForm.value.核准 = account.account;
   else
     quotationForm.value.核准 = '';
-  await custStore.updateExpiryFlag(quotationForm.value.quono, quotationForm.value.核准, type);
+  secondDialog.value = true;
+  await custStore.updateExpiryFlag(quotationForm.value.quono, quotationForm.value.核准, type).then((data)=>{
+    console.log(data);
+    alert('更新成功');
+    secondDialog.value = false;
+  });
 }
 const transferToSalesOrder = async () =>{
+  secondDialog.value = true;
   await custStore.transferToSalesOrder(quotationForm).then((data)=>{
     if (!data.data.errorMessage || data.data.errorMessage == ''){
       alert('轉開成功');
+      secondDialog.value = false;
       emit("update:showForm", false);
       init();
     } else {
       alert(data.data.errorMessage);
+      secondDialog.value = false;
     }
   })
 }

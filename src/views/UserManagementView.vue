@@ -54,7 +54,7 @@
                             />
                         </template>
                     </q-input>
-                    <q-checkbox label="停用" v-model="form.isActivate"  :readonly="readonly"  outlined dense/>
+                    <q-checkbox label="啟用" v-model="form.isActivate"  :readonly="readonly"  outlined dense/>
                 </div>
                 </q-card-section>
                 <q-card-actions align="right">
@@ -157,11 +157,13 @@ const openUserDialog = (type) => {
     form.value.account = user.account
     form.value.name = user.accountName
     form.value.password = user.password
+    form.value.isActivate = user.isActivate
   } else {
     readonly.value = false
     form.value.account = ''
     form.value.name = ''
     form.value.password = ''
+    form.value.isActivate = false;
   }
 }
 // 送出新增或修改使用者的表單

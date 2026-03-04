@@ -239,6 +239,7 @@
       />
     </q-dialog>
   </q-layout>
+  <LoadingComponent v-model="secondDialog"/>
 </template>
 <script setup>
 // import block start
@@ -268,6 +269,7 @@ import { useARStore } from '@/composables/useAR';
 // import block end
 
 // variable block start
+const secondDialog = ref(false);
 const 單號 = ref('');
 const myForm = ref(null);
 const 項目名稱 = ref('');
@@ -429,6 +431,7 @@ const handleOtherAction = async () => {
 
 const submitForm = async () =>{
   const Account = SessionStorage.getItem('Account');
+  secondDialog.value = true;
   if (mode.value == '新增'){
     console.log('mode', mode.value)
     form.value.建檔 = Account.account;
@@ -484,9 +487,11 @@ const submitForm = async () =>{
 const changeExRate = async (val) =>{
   console.log('val.currency', val);
   try{
+  secondDialog.value = true;
   await custStore.getExRateList(val).then((data)=>{
     console.log('data', data);
     form.value.匯率 = data[0].匯率 ;
+    secondDialog.value = false;
   });
   }catch(e){console.log(e)}
 }
@@ -497,9 +502,11 @@ const openAccountCheck = async () =>{
     alert('請輸入收款帳號');
     return;
   }
+  secondDialog.value = true;
   await custStore.getBankInfo(收款帳號.value).then((data)=>{
     console.log('bank data',data)
     bankAccountCheckForm.value = data;
+    secondDialog.value = false;
   })
   console.log('before set', showCheckForm.value)
   showCheckForm.value = true
@@ -552,6 +559,7 @@ const init = async () =>{
     傳票:'',
     detailList:[],
   };
+  secondDialog.value = false;
 }
 
 const updateCloseFlag = () =>{
@@ -601,6 +609,7 @@ const deleteAR = async () =>{
 }
 
 onMounted(async () =>{
+  secondDialog.value = true;
   init();
 })
 // function block end

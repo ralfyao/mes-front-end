@@ -24,6 +24,7 @@
       <q-btn label="EXIT" color="red" flat @click="close"></q-btn>
       <q-btn label="送出" color="blue" flat @click="handleOtherAction"></q-btn>
     </q-card-actions>
+    <LoadingComponent v-model="secondDialog"/>
   </q-card>
 </template>
 <script setup>
@@ -47,6 +48,7 @@ import {
 
 // variable block start
 const changeToName = ref('');
+const secondDialog = ref(false);
 const custStore = useCustStore();
 const theCust = ref({});
 const myForm = ref(null);
@@ -70,6 +72,7 @@ const submitForm = async () =>{
   var result = confirm('您確認是否要更名?');
   if (!result)
     return;
+  secondDialog.value = true;
   await custStore.updateCompanyName(originalName.value, changeToName.value).then((data)=>{
     if (data.data.errorMessage){
       alert(data.data.errorMessage);
@@ -77,6 +80,7 @@ const submitForm = async () =>{
       alert('更名成功!');
       emits('update:showForm', false);
     }
+    secondDialog.value = false;
   })
 }
 const handleOtherAction = async () => {

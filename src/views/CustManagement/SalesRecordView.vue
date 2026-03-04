@@ -394,6 +394,7 @@ const deleteCustomer = async () => {
   if (!result){
     return;
   }
+  secondDialog.value = true;
   console.log('Delete Sales Record:', selected.value[0]);
   await custStore.deleteRfq(selected.value[0]).then((data)=>{
     if (data.errorMessage){
@@ -404,6 +405,7 @@ const deleteCustomer = async () => {
       selected.value = [];
       init();
     }
+    secondDialog.value = false;
   })
 }
 const changeSalesName = () => {
@@ -503,6 +505,7 @@ const submitForm = async () => {
   console.log('送出的表單資料:', form.value);
   const Account = SessionStorage.getItem('Account');
   form.value.account = Account.account;
+  secondDialog.value = true;
   if (mode.value == '新增') {
     console.log('新增客戶資料:', form.value);
     await custStore.saveRfq(form).then((data) =>{
@@ -515,6 +518,7 @@ const submitForm = async () => {
       } else
         alert(data.errorMessage)
       showForm.value = false;
+      secondDialog.value = false;
     });
   } else if (mode.value == '修改'){
     console.log('修改客戶資料:', form.value);
@@ -529,6 +533,7 @@ const submitForm = async () => {
         init();
       }
       showForm.value = false;
+      secondDialog.value = false;
     });
   }
 };

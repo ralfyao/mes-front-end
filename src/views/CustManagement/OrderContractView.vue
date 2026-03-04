@@ -395,7 +395,7 @@
   </q-layout>
 </template>
 <script setup>
-// import block start
+//import block start
 import LoadingComponent from '@/components/LoadingComponent.vue';
 import {
     QIcon
@@ -446,6 +446,7 @@ const 單號 = ref('');
 const mode = ref('');
 const companyName = ref('');
 const errorMessage = ref('');
+const secondDialog = ref(false);
 const list = ref([]);
 const selected = ref([]);
 const selectedQuotation = ref([]);
@@ -598,6 +599,7 @@ const deleteCustomer = async () =>{
   }
   var result = confirm('您是否要刪除此筆訂單?');
   if (result){
+    secondDialog.value = true;
     await custStore.deleteSalesOrder(selected.value[0].單號).then((data)=>{
       console.log('data', data);
       if (data.data.errorMessage && data.data.errorMessage != ''){
@@ -701,6 +703,7 @@ const init = async () =>{
     orderListDetail:[],
     arListDetail:[],
   };
+  secondDialog.value = false;
 }
 const handleOtherAction = async () =>{
   const success = await myForm.value.validate()
@@ -717,6 +720,7 @@ const submitForm = async () =>{
   if (mode.value == '新增'){
     console.log('mode', mode.value)
     salesOrderForm.value.建檔 = Account.account;
+    secondDialog.value = true;
     await custStore.saveSalesOrder(salesOrderForm).then((data)=>{
       console.log('response', data);
       if (data.data.errorMessage){
@@ -725,10 +729,12 @@ const submitForm = async () =>{
         alert('寫入成功');
 
       }
+      secondDialog.value = false;
     });
   } else if (mode.value == '修改') {
     console.log('mode', mode.value)
     salesOrderForm.value.修改 = Account.account;
+    secondDialog.value = true;
     await custStore.updateSalesOrderForm(salesOrderForm).then((data)=>{
       console.log('response', data);
       if (data.data.errorMessage){
@@ -736,6 +742,7 @@ const submitForm = async () =>{
       } else {
         alert('修改成功');
       }
+      secondDialog.value = false;
     });
   }
   showForm.value = false;
@@ -785,6 +792,7 @@ const AddAR = () =>{
 }
 
 const updateCloseFlag = async () =>{//TO-DO
+  secondDialog.value = true;
   await custStore.updateCloseFlag(salesOrderForm.value.結案, salesOrderForm.value.單號).then((data)=>{
     console.log('close flag data', data)
     if (data.data.errorMessage){
@@ -797,6 +805,7 @@ const updateCloseFlag = async () =>{//TO-DO
         alert('已取消結案');
       showForm.value = false;
     }
+    secondDialog.value = false;
   });
 }
 
@@ -935,6 +944,7 @@ const carryToSalesOrder = () => {
 }
 
 const transferToShipOrder = async () => {
+  secondDialog.value = true;
   await custStore.transferToShipOrder(salesOrderForm).then((data)=>{
     console.log(data)
     if(data.data.errorMessage){
@@ -944,6 +954,7 @@ const transferToShipOrder = async () => {
       init();
       showForm.value = false;
     }
+    secondDialog.value = false;
   });
 }
 
@@ -964,6 +975,7 @@ const transferReceivable = async (item) =>{
   transferForm.orderListDetail = [];
   console.log('transferReceivable transferForm.value', transferForm);
   console.log('transferReceivable salesOrderForm.value after', salesOrderForm.value);
+  secondDialog.value = true;
   await custStore.transferReceivable(transferForm).then((data)=>{
     console.log(data);
     if (data.data.errorMessage){
@@ -972,6 +984,7 @@ const transferReceivable = async (item) =>{
       alert('轉單成功!');
       item.請款單號 = data.data.result;
     }
+    secondDialog.value = false;
   })
 }
 //function block end

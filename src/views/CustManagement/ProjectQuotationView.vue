@@ -53,10 +53,12 @@
       <QuotationView :form="quotationForm" :mode="mode" :preview="preview" :quono="selected.length ? selected[0].quono : ''" v-model:showForm="showForm"/>
     </q-dialog>
   </q-layout>
+  <LoadingComponent v-model="secondDialog"/>
 </template>
 <script setup>
 //import block start
 import QuotationView from '@/components/customer/quotation/QuotationView.vue';
+import LoadingComponent from '@/components/LoadingComponent.vue'
 import {
   QLayout
   , QPageContainer
@@ -72,6 +74,7 @@ import { useCustStore } from '@/composables/useCust';
 
 //variable block start
 const custStore = useCustStore();
+const secondDialog = ref(false);
 const showForm = ref(false);
 const preview = ref(false);
 const errorMessage = ref('');

@@ -103,6 +103,7 @@
       </q-card>
     </q-dialog>
   </q-layout>
+  <LoadingComponent v-model="secondDialog"/>
 </template>
 <script setup>
 // import block start
@@ -178,6 +179,7 @@ const data = ref({
   金額:0.0,
   detailList:[],
 });
+const secondDialog = ref(false);
 // variable block end
 
 // function block start
@@ -197,8 +199,10 @@ const close = () =>{
   showForm.value = false;
 }
 onMounted(async ()=>{
+  secondDialog.value = true;
   await arStore.getUnclosedARList().then((data)=>{
     list.value = data;
+    secondDialog.value = false;
   });
 })
 // function block end

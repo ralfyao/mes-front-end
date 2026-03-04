@@ -30,6 +30,7 @@
           2025 &copy; 營運管理系統
         </q-footer>
       </q-page-container>
+      <!--變更密碼表單-->
       <q-dialog v-model="showChangePasswordForm" persistent >
         <q-card  class="q-pa-md"  style="width: 400px; max-width: 80vw;">
           <q-card-section>
@@ -74,6 +75,7 @@
           </q-card-actions>
         </q-card>
       </q-dialog>
+      <LoadingComponent v-model="secondDialog" />
   </q-layout>
 </template>
 
@@ -89,6 +91,7 @@ import { useRouter } from 'vue-router'
 import SideMenu from '../components/SideMenu.vue'
 import { useCustStore } from '@/composables/useCust';
 import { useUserStore } from '@/composables/useUser'
+import LoadingComponent from '@/components/LoadingComponent.vue'
 
 export default {
   name: 'MainLayout',
@@ -103,7 +106,7 @@ export default {
     SideMenu,
     QFooter,
     QDialog,
-    QCard,QCardSection,QCardActions,QInput,QForm,
+    QCard,QCardSection,QCardActions,QInput,QForm,LoadingComponent,
   },
   setup () {
     const Account = SessionStorage.getItem('Account')
@@ -126,6 +129,7 @@ export default {
     if (!Account) {
       router.push('/login')
     }
+    const secondDialog = ref(false);
     const leftDrawerOpen = ref(true)
     const theCompany = ref({});
     const showChangePasswordForm = ref(false);
@@ -157,6 +161,7 @@ export default {
     }
 
     const submitForm = async () =>{
+      secondDialog.value = true;
       await userStore.changePassword(Account.account, newPassword.value).then((data)=>{
         if (data.data.errorMessage){
           alert(data.data.errorMessage);
@@ -169,6 +174,7 @@ export default {
           isPwd.value = true;
           closeForm();
         }
+        secondDialog.value = false;
       });
     }
 

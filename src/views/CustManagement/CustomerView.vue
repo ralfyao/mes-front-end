@@ -408,6 +408,7 @@ const setExpiry = async (flag) => {
   } else {
     form.value.停用日 = '';
   }
+  secondDialog.value = true;
   await custStore.updateCustomerExpiry(form.value).then((res) => {
     console.log('API回傳結果:', res);
     if (res.data.errorMessage == '') {
@@ -417,6 +418,7 @@ const setExpiry = async (flag) => {
       alert('操作失敗：' + res.data.errorMessage);
       errorMessage.value = res.data.errorMessage
     }
+    secondDialog.value = false;
   });
 }
 const init = async () =>{

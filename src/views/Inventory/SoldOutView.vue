@@ -295,6 +295,7 @@
       <SalesOrderDistributionView />
     </q-dialog>
   </q-layout>
+  <LoadingComponent v-model="secondDialog"/>
 </template>
 <script setup>
 //import block start
@@ -324,6 +325,7 @@ import dayjs from 'dayjs'
 //import block end
 
 //variable block start
+const secondDialog = ref(false);
 const exRateList    = ref([]);
 const companyFullName = ref('');
 const taxTypeList = ref([]);
@@ -545,6 +547,7 @@ const AddShipOrderDetail = () =>{
 }
 const submitForm = async () =>{
   console.log('submit form', form)
+  secondDialog.value = true;
   if (mode.value == '新增'){
     form.value.建檔 = SessionStorage.getItem('Account').account;
     await custStore.saveShipOrder(form).then((data)=>{
@@ -593,6 +596,7 @@ const getData = async () =>{
   await custStore.getShipOrderList().then((data)=>{
     list.value = data;
   });
+  secondDialog.value = false;
 }
 
 const deleteShippingOrder = async () =>{
@@ -600,6 +604,7 @@ const deleteShippingOrder = async () =>{
   if (!result)
     return;
   const delForm = selected.value[0]
+  secondDialog.value = true;
   await custStore.deleteShippingOrder(delForm).then((data)=>{
     if (data.data.errorMessage){
       alert(data.data.errorMessage)
