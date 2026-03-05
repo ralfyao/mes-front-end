@@ -54,6 +54,8 @@
                             />
                         </template>
                     </q-input>
+                    <q-select label="職務" v-model="form.position" :options="positionList" outlined dense emit-value map-options :rules="[val => !!val || '職務為必填欄位']" />
+                    <q-input v-model="form.empNo" ref="empNoRef" label="員工編號" outlined dense :rules="[val => !!val || '員工編號為必填欄位']"/>
                     <q-checkbox label="啟用" v-model="form.isActivate"  :readonly="readonly"  outlined dense/>
                     <q-checkbox label="寄件允許" v-model="form.isEmail"  :readonly="readonly"  outlined dense/>
                 </div>
@@ -81,6 +83,7 @@ import {
   , QCardSection
   , QCardActions
   , QCheckbox
+  , QSelect
   // , QInnerLoading
   , QInput,
   SessionStorage
@@ -101,6 +104,7 @@ const selected = ref([])
 const readonly = ref(false)
 const isPwd = ref(true)
 // const $q = useQuasar();
+const positionList = ref([]);
 const loading = ref(false)
 const columns = ref([
   { name: 'account', label: '帳號', align: 'left', field: 'account', sortable: true },
@@ -110,7 +114,7 @@ const columns = ref([
 ])
 const mode = ref('')
 const showForm = ref(false)
-const form = ref({ account: '', accountName: '', name: '', password: '', lastModifier: '', isActivate:false, isEmail:false })
+const form = ref({ account: '', accountName: '', name: '', password: '', lastModifier: '', isActivate:false, isEmail:false, position:'', empNo:'', })
 const modifier = SessionStorage.getItem('Account').account
 // 刪除使用者
 const deleteUser = async () => {
@@ -160,6 +164,8 @@ const openUserDialog = (type) => {
     form.value.password = user.password
     form.value.isActivate = user.isActivate
     form.value.isEmail = user.isEmail;
+    form.value.position = user.職務;
+    form.value.empNo = user.員工編號;
   } else {
     readonly.value = false
     form.value.account = ''
@@ -167,6 +173,8 @@ const openUserDialog = (type) => {
     form.value.password = ''
     form.value.isActivate = true;
     form.value.isEmail = false;
+    form.value.position = '';
+    form.value.empNo = '';
   }
 }
 // 送出新增或修改使用者的表單
@@ -189,6 +197,8 @@ async function submitForm () {
     lastModifier: modifier,
     isActivate:form.value.isActivate,
     isEmail:form.value.isEmail,
+    position:form.value.position,
+    empNo:form.value.empNo,
   }
   if (mode.value == '新增') {
     const msg = await userStore.addUser(user)
@@ -223,6 +233,9 @@ onMounted(async () => {
     errorMessage.value = '沒有使用者資料'
   }
   console.log('userList:', userList.value)
+  await userStore.getPositionList().then((data)=>{
+    positionList.value = data;
+  });
 })
 </script>
 <style lang="css">

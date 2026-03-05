@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import axios from 'axios'
 import { Constant } from './Constant'
+import { toRaw } from "vue";
 export const useUserStore = defineStore('user', {
   state: () => ({
     name: '',
@@ -85,10 +86,10 @@ export const useUserStore = defineStore('user', {
         return 'OK'
       }
     },
-    async getUserRoles() {
+    async getUserRoles(account) {
       const constant = Constant()
       console.log('APIUrl', constant.APIUrl)
-      const response = await axios.post(constant.APIUrl + 'api/GetUserRoles')
+      const response = await axios.post(constant.APIUrl + 'api/GetMenuFuncByAccount?account='+account)
       if (response.data.errorMessage !== '') {
         return []
       } else {
@@ -120,6 +121,45 @@ export const useUserStore = defineStore('user', {
         return response;
       }
       return null;
+    },
+    async getPositionList(){
+      const constant = Constant()
+      console.log('APIUrl', constant.APIUrl)
+      // console.log('user', user)
+      const response = await axios.get(constant.APIUrl + 'api/PositionList')
+      if (response !== null) {
+        return response.data.resultList;
+      }
+      return null;
+    },
+    async updateUserAuthList(account, authPrivList){
+      const constant = Constant();
+      const payload = toRaw(authPrivList.value);
+      console.log('APIUrl', constant.APIUrl)
+      console.log('account', account)
+      console.log('payload', payload);
+      const param = payload.map(item=>({
+        id:item.id,
+        職務:account?.職務??'',
+        高管:item.高管,
+        核准:item.核准,
+        編修:item.編修,
+        報表:item.報表,
+        輸出:item.輸出,
+        職務代理效期:item.職務代理效期,
+        機號:item.機號,
+        註記:item.註記,
+        menuID:item.menuID,
+        menuSubID:item.menuSubID,
+        menuSubUrl:'',
+        menuSubName:'',
+        createUser:'',
+      }));
+      console.log('param', param);
+      const response = await axios.post(constant.APIUrl + 'api/UpdateUserAuth', JSON.stringify(param), {
+        headers: { 'Content-Type': 'application/json' }
+      });
+      return response;
     },
     logout () {
       this.username = ''

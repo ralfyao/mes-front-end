@@ -477,8 +477,12 @@ const openQuotationList = () =>{
 }
 
 const getCustNo = async (country) =>{
-  console.log('country', country.國別)
-  await custStore.getCustNo(country.國別).then((data)=>{
+  console.log('country', country?.國別)
+  if (!country?.國別 || country?.國別 == ''){
+    alert('請先選擇國別!');
+    return;
+  }
+  await custStore.getCustNo(country?.國別).then((data)=>{
     if (data.data.errorMessage){
       alert(data.data.errorMessage);
     } else {

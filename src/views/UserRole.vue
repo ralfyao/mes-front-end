@@ -66,7 +66,7 @@
         </q-card>
       </q-dialog>
       <q-dialog v-model="showAuthorizeDialog" persistent>
-        <UserAuthorization />
+        <UserAuthorization v-model:showForm="showAuthorizeDialog" v-model:account="selectedUser.account" />
       </q-dialog>
       <LoadingComponent v-model="secondDialog"/>
     </q-layout>
@@ -116,7 +116,9 @@ const showAuthorizeDialog = ref(false);
 const closeWindow = () => {
   showEditDialog.value = false;
 };
-const editAuth = () =>{
+const editAuth = (row) =>{
+  selectedUser.value = row;
+  console.log('選中的使用者:', selectedUser.value);
   showAuthorizeDialog.value = true;
 }
 const saveRoles = async () => {

@@ -9,7 +9,6 @@
     virtual-scroll
     selection="single"
     v-model:selected="selected"
-    class="rounded-borders"
   ></q-table >
   <div class="row justify-start padding-top">
     <div class="padding-right">
