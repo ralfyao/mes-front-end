@@ -119,10 +119,20 @@ export default {
           }
           reset()
           const loginAccount = await thisuser.getUser(user)
-          SessionStorage.set('Account', loginAccount)
-          router.push('/dashboard')
+          await thisuser.getUserRoles(loginAccount.account).then((data)=>{
+            if (!data)
+            {
+              alert('擷取表單授權列表有誤，請洽系統人員');
+              return;
+            } else {
+              loginAccount.authList = data;
+              console.log('loginAccount',loginAccount);
+              SessionStorage.set('Account', loginAccount)
+              router.push('/dashboard')
+            }
+            loading.value = false
+          });
         }
-        loading.value = false
       } catch (error) {
         alert('登入有誤或伺服器無法連接');
         loading.value = false

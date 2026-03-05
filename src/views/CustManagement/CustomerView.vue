@@ -3,7 +3,7 @@
     <h5 class="no-wrap text-left">
       <div class="row justify-start padding-top">
         <div class="col-2 col-md-2">
-          <q-icon name="play_circle" size="30px" >客戶維護</q-icon>
+          <q-icon name="play_circle" size="30px" >{{ formName }}</q-icon>
         </div>
         <!-- <div class="row justify-start padding-top"> -->
           <div class="padding-right">
@@ -86,7 +86,7 @@
                     <q-input v-model="form.company" :readonly="readonly || preview" label="客戶全稱" outlined dense :rules="[val => !!val || '客戶全稱為必填欄位']"/>
                   </div>
                   <div class="col-1 col-md-1" style="max-width: 500px">
-                    <q-btn label="全稱更名" v-if="!(readonly || preview)" glossy color="brown" @click="changeCustName"/>
+                    <q-btn label="全稱更名" v-if="(auth && auth.高管) && !(readonly || preview)" glossy color="brown" @click="changeCustName"/>
                   </div>
                   <div class="col-3 col-md-3" style="max-width: 500px">
                     <q-input v-model="form.欄位2" :readonly="readonly || preview" label="客戶簡稱" outlined dense :rules="[val => !!val || '客戶簡稱為必填欄位']"/>
@@ -156,7 +156,7 @@
                     <IndustryCodeSelect :readonly="readonly || preview" v-model:industrycode="form.industrycode"/>
                   </div>
                   <div class="col-1 col-md-1" style="max-width: 750px">
-                    <q-btn color="orange" v-if="!(readonly || preview)" glossy label="業別管理" @click="openIndustryForm" />
+                    <q-btn color="orange" v-if="(auth && auth.高管) && !(readonly || preview)" glossy label="業別管理" @click="openIndustryForm" />
                   </div>
                 </div>
                 <div class="row q-col-gutter-md">
@@ -167,8 +167,8 @@
                     <q-input outlined dense label="停用日期" v-model="form.停用日" readonly/>
                    </div>
                    <div class="col-1 col-md-1" style="max-width: 750px">
-                    <q-btn label="停用" v-if="mode == '修改' && (form.停用日 === '' || form.停用日 === null)" @click="setExpiry('Y')" color="negative"/>&nbsp;
-                    <q-btn label="取消停用" v-if="mode == '修改' && (form.停用日 !== '' && form.停用日 !== null)"  color="primary" @click="setExpiry('N')"/>
+                    <q-btn label="停用" v-if="(auth && auth.高管) &&  mode == '修改' && (form.停用日 === '' || form.停用日 === null)" @click="setExpiry('Y')" color="negative"/>&nbsp;
+                    <q-btn label="取消停用" v-if="(auth && auth.高管) &&mode == '修改' && (form.停用日 !== '' && form.停用日 !== null)"  color="primary" @click="setExpiry('N')"/>
                    </div>
                    <div class="col-3 col-md-3" style="max-width: 750px">
                     <BankCodeSelect v-model:credibility="form.credibility"
@@ -323,6 +323,9 @@ import IndustryListForm from '@/components/customer/IndustryListForm.vue';
 //import block end
 
 //variable block start
+const formName = '客戶維護';
+const auth = ref({});
+const theUser = ref({});
 const showChangeNameForm = ref(false);
 const showSearchForm = ref(false);
 const loading = ref(false);
@@ -422,6 +425,9 @@ const setExpiry = async (flag) => {
   });
 }
 const init = async () =>{
+  theUser.value = SessionStorage.getItem('Account');
+  auth.value = theUser.value.authList.find((x)=>x.menuSubName == formName);
+  console.log('auth', auth.value);
   list.value = await custStore.getCustList() ;
   console.log('list.value', list.value)
   countryList.value = await custStore.getCountryList();
