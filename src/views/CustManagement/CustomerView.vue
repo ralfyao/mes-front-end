@@ -95,7 +95,7 @@
                     <q-input v-model="form.正航編號" :readonly="readonly || preview" label="客戶編號" outlined dense />
                   </div>
                   <div class="col-1 col-md-1" style="max-width: 500px">
-                    <q-btn v-if="form.正航編號 == '' && !(readonly || preview)" label="取號" glossy color="orange" @click="getCustNo(form.country)"/>
+                    <q-btn v-if="(auth && auth.高管) && form.正航編號 == '' && !(readonly || preview)" label="取號" glossy color="orange" @click="getCustNo(form.country)"/>
                   </div>
                 </div>
                 <div class="row q-col-gutter-md">
