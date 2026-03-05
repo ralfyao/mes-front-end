@@ -1,8 +1,29 @@
 <template>
     <!-- <q-page class="q-pa-md"> -->
     <q-layout class="q-pa-md padding  q-gutter-sm">
-        <h5 class="text-left">
-            <q-icon name="play_circle" size="30px" >使用者列表</q-icon>
+        <h5 class="row justify-start padding-top text-left">
+            <div class="col-2 col-md-2">
+              <q-icon name="play_circle" size="30px" >使用者列表</q-icon>
+            </div>
+            <div class="padding-right">
+              <q-btn color="primary" class="padding-right"
+                       glossy @click="openUserDialog('新增')"
+                       :loading="loading">新增使用者</q-btn>
+            </div>
+            <div class="padding-right">
+              <q-btn color="info" class="padding-right"
+                       glossy @click="openUserDialog('修改')"
+                       :loading="loading">修改使用者</q-btn>
+            </div>
+            <div class="padding-right">
+              <q-btn color="red" class="padding-right"
+                       glossy @click="deleteUser"
+                       :loading="loading">刪除使用者</q-btn>
+            </div>
+            <div class="padding-right">
+              <q-btn color="accent" class="padding-right" glossy @click="openAcntPwdList"
+                       :loading="loading">帳號密碼管理</q-btn>
+            </div>
         </h5>
         <q-page-container>
             <q-page>
@@ -16,21 +37,7 @@
                 selection="single"
                 v-model:selected="selected"
             ></q-table >
-            <div class="row justify-start padding-top">
-                <div class="padding-right">
-                <q-btn color="primary" class="padding-right"
-                       glossy @click="openUserDialog('新增')"
-                       :loading="loading">新增使用者</q-btn>
-                </div>
-                <div class="padding-right">
-                 <q-btn color="info" class="padding-right"
-                       glossy @click="openUserDialog('修改')"
-                       :loading="loading">修改使用者</q-btn>
-                </div>
-                <q-btn color="red" class="padding-right"
-                       glossy @click="deleteUser"
-                       :loading="loading">刪除使用者</q-btn>
-            </div>
+
             <h5 class="text-left text-red">{{ errorMessage }}</h5>
             </q-page>
         </q-page-container>
@@ -66,6 +73,12 @@
                 </q-card-actions>
             </q-card>
         </q-dialog>
+        <!--帳號密碼管理頁面-->
+        <q-dialog v-model="showAcntPwdForm" persistent >
+          <q-card class="q-pa-md"  style="width: 700px; max-width: 80vw;">
+
+          </q-card>
+        </q-dialog>
         <LoadingComponent v-model="secondDialog"/>
     </q-layout>
     <!-- </q-page> -->
@@ -92,6 +105,7 @@ import { ref, onMounted } from 'vue'
 import { useUserStore } from '@/composables/useUser.js'
 import LoadingComponent from '@/components/LoadingComponent.vue'
 // 定義變數
+const showAcntPwdForm = ref(false);
 const errorMessage = ref('')
 const userList = ref([])
 const userStore = useUserStore()
@@ -137,6 +151,7 @@ const deleteUser = async () => {
     if (msg !== 'OK') {
       errorMessage.value = msg
     } else {
+      alert('刪除完成!');
       errorMessage.value = ''
       userList.value = await userStore.getAllUsers()
       selected.value = []
