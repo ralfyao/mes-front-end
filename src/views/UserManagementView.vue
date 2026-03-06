@@ -75,9 +75,20 @@
         </q-dialog>
         <!--帳號密碼管理頁面-->
         <q-dialog v-model="showAcntPwdForm" persistent >
-          <q-card class="q-pa-md"  style="width: 700px; max-width: 80vw;">
-
-          </q-card>
+          <AccountPasswordManagement v-model:showForm="showAcntPwdForm"/>
+          <!-- <q-card class="q-pa-md"  style="width: 1000px; max-width: 80vw;">
+            <q-card-section>
+              <q-card-section>
+                <div class="text-h4">
+                  帳號密碼管理
+                </div>
+                <q-card-actions align="right">
+                  <q-btn flat color="red" label="EXIT" @click="close"/>
+                  <q-btn flat color="blue" label="送出" @click="handleOtherAction"/>
+                </q-card-actions>
+              </q-card-section>
+            </q-card-section>
+          </q-card> -->
         </q-dialog>
         <LoadingComponent v-model="secondDialog"/>
     </q-layout>
@@ -104,6 +115,7 @@ import {
 import { ref, onMounted } from 'vue'
 import { useUserStore } from '@/composables/useUser.js'
 import LoadingComponent from '@/components/LoadingComponent.vue'
+import AccountPasswordManagement from '@/components/userrole/AccountPasswordManagement.vue'
 // 定義變數
 const showAcntPwdForm = ref(false);
 const errorMessage = ref('')
@@ -252,6 +264,13 @@ onMounted(async () => {
     positionList.value = data;
   });
 })
+const openAcntPwdList = () =>{
+  showAcntPwdForm.value = true;
+}
+
+// const close = () =>{
+//   showAcntPwdForm.value = false;
+// }
 </script>
 <style lang="css">
 .padding{

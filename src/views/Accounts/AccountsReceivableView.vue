@@ -19,14 +19,11 @@
             <q-btn color="red" class="padding-right"
               glossy @click="deleteAR"
               :loading="loading">刪除立帳單</q-btn>&nbsp;
-        <!-- </div> -->
-        <!-- <div class="padding-right"> -->
-
+        </div>
         <div v-if="(hasAllAuth ||(auth && auth.查詢))">
           <q-btn color="green" class="padding-right"
               glossy @click="openARDialog('預覽')"
                 :loading="loading">立帳單預覽</q-btn>&nbsp;
-        </div>
         </div>
         <div v-if="(hasAllAuth ||(auth && auth.輸出))">
             <!-- <div class="padding-right"> -->
