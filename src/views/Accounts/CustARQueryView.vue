@@ -3,7 +3,7 @@
     <h5 class="no-wrap text-left">
       <div class="row justify-start padding-top">
         <div class="col-3 col-md3">
-          <q-icon name="play_circle" size="30px" >客戶未收查詢</q-icon>
+          <q-icon name="play_circle" size="30px" >{{formName}}</q-icon>
         </div>
         <div class="padding-right">
           <q-btn color="green" class="padding-right"
@@ -119,12 +119,16 @@ import {
   QCardSection,
   QCard,
   QForm,
-  QCardActions,
+  QCardActions,SessionStorage,
 } from 'quasar'
 import { ref, onMounted } from 'vue'
 // import block end
 
 // variable block start
+const formName = '客戶未收查詢';
+const auth = ref({});
+const hasAllAuth = ref(false);
+const theUser = ref({});
 const arStore = useARStore();
 const list = ref([]);
 const listAll = ref([]);
@@ -204,6 +208,12 @@ onMounted(async ()=>{
     list.value = data;
     secondDialog.value = false;
   });
+
+  theUser.value = SessionStorage.getItem('Account');
+  auth.value = theUser.value.authList.find((x)=>x.menuSubName == formName);
+  hasAllAuth.value =
+      (!auth.value.高管 && !auth.value.核准 && !auth.value.編修 && !auth.value.報表 && !auth.value.輸出);
+  console.log('auth', auth.value);
 })
 // function block end
 </script>

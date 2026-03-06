@@ -3,27 +3,44 @@
     <h5 class="no-wrap text-left">
       <div class="row justify-start padding-top">
         <div class="col-2 col-md-2">
-          <q-icon name="play_circle" size="30px" >專案報價</q-icon>
+          <q-icon name="play_circle" size="30px" >{{formName}}</q-icon>
         </div>
-        <div class="padding-right">
-          <q-btn color="primary" class="padding-right"
-            glossy @click="openCustomerDialog('新增')"
-            :loading="loading">新增報價單</q-btn>
+        <div v-if="(hasAllAuth ||(auth && auth.編修))">
+          <!-- <div class="padding-right"> -->
+            <q-btn color="primary" class="padding-right"
+              glossy @click="openCustomerDialog('新增')"
+              :loading="loading">新增報價單</q-btn>&nbsp;
+          <!-- </div> -->
+          <!-- <div class="padding-right"> -->
+            <q-btn color="info" class="padding-right"
+              glossy @click="openCustomerDialog('修改')"
+              :loading="loading">修改報價單</q-btn>&nbsp;
+          <!-- </div> -->
+          <!-- <div class="padding-right"> -->
+            <q-btn color="red" class="padding-right"
+              glossy @click="deleteQuotation"
+              :loading="loading">刪除報價單</q-btn>&nbsp;
+          <!-- </div> -->
         </div>
-        <div class="padding-right">
-          <q-btn color="info" class="padding-right"
-            glossy @click="openCustomerDialog('修改')"
-            :loading="loading">修改報價單</q-btn>
-        </div>
-        <div class="padding-right">
-          <q-btn color="red" class="padding-right"
-            glossy @click="deleteQuotation"
-            :loading="loading">刪除報價單</q-btn>
-        </div>
-        <div class="padding-right">
+
+        <div v-if="(hasAllAuth ||(auth && auth.查詢))">
+        <!-- <div class="padding-right"> -->
           <q-btn color="green" class="padding-right"
             glossy @click="openCustomerDialog('預覽')"
-            :loading="loading">預覽報價單</q-btn>
+            :loading="loading">預覽報價單</q-btn>&nbsp;
+        </div>
+
+        <div v-if="(hasAllAuth ||(auth && auth.輸出))">
+            <!-- <div class="padding-right"> -->
+            <q-btn color="grey" class="padding-right"
+                glossy
+                :loading="loading">列印</q-btn> &nbsp;
+            <!-- </div> -->
+            <!-- <div class="padding-right"> -->
+            <q-btn color="grey" class="padding-right"
+                glossy
+                :loading="loading">列印(英)</q-btn>
+            <!-- </div> -->
         </div>
       </div>
       <div class="row justify-start padding-top">
@@ -67,12 +84,17 @@ import {
   , QBtn
   , QDialog
   , QIcon
+  , SessionStorage
 } from 'quasar'
 import { ref, onMounted } from 'vue'
 import { useCustStore } from '@/composables/useCust';
 //import block end
 
 //variable block start
+const formName = '專案報價';
+const auth = ref({});
+const hasAllAuth = ref(false);
+const theUser = ref({});
 const custStore = useCustStore();
 const secondDialog = ref(false);
 const showForm = ref(false);
@@ -210,6 +232,11 @@ onMounted(async ()=>{
   await custStore.getQuotationList('').then((data)=>{
     list.value = data;
   });
+  theUser.value = SessionStorage.getItem('Account');
+  auth.value = theUser.value.authList.find((x)=>x.menuSubName == formName);
+  console.log('prjquo auth', auth.value)
+  hasAllAuth.value =
+      (!auth.value.高管 && !auth.value.核准 && !auth.value.編修 && !auth.value.報表 && !auth.value.輸出);
 })
 //function block end
 </script>

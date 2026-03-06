@@ -69,6 +69,13 @@
               </q-td>
             </template>
 
+            <!-- 輸出欄位 -->
+            <template v-slot:body-cell-查詢="props">
+              <q-td :props="props">
+                <q-checkbox v-model="props.row.查詢" />
+              </q-td>
+            </template>
+
             <!-- 註記欄位 -->
             <template v-slot:body-cell-註記="props">
               <q-td :props="props">
@@ -188,6 +195,7 @@ const columns = ref([
   { name: '編修', label: '編修', field: '編修', align: 'left', sortable: true  },
   { name: '報表', label: '報表', field: '報表', align: 'left', sortable: true  },
   { name: '輸出', label: '輸出', field: '輸出', align: 'left', sortable: true  },
+  { name: '查詢', label: '查詢', field: '查詢', align: 'left', sortable: true  },
   { name: '註記', label: '註記', field: '註記', align: 'left', sortable: true  },
   { name: '職務代理效期', label: '職務代理效期', align: 'left', field: '職務代理效期', sortable: true },
   { name: '機號', label: '機號', align: 'left', field: '機號', sortable: true }

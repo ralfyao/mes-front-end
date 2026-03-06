@@ -2,28 +2,44 @@
   <q-layout class="q-pa-md padding  q-gutter-sm">
     <h5 class="no-wrap text-left">
       <div class="row justify-start padding-top">
-        <div class="col-3 col-md-3">
-          <q-icon name="play_circle" size="30px" >客戶詢問函</q-icon>
+        <div class="col-2 col-md-2">
+          <q-icon name="play_circle" size="30px" >{{ formName }}</q-icon>
         </div>
-        <div class="padding-right">
+        <div v-if="(hasAllAuth ||(auth && auth.編修))">
+        <!-- <div class="padding-right"> -->
           <q-btn color="primary" class="padding-right"
                        glossy @click="openCustomerDialog('新增')"
-                       :loading="loading">新增詢問函</q-btn>
-        </div>
-        <div class="padding-right">
+                       :loading="loading">新增詢問函</q-btn>&nbsp;
+        <!-- </div> -->
+        <!-- <div class="padding-right"> -->
           <q-btn color="info" class="padding-right"
                        glossy @click="openCustomerDialog('修改')"
-                       :loading="loading">修改詢問函</q-btn>
-        </div>
-        <div class="padding-right">
+                       :loading="loading">修改詢問函</q-btn>&nbsp;
+        <!-- </div> -->
+        <!-- <div class="padding-right"> -->
           <q-btn color="red" class="padding-right"
                        glossy @click="deleteCustomer"
-                       :loading="loading">刪除詢問函</q-btn>
+                       :loading="loading">刪除詢問函</q-btn>&nbsp;
         </div>
-        <div class="padding-right">
+        <div v-if="(hasAllAuth ||(auth && auth.查詢))">
+        <!-- </div> -->
+        <!-- <div class="padding-right"> -->
           <q-btn color="green" class="padding-right"
                        glossy @click="openCustomerDialog('預覽')"
-                       :loading="loading">預覽詢問函</q-btn>
+                       :loading="loading">預覽詢問函</q-btn>&nbsp;
+        <!-- </div> -->
+        </div>
+        <div v-if="(hasAllAuth ||(auth && auth.輸出))">
+            <!-- <div class="padding-right"> -->
+              <q-btn color="grey" class="padding-right"
+                glossy
+                :loading="loading">列印</q-btn> &nbsp;
+            <!-- </div> -->
+            <!-- <div class="padding-right"> -->
+              <q-btn color="grey" class="padding-right"
+                glossy
+                :loading="loading">列印(英)</q-btn>
+            <!-- </div> -->
         </div>
       </div>
       <div class="row justify-start padding-top">
@@ -65,7 +81,7 @@
                 <q-input v-model="form.rfqno" :readonly="true" label="詢問函號" outlined dense/>
               </div>
               <div class="col-6 col-md-6" style="max-width: 500px">
-                <q-input filled dense :readonly="preview" v-model="form.rfqdate" label="洽談日期" mask="####/##/##" :rules="[val => !!val || '洽談日期為必填欄位']">
+                <q-input filled dense :readonly="preview" v-model="form.rfqdate" label="洽談日期" mask="####/##/##" :rules="[val =>  !!val || '洽談日期為必填欄位']">
                   <template v-slot:append>
                     <q-icon name="event" class="cursor-pointer">
                       <q-popup-proxy cover v-model="showDatePopup" transition-show="scale" transition-hide="scale">
@@ -132,7 +148,7 @@
                 <q-select v-model="form.ranking" :readonly="preview" label="成交率"
                   :options="rankginList"
                   option-value="ratio"
-                  option-label="ranking"  outlined dense :rules="[val => !!val || '成交率為必填欄位']"
+                  option-label="ranking"  outlined dense :rules="[val =>  !!val || '成交率為必填欄位']"
                 ></q-select>
               </div>
               <div class="col-6 col-md-6" style="max-width: 500px">
@@ -160,7 +176,7 @@
                     :options="salesList"
                             option-value="工號"
                             option-label="工號" @update:model-value="changeSalesName"
-                            :rules="[val => !!val || '業務編號為必填欄位']"
+                            :rules="[val =>  !!val || '業務編號為必填欄位']"
                             ></q-select>
                 <label class="text-red text-center" style=" font-size: 24px;">
                   {{ salesname }}
@@ -241,6 +257,10 @@ import QuotationView from '@/components/customer/quotation/QuotationView.vue';
 import dayjs  from 'dayjs';
 import IndustryCodeSelect from '@/components/customer/IndustryCodeSelect.vue';
 //變數
+const formName = '客戶詢問函';
+const auth = ref({});
+const hasAllAuth = ref(false);
+const theUser = ref({});
 const myForm = ref(null);
 const secondDialog = ref(false)
 const custStore = useCustStore();
@@ -490,7 +510,11 @@ const init = async () => {
   agentOptions.value = await custStore.getAgentOptions();
   countryList.value = await custStore.getCountryList();
   // console.log('Fetched Company List:', companyList.value);
-  console.log('Fetched Sales List:', salesList.value);
+  theUser.value = SessionStorage.getItem('Account');
+  auth.value = theUser.value.authList.find((x)=>x.menuSubName == formName);
+  console.log('prjquo auth', auth.value)
+  hasAllAuth.value =
+      (!auth.value.高管 && !auth.value.核准 && !auth.value.編修 && !auth.value.報表 && !auth.value.輸出);
   // console.log('Fetched Industry List:', industryList.value);
 }
 const handleOtherAction = async () => {

@@ -3,28 +3,43 @@
     <h5 class="no-wrap text-left">
       <div class="row justify-start padding-top">
         <div class="col-2 col-md-2">
-          <q-icon name="play_circle" size="30px" >應收立帳</q-icon>
+          <q-icon name="play_circle" size="30px" >{{formName}}</q-icon>
         </div>
-        <div class="padding-right">
+        <div v-if="(hasAllAuth ||(auth && auth.編修))">
+        <!-- <div class="padding-right"> -->
           <q-btn color="primary" class="padding-right"
-            glossy @click="openARDialog('新增')"
-            :loading="loading">新增立帳單</q-btn>
-        </div>
-        <div class="padding-right">
+            glossy @click="openARDialog('新增')" :loading="loading">新增立帳單</q-btn>&nbsp;
+        <!-- </div> -->
+        <!-- <div class="padding-right"> -->
           <q-btn color="info" class="padding-right"
             glossy @click="openARDialog('修改')"
-            :loading="loading">修改立帳單</q-btn>
-        </div>
-        <div class="padding-right">
+            :loading="loading">修改立帳單</q-btn>&nbsp;
+        <!-- </div> -->
+        <!-- <div class="padding-right"> -->
             <q-btn color="red" class="padding-right"
               glossy @click="deleteAR"
-              :loading="loading">刪除立帳單</q-btn>
-        </div>
-        <div class="padding-right">
+              :loading="loading">刪除立帳單</q-btn>&nbsp;
+        <!-- </div> -->
+        <!-- <div class="padding-right"> -->
+
+        <div v-if="(hasAllAuth ||(auth && auth.查詢))">
           <q-btn color="green" class="padding-right"
               glossy @click="openARDialog('預覽')"
-                :loading="loading">立帳單預覽</q-btn>
+                :loading="loading">立帳單預覽</q-btn>&nbsp;
         </div>
+        </div>
+        <div v-if="(hasAllAuth ||(auth && auth.輸出))">
+            <!-- <div class="padding-right"> -->
+              <q-btn color="grey" class="padding-right"
+                glossy
+                :loading="loading">列印</q-btn> &nbsp;
+            <!-- </div> -->
+            <!-- <div class="padding-right"> -->
+              <q-btn color="grey" class="padding-right"
+                glossy
+                :loading="loading">列印(英)</q-btn>
+            <!-- </div> -->
+          </div>
       </div>
       <div class="row justify-start padding-top">
         <div class="col-6 col-md-6"  style="max-width: 500px">
@@ -250,6 +265,10 @@ import { ref, onMounted } from 'vue'
 // import block end
 
 //variable block start
+const formName = '應收立帳';
+const auth = ref({});
+const hasAllAuth = ref(false);
+const theUser = ref({});
 const columns =
 [
   { name: '日期', label: '日期', align: 'left', field: '日期', sortable: true },
@@ -542,6 +561,12 @@ const init = async () =>{
     list.value = data;
   })
   secondDialog.value = false;
+
+  theUser.value = SessionStorage.getItem('Account');
+  auth.value = theUser.value.authList.find((x)=>x.menuSubName == formName);
+  hasAllAuth.value =
+      (!auth.value.高管 && !auth.value.核准 && !auth.value.編修 && !auth.value.報表 && !auth.value.輸出);
+  console.log('auth', auth.value);
 }
 
 const calcExRateAmount = (item) =>{

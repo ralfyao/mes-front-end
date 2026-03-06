@@ -5,25 +5,41 @@
         <div class="col-2 col-md-2">
           <q-icon name="play_circle" size="30px" >其他收入</q-icon>
         </div>
-        <div class="padding-right">
+        <div v-if="(hasAllAuth ||(auth && auth.編修))">
+        <!-- <div class="padding-right"> -->
           <q-btn color="primary" class="padding-right"
             glossy @click="openARDialog('新增')"
-            :loading="loading">新增其他收入</q-btn>
-        </div>
-        <div class="padding-right">
+            :loading="loading">新增其他收入</q-btn>&nbsp;
+        <!-- </div> -->
+        <!-- <div class="padding-right"> -->
           <q-btn color="info" class="padding-right"
             glossy @click="openARDialog('修改')"
-            :loading="loading">修改其他收入</q-btn>
-        </div>
-        <div class="padding-right">
+            :loading="loading">修改其他收入</q-btn>&nbsp;
+        <!-- </div> -->
+        <!-- <div class="padding-right"> -->
             <q-btn color="red" class="padding-right"
               glossy @click="deleteAR"
-              :loading="loading">刪除其他收入</q-btn>
+              :loading="loading">刪除其他收入</q-btn>&nbsp;
+        <!-- </div> -->
         </div>
-        <div class="padding-right">
+
+        <div v-if="(hasAllAuth ||(auth && auth.查詢))">
+        <!-- <div class="padding-right"> -->
           <q-btn color="green" class="padding-right"
               glossy @click="openARDialog('預覽')"
-                :loading="loading">其他收入預覽</q-btn>
+                :loading="loading">其他收入預覽</q-btn> &nbsp;
+        </div>
+        <div v-if="(hasAllAuth ||(auth && auth.輸出))">
+            <!-- <div class="padding-right"> -->
+              <q-btn color="grey" class="padding-right"
+                glossy
+                :loading="loading">列印</q-btn> &nbsp;
+            <!-- </div> -->
+            <!-- <div class="padding-right"> -->
+              <q-btn color="grey" class="padding-right"
+                glossy
+                :loading="loading">列印(英)</q-btn>
+            <!-- </div> -->
         </div>
       </div>
       <div class="row justify-start padding-top">
@@ -63,7 +79,7 @@
             <!--日期、單號、客戶編號、客戶簡稱、傳票-->
             <div class="row q-col-gutter-md">
               <div class="col-2 col-md-2" style="max-width: 300px">
-                <q-input outlined dense v-model="form.日期" label="日期" :readonly="readonly || preview" mask="####/##/##" :rules="[val => !!val || '日期為必填欄位']">
+                <q-input outlined dense v-model="form.日期" label="日期" :readonly="readonly || preview" mask="####/##/##" :rules="[val =>  !!val || '日期為必填欄位']">
                   <template v-slot:append>
                     <q-icon name="event" class="cursor-pointer">
                       <q-popup-proxy cover v-model="showDatePopup" transition-show="scale" transition-hide="scale">
@@ -115,7 +131,7 @@
                 option-value="currency"
                 option-label="currency" :readonly="readonly || preview"
                 @update:model-value="changeExRate" emit-value map-options
-                 :rules="[val => !preview && !!val || '幣別為必填欄位']"/>
+                 :rules="[val => !preview &&  !!val || '幣別為必填欄位']"/>
               </div>
               <div class="col-2 col-md-2" style="max-width: 300px">
                 <q-select outlined dense  label="匯率"
@@ -269,6 +285,10 @@ import { useARStore } from '@/composables/useAR';
 // import block end
 
 // variable block start
+const formName = '客戶未收查詢';
+const auth = ref({});
+const hasAllAuth = ref(false);
+const theUser = ref({});
 const secondDialog = ref(false);
 const 單號 = ref('');
 const myForm = ref(null);
@@ -560,6 +580,12 @@ const init = async () =>{
     detailList:[],
   };
   secondDialog.value = false;
+
+  theUser.value = SessionStorage.getItem('Account');
+  auth.value = theUser.value.authList.find((x)=>x.menuSubName == formName);
+  hasAllAuth.value =
+      (!auth.value.高管 && !auth.value.核准 && !auth.value.編修 && !auth.value.報表 && !auth.value.輸出);
+  console.log('auth', auth.value);
 }
 
 const updateCloseFlag = () =>{

@@ -5,31 +5,48 @@
         <div class="col-2 col-md-2">
           <q-icon name="play_circle" size="30px" >{{ formName }}</q-icon>
         </div>
+        <!-- <div class="col-10 col-md-10"> -->
         <!-- <div class="row justify-start padding-top"> -->
-          <div class="padding-right">
-            <q-btn color="primary" class="padding-right"
-              glossy @click="openCustomerDialog('新增')"
-                :loading="loading">新增客戶</q-btn>
+          <div v-if="(hasAllAuth ||(auth && auth.編修))">
+            <!-- <div class="padding-right"> -->
+              <q-btn color="primary" class="padding-right"
+                glossy @click="openCustomerDialog('新增')"
+                  :loading="loading">新增客戶</q-btn>&nbsp;
+            <!-- </div> -->
+            <!-- <div class="padding-right"> -->
+              <q-btn color="info" class="padding-right"
+                glossy @click="openCustomerDialog('修改')"
+                :loading="loading">修改客戶</q-btn>&nbsp;
+            <!-- </div> -->
+            <!-- <div class="padding-right"> -->
+              <q-btn color="red" class="padding-right"
+                glossy @click="deleteCustomer"
+                :loading="loading">刪除客戶</q-btn>&nbsp;
+            <!-- </div> -->
           </div>
-          <div class="padding-right">
-            <q-btn color="info" class="padding-right"
-              glossy @click="openCustomerDialog('修改')"
-              :loading="loading">修改客戶</q-btn>
-          </div>
-          <div class="padding-right">
-            <q-btn color="red" class="padding-right"
-              glossy @click="deleteCustomer"
-              :loading="loading">刪除客戶</q-btn>
-          </div>
-          <div class="padding-right">
+          <div v-if="(hasAllAuth ||(auth && auth.查詢))">
+          <!-- <div class="padding-right"> -->
             <q-btn color="green" class="padding-right"
               glossy @click="openCustomerDialog('預覽')"
-                :loading="loading">客戶預覽</q-btn>
-          </div>
-          <div class="padding-right">
+                :loading="loading">客戶預覽</q-btn>&nbsp;
+          <!-- </div> -->
+          <!-- <div class="padding-right"> -->
             <q-btn color="blue" class="padding-right"
               glossy @click="openSearchDialog"
-                :loading="loading">客戶搜尋</q-btn>
+                :loading="loading">客戶搜尋</q-btn>&nbsp;
+          <!-- </div> -->
+          </div>
+          <div v-if="(hasAllAuth ||(auth && auth.輸出))">
+            <!-- <div class="padding-right"> -->
+              <q-btn color="grey" class="padding-right"
+                glossy
+                :loading="loading">列印</q-btn> &nbsp;
+            <!-- </div> -->
+            <!-- <div class="padding-right"> -->
+              <q-btn color="grey" class="padding-right"
+                glossy
+                :loading="loading">列印(英)</q-btn>
+            <!-- </div> -->
           </div>
         <!-- </div> -->
       </div>
@@ -83,19 +100,19 @@
             <q-card-section>
                 <div class="row q-col-gutter-md">
                   <div class="col-5 col-md-5" style="max-width: 600px">
-                    <q-input v-model="form.company" :readonly="readonly || preview" label="客戶全稱" outlined dense :rules="[val => !!val || '客戶全稱為必填欄位']"/>
+                    <q-input v-model="form.company" :readonly="readonly || preview" label="客戶全稱" outlined dense :rules="[val =>  !!val || '客戶全稱為必填欄位']"/>
                   </div>
                   <div class="col-1 col-md-1" style="max-width: 500px">
-                    <q-btn label="全稱更名" v-if="(auth && auth.高管) && !(readonly || preview)" glossy color="brown" @click="changeCustName"/>
+                    <q-btn label="全稱更名" v-if="(hasAllAuth || (auth && auth.高管)) && !(readonly || preview)" glossy color="brown" @click="changeCustName"/>
                   </div>
                   <div class="col-3 col-md-3" style="max-width: 500px">
-                    <q-input v-model="form.欄位2" :readonly="readonly || preview" label="客戶簡稱" outlined dense :rules="[val => !!val || '客戶簡稱為必填欄位']"/>
+                    <q-input v-model="form.欄位2" :readonly="readonly || preview" label="客戶簡稱" outlined dense :rules="[val =>  !!val || '客戶簡稱為必填欄位']"/>
                   </div>
                   <div class="col-2 col-md-2" style="max-width: 500px">
                     <q-input v-model="form.正航編號" :readonly="readonly || preview" label="客戶編號" outlined dense />
                   </div>
                   <div class="col-1 col-md-1" style="max-width: 500px">
-                    <q-btn v-if="(auth && auth.高管) && form.正航編號 == '' && !(readonly || preview)" label="取號" glossy color="orange" @click="getCustNo(form.country)"/>
+                    <q-btn v-if="(hasAllAuth ||(auth && auth.高管)) && form.正航編號 == '' && !(readonly || preview)" label="取號" glossy color="orange" @click="getCustNo(form.country)"/>
                   </div>
                 </div>
                 <div class="row q-col-gutter-md">
@@ -114,10 +131,10 @@
                 </div>
                 <div class="row q-col-gutter-md">
                   <div class="col-6 col-md-6" style="max-width: 750px">
-                    <q-input v-model="form.address" :readonly="readonly || preview" label="營業地址" outlined dense :rules="[val => !!val || '營業地址為必填欄位']"/>
+                    <q-input v-model="form.address" :readonly="readonly || preview" label="營業地址" outlined dense :rules="[val =>  !!val || '營業地址為必填欄位']"/>
                   </div>
                   <div class="col-6 col-md-6" style="max-width: 750px">
-                    <q-input v-model="form.daddress" :readonly="readonly || preview" label="寄件地址" outlined dense :rules="[val => !!val || '寄件地址為必填欄位']"/>
+                    <q-input v-model="form.daddress" :readonly="readonly || preview" label="寄件地址" outlined dense :rules="[val =>  !!val || '寄件地址為必填欄位']"/>
                   </div>
                 </div>
                 <div class="row q-col-gutter-md">
@@ -156,7 +173,7 @@
                     <IndustryCodeSelect :readonly="readonly || preview" v-model:industrycode="form.industrycode"/>
                   </div>
                   <div class="col-1 col-md-1" style="max-width: 750px">
-                    <q-btn color="orange" v-if="(auth && auth.高管) && !(readonly || preview)" glossy label="業別管理" @click="openIndustryForm" />
+                    <q-btn color="orange" v-if="(hasAllAuth ||(auth && auth.高管)) && !(readonly || preview)" glossy label="業別管理" @click="openIndustryForm" />
                   </div>
                 </div>
                 <div class="row q-col-gutter-md">
@@ -167,8 +184,8 @@
                     <q-input outlined dense label="停用日期" v-model="form.停用日" readonly/>
                    </div>
                    <div class="col-1 col-md-1" style="max-width: 750px">
-                    <q-btn label="停用" v-if="(auth && auth.高管) &&  mode == '修改' && (form.停用日 === '' || form.停用日 === null)" @click="setExpiry('Y')" color="negative"/>&nbsp;
-                    <q-btn label="取消停用" v-if="(auth && auth.高管) &&mode == '修改' && (form.停用日 !== '' && form.停用日 !== null)"  color="primary" @click="setExpiry('N')"/>
+                    <q-btn label="停用" v-if="(hasAllAuth ||(auth && auth.高管)) &&  mode == '修改' && (form.停用日 === '' || form.停用日 === null)" @click="setExpiry('Y')" color="negative"/>&nbsp;
+                    <q-btn label="取消停用" v-if="(hasAllAuth ||(auth && auth.高管)) &&mode == '修改' && (form.停用日 !== '' && form.停用日 !== null)"  color="primary" @click="setExpiry('N')"/>
                    </div>
                    <div class="col-3 col-md-3" style="max-width: 750px">
                     <BankCodeSelect v-model:credibility="form.credibility"
@@ -248,7 +265,7 @@
                         :options="salesList"
                         option-value="工號"
                         option-label="工號" @update:model-value="changeSalesName(item)"
-                        :rules="[val => !!val || '業務編號為必填欄位']"
+                        :rules="[val =>   !!val || '業務編號為必填欄位']"
                         emit-value
                         map-options
                       />
@@ -325,6 +342,7 @@ import IndustryListForm from '@/components/customer/IndustryListForm.vue';
 //variable block start
 const formName = '客戶維護';
 const auth = ref({});
+const hasAllAuth = ref(false);
 const theUser = ref({});
 const showChangeNameForm = ref(false);
 const showSearchForm = ref(false);
@@ -427,6 +445,8 @@ const setExpiry = async (flag) => {
 const init = async () =>{
   theUser.value = SessionStorage.getItem('Account');
   auth.value = theUser.value.authList.find((x)=>x.menuSubName == formName);
+  hasAllAuth.value =
+      (!auth.value.高管 && !auth.value.核准 && !auth.value.編修 && !auth.value.報表 && !auth.value.輸出);
   console.log('auth', auth.value);
   list.value = await custStore.getCustList() ;
   console.log('list.value', list.value)

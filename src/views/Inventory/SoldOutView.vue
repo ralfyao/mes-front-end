@@ -3,27 +3,43 @@
     <h5 class="no-wrap text-left">
       <div class="row justify-start padding-top">
         <div class="col-2 col-md-2">
-          <q-icon name="play_circle" size="30px" >銷貨出庫</q-icon>
+          <q-icon name="play_circle" size="30px" >{{ formName }}</q-icon>
         </div>
-        <div class="padding-right">
-          <q-btn color="primary" class="padding-right"
-                       glossy @click="openCustomDialog('新增')"
-                       :loading="loading">新增出貨單</q-btn>
+        <div v-if="(hasAllAuth ||(auth && auth.編修))">
+          <!-- <div class="padding-right"> -->
+            <q-btn color="primary" class="padding-right"
+                        glossy @click="openCustomDialog('新增')"
+                        :loading="loading">新增出貨單</q-btn>&nbsp;
+          <!-- </div> -->
+          <!-- <div class="padding-right"> -->
+            <q-btn color="info" class="padding-right"
+                        glossy @click="openCustomDialog('修改')"
+                        :loading="loading">修改出貨單</q-btn>&nbsp;
+          <!-- </div> -->
+          <!-- <div class="padding-right"> -->
+            <q-btn color="red" class="padding-right"
+                        glossy @click="deleteShippingOrder"
+                        :loading="loading">刪除出貨單</q-btn>&nbsp;
+          <!-- </div> -->
         </div>
-        <div class="padding-right">
-          <q-btn color="info" class="padding-right"
-                       glossy @click="openCustomDialog('修改')"
-                       :loading="loading">修改出貨單</q-btn>
-        </div>
-        <div class="padding-right">
-          <q-btn color="red" class="padding-right"
-                       glossy @click="deleteShippingOrder"
-                       :loading="loading">刪除出貨單</q-btn>
-        </div>
-        <div class="padding-right">
+
+        <div v-if="(hasAllAuth ||(auth && auth.查詢))">
+        <!-- <div class="padding-right"> -->
           <q-btn color="green" class="padding-right"
                        glossy @click="openCustomDialog('預覽')"
-                       :loading="loading">預覽出貨單</q-btn>
+                       :loading="loading">預覽出貨單</q-btn>&nbsp;
+        </div>
+        <div v-if="(hasAllAuth ||(auth && auth.輸出))">
+            <!-- <div class="padding-right"> -->
+              <q-btn color="grey" class="padding-right"
+                glossy
+                :loading="loading">列印</q-btn> &nbsp;
+            <!-- </div> -->
+            <!-- <div class="padding-right"> -->
+              <q-btn color="grey" class="padding-right"
+                glossy
+                :loading="loading">列印(英)</q-btn>
+            <!-- </div> -->
         </div>
       </div>
       <div class="row justify-start padding-top">
@@ -93,7 +109,7 @@
                 <q-input outlined dense v-model="form.佣金" :readonly="preview" label="應付佣金"/>
               </div>
               <div class="col-6 col-md-6" style="max-width: 500px">
-                <q-input  outlined dense :readonly="preview" v-model="form.原定交貨日期" label="原定交貨日" mask="####/##/##" :rules="[val => !!val || '日期為必填欄位']">
+                <q-input  outlined dense :readonly="preview" v-model="form.原定交貨日期" label="原定交貨日" mask="####/##/##" :rules="[val =>  !!val || '日期為必填欄位']">
                   <template v-slot:append>
                     <q-icon name="event" class="cursor-pointer">
                       <q-popup-proxy cover v-model="showShipDatePopup" transition-show="scale" transition-hide="scale">
@@ -118,7 +134,7 @@
               </div>
               <div class="col-6 col-md-6" style="max-width: 500px">
                 <q-select  outlined dense v-model="form.稅率"  label="稅率" :readonly="readonly || preview"
-                :rules="[val => !!val || '稅率為必填欄位']"  emit-value map-options
+                :rules="[val =>  !!val || '稅率為必填欄位']"  emit-value map-options
                 :options="taxRateList"/>
               </div>
             </div>
@@ -182,7 +198,7 @@
               <div class="col-6 col-md-6" style="max-width: 500px">
                 <q-select  outlined v-model="form.交貨方式" dense :readonly="readonly || preview"  label="交貨方式"
                     :options="handMethod"
-                    :rules="[val => !!val || '交貨方式為必填欄位']"
+                    :rules="[val =>  !!val || '交貨方式為必填欄位']"
                     option-value="條文編號"
                     option-label="條文名稱"
                     emit-value map-options
@@ -191,7 +207,7 @@
               <div class="col-6 col-md-6" style="max-width: 500px">
                 <q-select  outlined dense v-model="form.價格條件"  label="貿易條件"
                 :options="priceCondList" :readonly="readonly || preview"
-                :rules="[val => !!val || '價格條件為必填欄位']"  emit-value map-options
+                :rules="[val =>  !!val || '價格條件為必填欄位']"  emit-value map-options
                 option-value="條文編號"
                 option-label="條文名稱"/>
               </div>
@@ -213,7 +229,7 @@
               <div class="col-6 col-md-6" style="max-width: 500px">
                 <q-select  outlined v-model="form.付款方式" dense :readonly="readonly || preview"  label="付款方式"
                 :options="paymentTerm"
-                :rules="[val => !!val || '付款方式為必填欄位']"
+                :rules="[val =>  !!val || '付款方式為必填欄位']"
                 emit-value map-options
                 option-value="條文編號"
                 option-label="條文名稱"/>
@@ -239,40 +255,40 @@
               <div v-for="item in form.shipOrderLists"  v-bind:key="item.識別碼" class="row no-wrap q-col-gutter-md">
                 <div class="col-1 col-md-1" style="max-width: 200px">
                   <q-input outlined dense v-model="item.產品編號" :readonly="readonly || preview" label="產品編號"
-                  :rules="[val => !!val || '產品編號為必填欄位']"/>
+                  :rules="[val =>  !!val || '產品編號為必填欄位']"/>
                 </div>
                 <div class="col-2 col-md-2" style="max-width: 300px">
                   <q-input outlined dense v-model="item.品名規格" :readonly="readonly || preview" label="品名規格"
-                  :rules="[val => !!val || '品名規格為必填欄位']"/>
+                  :rules="[val =>  !!val || '品名規格為必填欄位']"/>
                 </div>
                 <div class="col-1 col-md-1" style="max-width: 180px">
                   <q-input outlined dense v-model="item.單位" :readonly="readonly || preview" label="銷售單位"
-                  :rules="[val => !!val || '銷售單位為必填欄位']"/>
+                  :rules="[val =>  !!val || '銷售單位為必填欄位']"/>
                 </div>
                 <div class="col-1 col-md-1" style="max-width: 180px">
                   <q-input type="number" min="0" outlined dense :readonly="readonly || preview" v-model="item.數量2" label="數量"
-                  :rules="[val => !!val || '數量為必填欄位']"/>
+                  :rules="[val =>  !!val || '數量為必填欄位']"/>
                 </div>
                 <div class="col-1 col-md-1" style="max-width: 180px">
                   <q-input type="number" min="0" outlined dense :readonly="readonly || preview" v-model="item.單價2" label="訂單單價" @blur="onBlur(item)"
-                  :rules="[val => !!val || '單價為必填欄位']"/>
+                  :rules="[val =>  !!val || '單價為必填欄位']"/>
                 </div>
                 <div class="col-1 col-md-1" style="max-width: 180px">
                   <q-input type="number" min="0" outlined dense :readonly="readonly || preview" v-model="item.金額2" label="未稅金額"
-                  :rules="[val => !!val || '金額為必填欄位']"/>
+                  :rules="[val =>  !!val || '金額為必填欄位']"/>
                 </div>
                 <div class="col-2 col-md-2" style="max-width: 300px">
                   <q-input outlined dense v-model="item.描述" :readonly="readonly || preview" label="註記"
-                  :rules="[val => !!val || '描述為必填欄位']"/>
+                  :rules="[val =>  !!val || '描述為必填欄位']"/>
                 </div>
                 <div class="col-2 col-md-2" style="max-width: 300px">
                   <q-input outlined dense v-model="item.樣品別" :readonly="readonly || preview" label="專案序號"
-                  :rules="[val => !!val || '樣品別為必填欄位']"/>
+                  :rules="[val =>  !!val || '樣品別為必填欄位']"/>
                 </div>
                 <div class="col-2 col-md-2" style="max-width: 300px">
                   <q-select  outlined v-model="item.倉庫別" dense :readonly="readonly || preview"  label="倉庫別"
                   :options="warehouseList"
-                  :rules="[val => !!val || '倉庫別為必填欄位']"
+                  :rules="[val =>  !!val || '倉庫別為必填欄位']"
                   emit-value map-options
                   option-value="倉庫"
                   option-label="倉庫"/>
@@ -325,6 +341,10 @@ import dayjs from 'dayjs'
 //import block end
 
 //variable block start
+const formName = '銷貨出庫';
+const auth = ref({});
+const hasAllAuth = ref(false);
+const theUser = ref({});
 const secondDialog = ref(false);
 const exRateList    = ref([]);
 const companyFullName = ref('');
@@ -487,7 +507,12 @@ onMounted(async ()=>{
   await custStore.getWarehouseList().then((data)=>{
     warehouseList.value = data;
   })//倉庫別
-  // let pt2   = await custStore.getTxConditionList('P');//付款方式
+  // let pt2   = await custStore.getTxConditionList('P');//付款方式theUser.value = SessionStorage.getItem('Account');
+  theUser.value = SessionStorage.getItem('Account');
+  auth.value = theUser.value.authList.find((x)=>x.menuSubName == formName);
+  hasAllAuth.value =
+      (!auth.value.高管 && !auth.value.核准 && !auth.value.編修 && !auth.value.報表 && !auth.value.輸出);
+  console.log('auth', auth.value);
 })
 const changeExRate = async (val) =>{
   console.log('val.currency', val);
