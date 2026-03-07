@@ -149,6 +149,7 @@ export const useUserStore = defineStore('user', {
         職務代理效期:item.職務代理效期,
         機號:item.機號,
         註記:item.註記,
+        查詢:item.查詢,
         menuID:item.menuID,
         menuSubID:item.menuSubID,
         menuSubUrl:'',

@@ -718,7 +718,7 @@ const deleteCustomer = () => {
   }
   const custToDelete = selected.value[0];
   console.log('要刪除的客戶資料:', custToDelete);
-  let result = confirm(`確定要刪除客戶 ${custToDelete.company} 嗎？`);
+  let result = confirm(`確定要刪除客戶 ${custToDelete?.company} 嗎？`);
   if (result) {
     secondDialog.value = true;
     loading.value = true;

@@ -264,6 +264,15 @@ export const useCustStore = defineStore('',  {
       }
       return null;
     },
+    async getRepairtorList(){
+      const constant = Constant()
+      console.log('APIUrl', constant.APIUrl)
+      const response = await axios.get(constant.APIUrl + 'api/GetRepairtorList');
+      if (response.data.resultList) {
+        return response.data.resultList
+      }
+      return null;
+    },
     async getContactList(companyName){
       const constant = Constant()
       console.log('APIUrl', constant.APIUrl)
@@ -470,7 +479,7 @@ export const useCustStore = defineStore('',  {
       const param = {
         idno		    :payload.idno,
         quono       :payload.quono,
-        mtype       :payload.mtype.typeid?payload.mtype.typeid:payload.mtype,
+        mtype       :payload.mtype?.typeid?payload.mtype?.typeid:payload.mtype,
         mmodel      :payload.mmodel,
         currency    :payload.currency.currency?payload.currency.currency:payload.currency,
         amount      :payload.amount,
@@ -515,7 +524,7 @@ export const useCustStore = defineStore('',  {
       const param = {
         idno		    :payload.idno,
         quono       :payload.quono,
-        mtype       :payload.mtype.typeid?payload.mtype.typeid:payload.mtype,
+        mtype       :payload.mtype?.typeid?payload.mtype?.typeid:payload.mtype,
         mmodel      :payload.mmodel,
         currency    :payload.currency.currency?payload.currency.currency:payload.currency,
         amount      :payload.amount,
@@ -616,7 +625,7 @@ export const useCustStore = defineStore('',  {
       const param = {
         idno		    :payload.idno,
         quono       :payload.quono,
-        mtype       :payload.mtype.typeid?payload.mtype.typeid:payload.mtype,
+        mtype       :payload.mtype.typeid?payload.mtype?.typeid:payload.mtype,
         mmodel      :payload.mmodel,
         currency    :payload.currency.currency?payload.currency.currency:payload.currency,
         amount      :payload.amount,
@@ -1015,5 +1024,151 @@ export const useCustStore = defineStore('',  {
       });
       return response;
     },
+    async getCARRepairReasons(){
+      const constant = Constant();
+      console.log('APIUrl', constant.APIUrl)
+      const response =await axios.get(constant.APIUrl+'api/CARRepairReasonList')
+      console.log('response', response)
+      if (response){
+        return response.data.resultList;
+      }
+      return null;
+    },
+    async addCAR(form){
+      const constant = Constant();
+      const payload = { ...toRaw(form.value) };
+      console.log('APIUrl', constant.APIUrl)
+      console.log('payload', payload);
+      const param = {
+                      識別碼:0,
+                      申請日期:payload.申請日期,
+                      單號:payload.單號,
+                      機台型號:payload.機台型號,
+                      客戶簡稱:payload.客戶簡稱,
+                      專案序號:payload.專案序號,
+                      機台類型:payload.機台類型,
+                      機台名稱:payload.機台名稱,
+                      客戶名稱:payload.客戶名稱,
+                      訴願聯絡窗口:payload.訴願聯絡窗口,
+                      訴願類別:payload.訴願類別,
+                      訴求內容:payload.訴求內容,
+                      業務人員:payload.業務人員,
+                      鑑定人員:payload.鑑定人員,
+                      回覆日期:payload.回覆日期,
+                      解決對策:payload.解決對策,
+                      解決方式:payload.解決方式,
+                      議決人員:payload.議決人員,
+                      維修單號:payload.維修單號,
+                      原因鑑定1:payload.原因鑑定1,
+                      原因類別1:payload.原因類別1,
+                      原因類別2:payload.原因類別2,
+                      原因類別3:payload.原因類別3,
+                      建檔:payload.建檔,
+                    };
+      console.log('param', param);
+      const response = await axios.post(constant.APIUrl + 'api/SaveCAR', param, {
+        headers: { 'Content-Type': 'application/json' }
+      });
+      return response;
+    },
+    async updateCAR(form){
+      const constant = Constant();
+      const payload = { ...toRaw(form.value) };
+      console.log('APIUrl', constant.APIUrl)
+      console.log('payload', payload);
+      const param = {
+                      識別碼:payload.識別碼,
+                      申請日期:payload.申請日期,
+                      單號:payload.單號,
+                      機台型號:payload.機台型號,
+                      客戶簡稱:payload.客戶簡稱,
+                      專案序號:payload.專案序號,
+                      機台類型:payload.機台類型,
+                      機台名稱:payload.機台名稱,
+                      客戶名稱:payload.客戶名稱,
+                      訴願聯絡窗口:payload.訴願聯絡窗口,
+                      訴願類別:payload.訴願類別,
+                      訴求內容:payload.訴求內容,
+                      業務人員:payload.業務人員,
+                      鑑定人員1:payload.鑑定人員,
+                      回覆日期:payload.回覆日期,
+                      解決對策:payload.解決對策,
+                      解決方式:payload.解決方式,
+                      議決人員:payload.議決人員,
+                      維修服務單號:payload.維修服務單號,
+                      轉維修:payload.轉維修,
+                      原因鑑定1:payload.原因鑑定1,
+                      原因類別1:payload.原因類別1,
+                      原因類別2:payload.原因類別2,
+                      原因類別3:payload.原因類別3,
+                      建檔:payload.建檔,
+                    };
+      console.log('param', param);
+      const response = await axios.post(constant.APIUrl + 'api/UpdateCAR', param, {
+        headers: { 'Content-Type': 'application/json' }
+      });
+      return response;
+    },
+    async deleteCAR(formNo){
+      console.log('delete form',formNo)
+      const constant = Constant()
+      const response = await axios.get(constant.APIUrl+'api/DeleteCAR?formNo='+formNo)
+      if (response){
+        return response;
+      }
+      return null;
+    },
+    async getCARList(){
+      const constant = Constant();
+      console.log('APIUrl', constant.APIUrl)
+      const response =await axios.get(constant.APIUrl+'api/CARList')
+      console.log('response', response)
+      if (response){
+        return response.data.resultList;
+      }
+      return null;
+    },
+    async transferToRepair(form){
+      const constant = Constant()
+      console.log('form ', form);
+      console.log('form value', form.value);
+      const payload = { ...toRaw(form.value) };
+      console.log('APIUrl', constant.APIUrl)
+      console.log('payload', payload);
+      const param = {
+                      識別碼:payload.識別碼,
+                      申請日期:payload.申請日期,
+                      單號:payload.單號,
+                      機台型號:payload.機台型號,
+                      客戶簡稱:payload.客戶簡稱,
+                      專案序號:payload.專案序號,
+                      機台類型:payload.機台類型,
+                      機台名稱:payload.機台名稱,
+                      客戶名稱:payload.客戶名稱,
+                      訴願聯絡窗口:payload.訴願聯絡窗口,
+                      訴願類別:payload.訴願類別,
+                      訴求內容:payload.訴求內容,
+                      業務人員:payload.業務人員,
+                      鑑定人員:payload.鑑定人員,
+                      回覆日期:payload.回覆日期,
+                      解決對策:payload.解決對策,
+                      解決方式:payload.解決方式,
+                      議決人員:payload.議決人員,
+                      維修服務單號:payload.維修服務單號,
+                      轉維修:payload.轉維修,
+                      原因鑑定1:payload.原因鑑定1,
+                      原因類別1:payload.原因類別1,
+                      原因類別2:payload.原因類別2,
+                      原因類別3:payload.原因類別3,
+                      建檔:payload.建檔,
+                    };
+      const response = await axios.post(constant.APIUrl + 'api/TransferToRepair', param, {
+        headers: { 'Content-Type': 'application/json' }
+      });
+      if (response){
+        return response;
+      }
+      return null;
+    }
   }
 })

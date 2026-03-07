@@ -595,8 +595,8 @@ const openCustomerDialog = (type) =>{
       console.log('custNumberList.value',custNumberList.value);
       console.log('salesOrderForm.value.客戶編號', salesOrderForm.value.客戶編號);
       console.log('Customer Number List', custNumberList.value.find((x)=>x.正航編號==salesOrderForm.value.客戶編號));
-      companyName.value = custNumberList.value.find((x)=>x.正航編號==salesOrderForm.value.客戶編號).company;
-      收款帳號.value = custNumberList.value.find((x)=>x.正航編號==salesOrderForm.value.客戶編號).credibility;
+      companyName.value = custNumberList?.value?.find((x)=>x.正航編號==salesOrderForm.value.客戶編號)?.company??'';
+      收款帳號.value = custNumberList?.value?.find((x)=>x.正航編號==salesOrderForm.value.客戶編號)?.credibility??'';
       errorMessage.value = "";
       if (type == '預覽')
         preview.value = true;

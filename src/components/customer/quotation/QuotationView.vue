@@ -427,12 +427,12 @@ const init =async () =>{
       if (props.form.rfqno !== '') {
         await custStore.getRfq(props.form.rfqno).then((data2)=>{
           console.log('rfq obj', data2)
-          console.log('data2.company', data2.company)
-          companyName.value = data2.company;
-          custStore.getCompany(data2.company).then((data3)=>{
+          console.log('data2.company', data2?.company)
+          companyName.value = data2?.company;
+          custStore.getCompany(data2?.company).then((data3)=>{
             console.log('data3', data3)
-            companyNo.value = data3.正航編號;
-            companyAlias.value = data3.欄位2;
+            companyNo.value = data3?.正航編號;
+            companyAlias.value = data3?.欄位2;
           })
         });
       }
