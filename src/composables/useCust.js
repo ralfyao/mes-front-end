@@ -765,7 +765,7 @@ export const useCustStore = defineStore('',  {
               machineno:payload.mtype,
               remark:payload.remark,
               建檔:payload.建檔,
-              修改:payload.account,
+              修改:payload.修改,
               核准:payload.核准,
               建檔日:payload.建檔日,
               修改日:payload.修改日,
@@ -1167,6 +1167,16 @@ export const useCustStore = defineStore('',  {
       });
       if (response){
         return response;
+      }
+      return null;
+    },
+    async getAgentList(){
+      const constant = Constant();
+      console.log('APIUrl', constant.APIUrl)
+      const response =await axios.get(constant.APIUrl+'api/GetAgentList')
+      console.log('response', response)
+      if (response){
+        return response.data.resultList;
       }
       return null;
     }

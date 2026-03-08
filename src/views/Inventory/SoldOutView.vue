@@ -71,6 +71,10 @@
           <div class="text-h4">
             {{mode}}出貨單
             <q-btn outlined dense glossy color="primary" v-if="!preview" label="訂單分配" @click="showSODistributionForm"/>
+            <q-card-actions align="right">
+              <q-btn flat label="取消" color="negative" @click="close" />
+              <q-btn v-if="!preview" label="送出" color="primary" @click="handleOtherAction" />
+            </q-card-actions>
           </div>
         </q-card-section>
         <q-form ref="myForm" >
@@ -295,13 +299,25 @@
                 </div>
               </div>
             </div>
+            <label class="text-h4">金額總計：{{ form.總額 }}</label>
           </q-card-section>
+          <label class="text-h4">
+            <div class="row q-col-gutter-md">
+              <div class="col-4 col-md-4 no-wrap"  style="max-width: 300px">
+                財務覆核：{{ form.核准 }}
+                <q-input outlined dense v-model="form.核准日" style="max-width: 150px" readonly/>
+              </div>
+              <div class="col-4 col-md-4 no-wrap"  style="max-width: 300px">
+                修改人員：{{ form.修改 }}
+                <q-input outlined dense v-model="form.修改日" style="max-width: 150px"  readonly/>
+              </div>
+              <div class="col-4 col-md-4 no-wrap"  style="max-width: 300px">
+                建檔人員：{{ form.建檔 }}
+                <q-input outlined dense v-model="form.建檔日" style="max-width: 150px"  readonly/>
+              </div>
+            </div>
+          </label>
         </q-form>
-        <q-card-actions align="right">
-          <label class="q-pa-md">建檔：{{ form.建檔 }} &nbsp;&nbsp;&nbsp;&nbsp;修改：{{ form.修改 }} &nbsp;&nbsp;&nbsp;&nbsp; 金額總計：{{ form.總額 }}</label>
-          <q-btn flat label="取消" color="negative" @click="close" />
-          <q-btn v-if="!preview" label="送出" color="primary" @click="handleOtherAction" />
-        </q-card-actions>
       </q-card>
     </q-dialog>
     <q-dialog v-model="showBankInfo" persistent>

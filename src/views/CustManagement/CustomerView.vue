@@ -159,7 +159,15 @@
                     <q-input v-model="form.ma" :readonly="readonly || preview" label="型態分類" outlined dense/>
                   </div>
                   <div class="col-3 col-md-3" style="max-width: 500px">
-                    <q-input v-model="form.industry" :readonly="readonly || preview" label="配合代理" outlined dense/>
+                    <q-select
+                    v-model="form.industry"
+                    :readonly="readonly || preview"
+                    label="配合代理"
+                    outlined dense
+                    :options="agentList"
+                    option-value="agent"
+                    option-label="agent"
+                    emit-value map-options/>
                   </div>
                   <div class="col-3 col-md-3" style="max-width: 500px">
                     <q-input v-model="form.欄位1" :readonly="readonly || preview" label="終端使用" outlined dense/>
@@ -343,6 +351,7 @@ import IndustryListForm from '@/components/customer/IndustryListForm.vue';
 const formName = '客戶維護';
 const auth = ref({});
 const hasAllAuth = ref(false);
+const agentList = ref([]);
 const theUser = ref({});
 const showChangeNameForm = ref(false);
 const showSearchForm = ref(false);
@@ -455,6 +464,7 @@ const init = async () =>{
   console.log('industryList', industryList.value);
   bankList.value = await custStore.getBankList();
   salesList.value = await custStore.getSalesList();
+  agentList.value =  await custStore.getAgentOptions();
   form.value = {
   識別: '',
   company: '',

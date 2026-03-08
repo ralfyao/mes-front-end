@@ -79,6 +79,10 @@
               <q-btn v-if="!preview" label="轉製令工件" color="primary" glossy densed/>&nbsp;
               <q-btn v-if="!preview" label="轉開出貨單" color="brown" glossy densed @click="transferToShipOrder"/>
             </div>
+            <q-card-actions align="right">
+              <q-btn flat label="取消" color="negative" @click="close" />
+              <q-btn v-if="!preview" label="送出" color="primary" @click="handleOtherAction" />
+            </q-card-actions>
           </div>
         </q-card-section>
         <q-form ref="myForm" >
@@ -365,12 +369,30 @@
                 </div>
               </div>
             </div>
+            <label class="justify-center">金額總計：{{ salesOrderForm.總額 }}</label>
           </q-card-section>
         </q-form>
-        <q-card-actions align="right">
-          <q-btn flat label="取消" color="negative" @click="close" />
-          <q-btn v-if="!preview" label="送出" color="primary" @click="handleOtherAction" />
-        </q-card-actions>
+        <q-card-section>
+          <label class="text-h4">
+            <div class="row q-col-gutter-md">
+              <div class="col-3 col-md-3 no-wrap"  style="max-width: 300px">
+                核准人員：{{ salesOrderForm.核准 }}
+                <q-input outlined dense v-model="salesOrderForm.核准日" style="max-width: 150px" readonly/>
+              </div>
+              <div class="col-3 col-md-3 no-wrap"  style="max-width: 300px">
+                修改人員：{{ salesOrderForm.修改 }}
+                <q-input outlined dense v-model="salesOrderForm.修改日" style="max-width: 150px"  readonly/>
+              </div>
+              <div class="col-3 col-md-3 no-wrap"  style="max-width: 300px">
+                建檔人員：{{ salesOrderForm.建檔 }}
+                <q-input outlined dense v-model="salesOrderForm.建檔日" style="max-width: 150px"  readonly/>
+              </div>
+              <div class="col-3 col-md-3 no-wrap"  style="max-width: 300px">
+                製令工號{{ salesOrderForm.machineno }}
+              </div>
+            </div>
+          </label>
+        </q-card-section>
       </q-card>
     </q-dialog>
     <!--銀行帳戶核對-->
@@ -402,7 +424,6 @@
           ></q-table >
         </q-card-section>
         <q-card-actions align="right">
-
           <q-btn flat label="帶入訂單" color="primary" @click="carryToSalesOrder" />
           <q-btn flat label="取消" color="negative" @click="closeQuotationDistributionForm" />
         </q-card-actions>
@@ -768,6 +789,7 @@ const submitForm = async () =>{
         alert('修改成功');
       }
       secondDialog.value = false;
+      init();
     });
   }
   showForm.value = false;

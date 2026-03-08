@@ -224,6 +224,22 @@
                   <q-input  :readonly="readonly || preview" v-model="item.專案序號" outlined dense label="專案序號"/>
                 </div>
               </div>
+              <label class="text-h4">
+                <div class="row q-col-gutter-md">
+                  <div class="col-4 col-md-4 no-wrap"  style="max-width: 300px">
+                    財務覆核：{{ form.核准 }}
+                    <q-input outlined dense v-model="form.核准日" style="max-width: 150px" readonly/>
+                  </div>
+                  <div class="col-4 col-md-4 no-wrap"  style="max-width: 300px">
+                    修改人員：{{ form.修改 }}
+                    <q-input outlined dense v-model="form.修改日" style="max-width: 150px"  readonly/>
+                  </div>
+                  <div class="col-4 col-md-4 no-wrap"  style="max-width: 300px">
+                    建檔人員：{{ form.建檔 }}
+                    <q-input outlined dense v-model="form.建檔日" style="max-width: 150px"  readonly/>
+                  </div>
+                </div>
+              </label>
             </div>
           </q-card-section>
         </q-form>
