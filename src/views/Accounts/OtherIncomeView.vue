@@ -72,6 +72,10 @@
             {{mode}}其他收入單
             <div v-if="mode == '修改'">
             </div>
+            <q-card-actions align="right">
+              <q-btn flat label="取消" color="negative" @click="close" />
+              <q-btn v-if="!preview" label="送出" color="primary" @click="handleOtherAction" />
+            </q-card-actions>
           </div>
         </q-card-section>
         <q-form ref="myForm" >
@@ -237,6 +241,7 @@
                     <br>
                   </div>
                 </div>
+                <br>
                 <label class="text-h4">
                   <div class="row q-col-gutter-md">
                     <div class="col-4 col-md-4 no-wrap"  style="max-width: 300px">
@@ -257,10 +262,6 @@
             </q-card-section>
           </q-card-section>
         </q-form>
-        <q-card-actions align="right">
-          <q-btn flat label="取消" color="negative" @click="close" />
-          <q-btn v-if="!preview" label="送出" color="primary" @click="handleOtherAction" />
-        </q-card-actions>
       </q-card>
     </q-dialog>
     <!--銀行帳戶核對-->
