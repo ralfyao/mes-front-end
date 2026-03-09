@@ -137,6 +137,10 @@
                 emit-value map-options
                 @update:model-value="changeCustCompany"
                 />
+                <q-icon name="search" size="30px" @click="openSearcCustomerForm" class="cursor-pointer"></q-icon>
+                <q-dialog v-model="showSearchCustNoForm" perisitent>
+                  <CustListQueryView v-model:showForm="showSearchCustNoForm" v-model:custNo="form.客戶編號"/>
+                </q-dialog>
               </div>
               <div class="col-4 col-md-4" style="max-width: 322px">
                 <q-input  :readonly="readonly || preview" v-model="companyName" outlined dense label="客戶簡稱"/>
@@ -274,10 +278,12 @@ import {
   QPopupProxy,
   SessionStorage
 } from 'quasar'
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, watch } from 'vue'
+import CustListQueryView from '@/components/customer/query/CustListQueryView.vue';
 // import block end
 
 //variable block start
+const showSearchCustNoForm = ref(false);
 const formName = '應收立帳';
 const auth = ref({});
 const hasAllAuth = ref(false);
@@ -465,6 +471,10 @@ const quotationDistribution = () =>{
 
 }
 
+const openSearcCustomerForm = () =>{
+  showSearchCustNoForm.value = true;
+}
+
 const updateCloseFlag = async () =>{
   secondDialog.value = true;
   await arStore.updateCloseFlag(form.value.單號).then((data)=>{
@@ -604,5 +614,15 @@ const calculateTax = () =>{
   console.log('calculateTax 收票金額', form.value.收票金額, )
   form.value.銀轉金額 = Math.round(form.value.收款總額) - Math.round(form.value.收票金額);
 }
+
+watch(
+  () => form.value.客戶編號,
+  (newVal) => {
+    console.log('資料更新了', newVal)
+    if(newVal)
+      changeCustCompany();
+  },
+  { deep: true, immediate: true }
+)
 //function block end
 </script>

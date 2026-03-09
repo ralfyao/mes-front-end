@@ -111,12 +111,16 @@
                       map-options
                       @update:model-value="onSelection"
                     />
+                    <q-icon name="search" size="30px" @click="openSearcCustomerForm" class="cursor-pointer"></q-icon>
+                    <q-dialog v-model="showSearchCustNoForm" perisitent>
+                      <CustListQueryView v-model:showForm="showSearchCustNoForm" v-model:custNo="form.客戶編號"/>
+                    </q-dialog>
                   </div>
                   <div class="col-4">
                     <q-select v-model="form.專案序號" label="專案序號"  :readonly="readonly||preview" outlined dense
                       emit-value map-options
                       :options="projectSerial"
-                      @update:model-value="onPrjSrialSelec"/>
+                      @update:model-value="onPrjSrialSelec" :rules="[val => !preview && !!val || '專案序號為必填欄位']"/>
                   </div>
                   <div class="col-4">
                     <q-input v-model="form.機台類型" label="機台類型" :readonly="true" outlined dense></q-input>
@@ -306,12 +310,14 @@ import {
   QSelect,
   SessionStorage
 } from 'quasar'
-import { ref, onMounted, } from 'vue';
+import { ref, onMounted, watch, } from 'vue';
 import dayjs  from 'dayjs';
 import LoadingComponent from '@/components/LoadingComponent.vue';
+import CustListQueryView from '@/components/customer/query/CustListQueryView.vue'
 // import block end
 
 // variable block start
+const showSearchCustNoForm = ref(false);
 const errorMessage = ref('');
 const repairatorList  =  ref([]);
 const decidorsname = ref('');
@@ -628,6 +634,22 @@ const transferToRepair = async () =>{
     }
   })
 }
+
+
+const openSearcCustomerForm = () =>{
+  showSearchCustNoForm.value = true;
+}
+
+
+watch(
+  () => form.value.客戶編號,
+  (newVal) => {
+    console.log('資料更新了', newVal)
+    if(newVal)
+      onSelection(newVal);
+  },
+  { deep: true, immediate: true }
+)
 // function block end
 
 </script>

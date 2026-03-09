@@ -104,6 +104,10 @@
                 emit-value map-options
                 @update:model-value="changeCustCompany"
                 />
+                <q-icon name="search" size="30px" @click="openSearcCustomerForm" class="cursor-pointer"></q-icon>
+                <q-dialog v-model="showSearchCustNoForm" perisitent>
+                  <CustListQueryView v-model:showForm="showSearchCustNoForm" v-model:custNo="form.客戶編號"/>
+                </q-dialog>
                 <label class="text-red text-center" style=" font-size: 24px;">{{ companyName }}</label>
               </div>
             </div>
@@ -352,11 +356,13 @@ import {
   , QCardActions,
   SessionStorage
 } from 'quasar';
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, watch } from 'vue';
 import dayjs from 'dayjs'
+import CustListQueryView from '@/components/customer/query/CustListQueryView.vue'
 //import block end
 
 //variable block start
+const showSearchCustNoForm = ref(false);
 const formName = '銷貨出庫';
 const auth = ref({});
 const hasAllAuth = ref(false);
@@ -489,6 +495,11 @@ const openCustomDialog = async (type) => {
 }
 const onSelection = () =>{
 
+}
+
+const openSearcCustomerForm = () =>{
+  // alert('openSearcCustomerForm');
+  showSearchCustNoForm.value = true;
 }
 onMounted(async ()=>{
   await custStore.getShipOrderList().then((data)=>{
@@ -655,5 +666,15 @@ const deleteShippingOrder = async () =>{
     }
   });
 }
+
+watch(
+  () => form.value.客戶編號,
+  (newVal) => {
+    console.log('資料更新了', newVal)
+    if(newVal)
+      changeCustCompany();
+  },
+  { deep: true, immediate: true }
+)
 //function block end
 </script>

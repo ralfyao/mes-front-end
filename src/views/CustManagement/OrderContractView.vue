@@ -137,6 +137,10 @@
                 emit-value map-options
                 @update:model-value="changeCustCompany"
                 />
+                <q-icon name="search" size="30px" @click="openSearcCustomerForm" class="cursor-pointer"></q-icon>
+                <q-dialog v-model="showSearchCustNoForm" perisitent>
+                  <CustListQueryView v-model:showForm="showSearchCustNoForm" v-model:custNo="salesOrderForm.客戶編號"/>
+                </q-dialog>
               </div>
               <div class="col-6 col-md-6" style="max-width: 500px">
                 <q-input  :readonly="readonly || preview" v-model="companyName" outlined dense label="客戶簡稱"></q-input>
@@ -455,12 +459,14 @@ import {
   , QCheckbox
   , SessionStorage
 } from 'quasar';
-import {ref, onMounted,} from 'vue'
+import {ref, onMounted, watch} from 'vue'
 import { useCustStore } from '@/composables/useCust';
 import BankInfoView from '@/components/customer/salesorder/BankInfoView.vue';
+import CustListQueryView from '@/components/customer/query/CustListQueryView.vue'
 //import block end
 
 //variable block start
+const showSearchCustNoForm = ref(false);
 const formName = '訂單合約';
 const theUser = ref([]);
 const auth = ref({});
@@ -618,6 +624,7 @@ const openCustomerDialog = (type) =>{
       console.log('Customer Number List', custNumberList.value.find((x)=>x.正航編號==salesOrderForm.value.客戶編號));
       companyName.value = custNumberList?.value?.find((x)=>x.正航編號==salesOrderForm.value.客戶編號)?.company??'';
       收款帳號.value = custNumberList?.value?.find((x)=>x.正航編號==salesOrderForm.value.客戶編號)?.credibility??'';
+      changeSalesName();
       errorMessage.value = "";
       if (type == '預覽')
         preview.value = true;
@@ -1034,5 +1041,20 @@ const transferReceivable = async (item) =>{
     secondDialog.value = false;
   })
 }
+
+const openSearcCustomerForm = () =>{
+  // alert('openSearcCustomerForm');
+  showSearchCustNoForm.value = true;
+}
+
+watch(
+  () => salesOrderForm.value.客戶編號,
+  (newVal) => {
+    console.log('資料更新了', newVal)
+    if(newVal)
+      changeCustCompany();
+  },
+  { deep: true, immediate: true }
+)
 //function block end
 </script>
