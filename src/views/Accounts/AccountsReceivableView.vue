@@ -37,6 +37,14 @@
                 :loading="loading">列印(英)</q-btn>
             <!-- </div> -->
           </div>
+          <div v-if="(hasAllAuth ||(auth && auth.核准)) && !preview">
+            <q-btn color="grey" class="padding-right"
+                glossy v-if="form.核准日 && form.核准日!= ''"
+                :loading="loading" @click="validate(false)">取消核准</q-btn> &nbsp;
+            <q-btn color="grey" class="padding-right"
+                glossy v-if="!form.核准日 || form.核准日== ''"
+                :loading="loading" @click="validate(true)">核准</q-btn> &nbsp;
+          </div>
       </div>
       <div class="row justify-start padding-top">
         <div class="col-6 col-md-6"  style="max-width: 500px">
@@ -72,6 +80,8 @@
               <q-btn v-if="!preview" label="出納收款" color="green" glossy densed @click="quotationDistribution"/>&nbsp;
               <q-btn v-if="!preview" label="收款明細導入" color="primary" glossy densed/>&nbsp;
               <q-btn v-if="!preview" label="會計傳票" color="brown" glossy densed/>
+              <q-btn v-if="(auth.核准 || hasAllAuth) && mode == '修改' && !form.核准日" label="覆核" color="grey" @click="validate(true)"/>
+              <q-btn v-if="(auth.核准 || hasAllAuth) && mode == '修改' && form.核准日" label="取消覆核" color="grey" @click="validate(false)"/>
             </div>
           </div>
         </q-card-section>
@@ -584,7 +594,7 @@ const init = async () =>{
     list.value = data;
   })
   secondDialog.value = false;
-
+  selected.value = [];
   theUser.value = SessionStorage.getItem('Account');
   auth.value = theUser.value.authList.find((x)=>x.menuSubName == formName);
   hasAllAuth.value =
@@ -613,6 +623,18 @@ const calculateTax = () =>{
   console.log('calculateTax 收款總額', form.value.收款總額, )
   console.log('calculateTax 收票金額', form.value.收票金額, )
   form.value.銀轉金額 = Math.round(form.value.收款總額) - Math.round(form.value.收票金額);
+}
+
+const validate = async (valid) => {
+  await arStore.validateAR(form.value.單號, valid, theUser.value.account).then((data)=>{
+    if (data.data.errorMessage){
+      alert(data.data.errorMessage);
+    } else {
+      alert((valid?'覆核':'取消覆核')+'成功!');
+    }
+    close();
+    init();
+  })
 }
 
 watch(

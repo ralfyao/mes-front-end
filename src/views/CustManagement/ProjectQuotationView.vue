@@ -67,13 +67,21 @@
       </q-page>
     </q-page-container>
     <q-dialog v-model="showForm" persistent >
-      <QuotationView :form="quotationForm" :mode="mode" :preview="preview" :quono="selected.length ? selected[0].quono : ''" v-model:showForm="showForm"/>
+      <QuotationView
+        :form="quotationForm"
+        :mode="mode" :preview="preview"
+        :quono="selected.length ? selected[0].quono : ''"
+        v-model:theUser="theUser"
+        v-model:auth="auth"
+        v-model:hasAllAuth="hasAllAuth"
+        v-model:showForm="showForm"/>
     </q-dialog>
   </q-layout>
   <LoadingComponent v-model="secondDialog"/>
 </template>
 <script setup>
 //import block start
+import dayjs from 'dayjs'
 import QuotationView from '@/components/customer/quotation/QuotationView.vue';
 import LoadingComponent from '@/components/LoadingComponent.vue'
 import {
@@ -231,6 +239,7 @@ const onSelection = () =>{
 onMounted(async ()=>{
   await custStore.getQuotationList('').then((data)=>{
     list.value = data;
+    list.value.forEach((x)=>x.quodate = dayjs(x.quodate, "MM/DD/YYYY HH:mm:ss").format("YYYY/MM/DD"));
   });
   theUser.value = SessionStorage.getItem('Account');
   auth.value = theUser.value.authList.find((x)=>x.menuSubName == formName);

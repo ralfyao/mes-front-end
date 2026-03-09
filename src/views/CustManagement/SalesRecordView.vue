@@ -72,6 +72,10 @@
           <div class="text-h4">
             {{mode}}詢問函
             <q-btn v-if="!preview" color="info" glossy @click="openQuotationForm">新增報價單</q-btn>
+            <q-card-actions align="right">
+              <q-btn flat label="取消" color="negative" @click="close" />
+              <q-btn v-if="!preview" label="送出" color="primary" @click="handleOtherAction" />
+            </q-card-actions>
           </div>
         </q-card-section>
         <q-form ref="myForm" >
@@ -214,15 +218,11 @@
             <SalesWorkRecordList :workRecordList="workRecordList" />
           </q-card-section>
         </q-form>
-        <q-card-actions align="right">
-          <q-btn flat label="取消" color="negative" @click="close" />
-          <q-btn v-if="!preview" label="送出" color="primary" @click="handleOtherAction" />
-        </q-card-actions>
       </q-card>
     </q-dialog>
     <!--報價單-->
     <q-dialog  class="q-pa-md"  style="width: 1000px; max-width: 80vw;" v-model="showQuotationForm" persistent>
-      <QuotationView :form="form" :mode="'新增'" :custList="salesList" v-model:showForm="showQuotationForm"></QuotationView>
+      <QuotationView :form="form" :mode="'新增'" :custList="salesList" v-model:showForm="showQuotationForm" v-if="(hasAllAuth && auth.核准)"/>
     </q-dialog>
     <LoadingComponent v-model="secondDialog"/>
   </q-layout>

@@ -154,6 +154,20 @@ export const useARStore = defineStore('ar',  {
       });
       return response;
     },
+    async validateOtherIncome(formNo, valid, account){
+      const constant = Constant();
+      const response = await axios.get(constant.APIUrl + 'api/ValidateOtherIncome?formNo='+formNo+'&valid='+valid+'&account='+account, {
+        headers: { 'Content-Type': 'application/json' }
+      });
+      return response;
+    },
+    async validateAR(formNo, valid, account){
+      const constant = Constant();
+      const response = await axios.get(constant.APIUrl + 'api/ValidateAR?formNo='+formNo+'&valid='+valid+'&account='+account, {
+        headers: { 'Content-Type': 'application/json' }
+      });
+      return response;
+    },
     async getUnclosedARList(){
       const constant = Constant()
       console.log('APIUrl', constant.APIUrl)

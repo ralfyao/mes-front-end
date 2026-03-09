@@ -589,6 +589,7 @@ const init = async () => {
   })
   await custStore.getCARList().then((data)=>{
     list.value = data;
+    list.value.forEach((x)=> x.申請日期 = dayjs(x.日期, "MM/DD/YYYY HH:mm:ss").format("YYYY/MM/DD"))
   })
   await custStore.getRepairtorList().then((data)=>{
     repairatorList.value = data;
@@ -605,9 +606,6 @@ const init = async () => {
   console.log('auth.value ', auth.value )
   hasAllAuth.value =
       (!auth.value.高管 && !auth.value.核准 && !auth.value.編修 && !auth.value.報表 && !auth.value.輸出);
-  // await custStore.getProjectSerial().then((data)=>{
-  //   projectSerial.value = data;
-  // })
   console.log('custList', custAliasList.value);
   console.log('salesList', salesList.value);
 }
@@ -635,11 +633,9 @@ const transferToRepair = async () =>{
   })
 }
 
-
 const openSearcCustomerForm = () =>{
   showSearchCustNoForm.value = true;
 }
-
 
 watch(
   () => form.value.客戶編號,

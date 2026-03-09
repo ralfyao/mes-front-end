@@ -79,6 +79,14 @@
               <q-btn v-if="!preview" label="轉製令工件" color="primary" glossy densed/>&nbsp;
               <q-btn v-if="!preview" label="轉開出貨單" color="brown" glossy densed @click="transferToShipOrder"/>
             </div>
+            <div v-if="(hasAllAuth ||(auth && auth.核准)) && !preview">
+              <q-btn color="grey" class="padding-right"
+                      glossy v-if="salesOrderForm.核准日 && salesOrderForm.核准日!= ''"
+                      :loading="loading" @click="validate(false)">取消核准</q-btn> &nbsp;
+              <q-btn color="grey" class="padding-right"
+                      glossy v-if="!salesOrderForm.核准日 || salesOrderForm.核准日== ''"
+                      :loading="loading" @click="validate(true)">核准</q-btn> &nbsp;
+            </div>
             <q-card-actions align="right">
               <q-btn flat label="取消" color="negative" @click="close" />
               <q-btn v-if="!preview" label="送出" color="primary" @click="handleOtherAction" />
@@ -438,6 +446,7 @@
 </template>
 <script setup>
 //import block start
+import dayjs from 'dayjs'
 import LoadingComponent from '@/components/LoadingComponent.vue';
 import {
     QIcon
@@ -622,6 +631,7 @@ const openCustomerDialog = (type) =>{
       console.log('custNumberList.value',custNumberList.value);
       console.log('salesOrderForm.value.客戶編號', salesOrderForm.value.客戶編號);
       console.log('Customer Number List', custNumberList.value.find((x)=>x.正航編號==salesOrderForm.value.客戶編號));
+      salesOrderForm.value.日期 = dayjs(salesOrderForm.value.日期, "MM/DD/YYYY HH:mm:ss").format("YYYY/MM/DD")
       companyName.value = custNumberList?.value?.find((x)=>x.正航編號==salesOrderForm.value.客戶編號)?.company??'';
       收款帳號.value = custNumberList?.value?.find((x)=>x.正航編號==salesOrderForm.value.客戶編號)?.credibility??'';
       changeSalesName();
@@ -664,6 +674,7 @@ const init = async () =>{
   await custStore.getSalesOrderList().then((data)=>{
     console.log('data list', data);
     list.value = data;
+    list.value.forEach((x)=>x.日期 = dayjs(x.日期, "MM/DD/YYYY HH:mm:ss").format("YYYY/MM/DD"))
   });
   await custStore.getCustNumberList().then((data)=>{
     console.log('custNumberList', data);
@@ -752,6 +763,7 @@ const init = async () =>{
     orderListDetail:[],
     arListDetail:[],
   };
+  selected.value = [];
   secondDialog.value = false;
   theUser.value = SessionStorage.getItem('Account');
   auth.value = theUser.value.authList.find((x)=>x.menuSubName == formName);
@@ -1056,5 +1068,17 @@ watch(
   },
   { deep: true, immediate: true }
 )
+
+const validate = async(valid) =>{
+  await custStore.validateSalesOrder(salesOrderForm.value.單號, valid, theUser.value.account).then((data)=>{
+    if (data.data.errorMessage){
+      alert(data.data.errorMessage);
+    } else {
+      alert((valid?'覆核':'取消覆核')+'成功!');
+    }
+    close();
+    init();
+  })
+}
 //function block end
 </script>

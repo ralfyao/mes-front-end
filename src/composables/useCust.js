@@ -1179,6 +1179,27 @@ export const useCustStore = defineStore('',  {
         return response.data.resultList;
       }
       return null;
+    },
+    async validateShipOrder(formNo, valid, account){
+      const constant = Constant();
+      const response = await axios.get(constant.APIUrl + 'api/ValidateShipOrder?formNo='+formNo+'&valid='+valid+'&account='+account, {
+        headers: { 'Content-Type': 'application/json' }
+      });
+      return response;
+    },
+    async validateSalesOrder(formNo, valid, account){
+      const constant = Constant();
+      const response = await axios.get(constant.APIUrl + 'api/ValidateSalesOrder?formNo='+formNo+'&valid='+valid+'&account='+account, {
+        headers: { 'Content-Type': 'application/json' }
+      });
+      return response;
+    },
+    async validateQuotation(formNo, valid, account){
+      const constant = Constant();
+      const response = await axios.get(constant.APIUrl + 'api/ValidateQuotation?formNo='+formNo+'&valid='+valid+'&account='+account, {
+        headers: { 'Content-Type': 'application/json' }
+      });
+      return response;
     }
   }
 })

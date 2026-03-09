@@ -71,9 +71,20 @@
           <div class="text-h4">
             {{mode}}出貨單
             <q-btn outlined dense glossy color="primary" v-if="!preview" label="訂單分配" @click="showSODistributionForm"/>
+            <q-dialog v-model="showSODistribution" persistent>
+              <SalesOrderDistributionView v-model:showForm="showSODistribution"/>
+            </q-dialog>
             <q-card-actions align="right">
               <q-btn flat label="取消" color="negative" @click="close" />
               <q-btn v-if="!preview" label="送出" color="primary" @click="handleOtherAction" />
+              <div v-if="(hasAllAuth ||(auth && auth.核准)) && !preview">
+                <q-btn color="grey" class="padding-right"
+                      glossy v-if="form.核准日 && form.核准日!= ''"
+                      :loading="loading" @click="validate(false)">取消核准</q-btn> &nbsp;
+                  <q-btn color="grey" class="padding-right"
+                      glossy v-if="!form.核准日 || form.核准日== ''"
+                      :loading="loading" @click="validate(true)">核准</q-btn> &nbsp;
+              </div>
             </q-card-actions>
           </div>
         </q-card-section>
@@ -501,9 +512,11 @@ const openSearcCustomerForm = () =>{
   // alert('openSearcCustomerForm');
   showSearchCustNoForm.value = true;
 }
-onMounted(async ()=>{
-  await custStore.getShipOrderList().then((data)=>{
+const init = async () =>{
+  secondDialog.value = true;
+   await custStore.getShipOrderList().then((data)=>{
     list.value = data;
+    list.value.forEach((x)=>x.日期 = dayjs(x.日期, "MM/DD/YYYY HH:mm:ss").format("YYYY/MM/DD"))
   });
   await custStore.getCustNumberList().then((data)=>{
     console.log('custNumberList', data);
@@ -540,6 +553,11 @@ onMounted(async ()=>{
   hasAllAuth.value =
       (!auth.value.高管 && !auth.value.核准 && !auth.value.編修 && !auth.value.報表 && !auth.value.輸出);
   console.log('auth', auth.value);
+  selected.value = [];
+  secondDialog.value = false;
+}
+onMounted(()=>{
+  init();
 })
 const changeExRate = async (val) =>{
   console.log('val.currency', val);
@@ -626,7 +644,7 @@ const submitForm = async () =>{
 }
 
 const showSODistributionForm = () =>{
-
+  showSODistribution.value = true;
 }
 
 const changeSalesName = () =>{
@@ -665,6 +683,18 @@ const deleteShippingOrder = async () =>{
       getData();
     }
   });
+}
+
+const validate = async (valid) => {
+  await custStore.validateShipOrder(form.value.單號, valid, theUser.value.account).then((data)=>{
+    if (data.data.errorMessage){
+      alert(data.data.errorMessage);
+    } else {
+      alert((valid?'覆核':'取消覆核')+'成功!');
+    }
+    close();
+    init();
+  })
 }
 
 watch(

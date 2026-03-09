@@ -75,6 +75,8 @@
             <q-card-actions align="right">
               <q-btn flat label="取消" color="negative" @click="close" />
               <q-btn v-if="!preview" label="送出" color="primary" @click="handleOtherAction" />
+              <q-btn v-if="(auth.核准 || hasAllAuth) && mode == '修改' && !form.核准日" label="覆核" color="grey" @click="validate(true)"/>
+              <q-btn v-if="(auth.核准 || hasAllAuth) && mode == '修改' && form.核准日" label="取消覆核" color="grey" @click="validate(false)"/>
             </q-card-actions>
           </div>
         </q-card-section>
@@ -302,6 +304,7 @@ import { useARStore } from '@/composables/useAR';
 // import block end
 
 // variable block start
+const account = SessionStorage.getItem('Account');
 const formName = '客戶未收查詢';
 const auth = ref({});
 const hasAllAuth = ref(false);
@@ -479,6 +482,8 @@ const submitForm = async () =>{
       } else {
         alert('寫入成功');
       }
+      close();
+      init();
     });
     // quotationForm.value.
   } else if (mode.value == '修改') {
@@ -491,6 +496,8 @@ const submitForm = async () =>{
       } else {
         alert('修改成功');
       }
+      close();
+      init();
     });
   }
   form.value = {
@@ -597,7 +604,7 @@ const init = async () =>{
     detailList:[],
   };
   secondDialog.value = false;
-
+  selected.value = [];
   theUser.value = SessionStorage.getItem('Account');
   auth.value = theUser.value.authList.find((x)=>x.menuSubName == formName);
   hasAllAuth.value =
@@ -655,5 +662,19 @@ onMounted(async () =>{
   secondDialog.value = true;
   init();
 })
+
+const validate = async (valid) =>{
+  await arStore.validateOtherIncome(form.value.單號, valid, account.account).then((data)=>{
+    if (data.data.errorMessage){
+      alert(data.data.errorMessage);
+    } else {
+      alert((valid?'覆核':'取消覆核')+'成功');
+    }
+    close();
+    init();
+  })
+}
+
+
 // function block end
 </script>

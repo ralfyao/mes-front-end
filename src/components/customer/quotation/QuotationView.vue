@@ -5,8 +5,16 @@
         <div v-if="props.mode=='修改'">
           <q-btn  dense outlined label="複製" color="warning" @click="copy" />&nbsp;
           <q-btn  dense outlined label="轉開訂單" color="primary" @click="transferToSalesOrder" />&nbsp;
-          <q-btn  dense outlined label="取消停用" color="green" v-if="!quotationForm.核准 || quotationForm.核准 == ''" @click="updateExpiryFlag('Y')" />
-          <q-btn  dense outlined label="停用" color="negative" v-if="quotationForm.核准 && quotationForm.核准 != ''" @click="updateExpiryFlag('N')" />
+          <q-btn  dense outlined label="取消停用" color="green" v-if="!props.preview && (!quotationForm.核准 || quotationForm.核准 == '')" @click="updateExpiryFlag('Y')" />
+          <q-btn  dense outlined label="停用" color="negative" v-if="!props.preview && (quotationForm.核准 && quotationForm.核准 != '')" @click="updateExpiryFlag('N')" />
+          <div v-if="(props.hasAllAuth ||(props.auth && props.auth.核准)) && !preview">
+            <q-btn color="grey" class="padding-right"
+                  glossy v-if="quotationForm.核准日 && quotationForm.核准日!= ''"
+                  :loading="loading" @click="validate(false)">取消核准</q-btn> &nbsp;
+           <q-btn color="grey" class="padding-right"
+                  glossy v-if="!quotationForm.核准日 || quotationForm.核准日== ''"
+                  :loading="loading" @click="validate(true)">核准</q-btn> &nbsp;
+          </div>
         </div>
       </q-card-section>
       <q-form ref="myForm">
@@ -279,6 +287,18 @@ const props = defineProps({
     type:String,
     default:()=>''
   },
+  theUser:{
+    type:Object,
+    default:()=>{},
+  },
+  auth:{
+    type:Object,
+    default:()=>{}
+  },
+  hasAllAuth:{
+    type:Boolean,
+    default:false,
+  },
   form:{
     type:Object,
     default: () => ({
@@ -316,6 +336,10 @@ const props = defineProps({
   salesList:{
     type:Array,
     default:()=>[]
+  },
+  hasPrivilege:{
+    type:Boolean,
+    default:()=>false,
   }
 });
 const emit = defineEmits(['update:showForm']);
@@ -613,6 +637,18 @@ const transferToSalesOrder = async () =>{
       alert(data.data.errorMessage);
       secondDialog.value = false;
     }
+  })
+}
+const validate = async (valid) => {
+  console.log('props.theUser.value', props.theUser.value);
+  await custStore.validateQuotation(quotationForm.value.quono, valid, props.theUser.account).then((data)=>{
+    if (data.data.errorMessage){
+      alert(data.data.errorMessage);
+    } else {
+      alert((valid?'覆核':'取消覆核')+'成功!');
+    }
+    close();
+    init();
   })
 }
 // function block
