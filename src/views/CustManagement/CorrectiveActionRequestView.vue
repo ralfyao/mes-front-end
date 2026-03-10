@@ -27,18 +27,6 @@
               glossy @click="openCARDialog('預覽')"
                 :loading="loading">客戶訴願預覽</q-btn>&nbsp;
         </div>
-        <div v-if="(hasAllAuth ||(auth && auth.輸出))">
-            <!-- <div class="padding-right"> -->
-              <q-btn color="grey" class="padding-right"
-                glossy
-                :loading="loading">列印</q-btn> &nbsp;
-            <!-- </div> -->
-            <!-- <div class="padding-right"> -->
-              <q-btn color="grey" class="padding-right"
-                glossy
-                :loading="loading">列印(英)</q-btn>
-            <!-- </div> -->
-        </div>
       </div>
       <div class="row justify-start padding-top">
         <div class="text-left text-red">{{ errorMessage }}</div>
@@ -66,6 +54,18 @@
           <div class="text-h4">
             {{mode}}客戶訴願單
             <div v-if="mode == '修改'">
+            </div>
+            <div v-if="(hasAllAuth ||(auth && auth.輸出))">
+                <!-- <div class="padding-right"> -->
+                  <q-btn color="grey" class="padding-right"
+                    glossy
+                    :loading="loading">列印</q-btn> &nbsp;
+                <!-- </div> -->
+                <!-- <div class="padding-right"> -->
+                  <q-btn color="grey" class="padding-right"
+                    glossy
+                    :loading="loading">列印(英)</q-btn>
+                <!-- </div> -->
             </div>
           </div>
         </q-card-section>
@@ -109,11 +109,12 @@
                       option-label="正航編號"
                       emit-value
                       map-options
+                      :readonly="readonly||preview"
                       @update:model-value="onSelection"
                     />
                     <q-icon name="search" size="30px" @click="openSearcCustomerForm" class="cursor-pointer"></q-icon>
                     <q-dialog v-model="showSearchCustNoForm" perisitent>
-                      <CustListQueryView v-model:showForm="showSearchCustNoForm" v-model:custNo="form.客戶編號"/>
+                      <CustListQueryView v-model:showForm="showSearchCustNoForm" v-model:custNo="form.客戶簡稱"/>
                     </q-dialog>
                   </div>
                   <div class="col-4">

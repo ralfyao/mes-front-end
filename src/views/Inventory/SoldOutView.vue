@@ -29,18 +29,6 @@
                        glossy @click="openCustomDialog('預覽')"
                        :loading="loading">預覽出貨單</q-btn>&nbsp;
         </div>
-        <div v-if="(hasAllAuth ||(auth && auth.輸出))">
-            <!-- <div class="padding-right"> -->
-              <q-btn color="grey" class="padding-right"
-                glossy
-                :loading="loading">列印</q-btn> &nbsp;
-            <!-- </div> -->
-            <!-- <div class="padding-right"> -->
-              <q-btn color="grey" class="padding-right"
-                glossy
-                :loading="loading">列印(英)</q-btn>
-            <!-- </div> -->
-        </div>
       </div>
       <div class="row justify-start padding-top">
         <div class="col-6 col-md-6"  style="max-width: 500px">
@@ -75,8 +63,10 @@
               <SalesOrderDistributionView v-model:showForm="showSODistribution"/>
             </q-dialog>
             <q-card-actions align="right">
-              <q-btn flat label="取消" color="negative" @click="close" />
-              <q-btn v-if="!preview" label="送出" color="primary" @click="handleOtherAction" />
+              <div>
+                <q-btn flat label="取消" color="negative" @click="close" />
+                <q-btn v-if="!preview" label="送出" color="primary" @click="handleOtherAction" />
+              </div>
               <div v-if="(hasAllAuth ||(auth && auth.核准)) && !preview">
                 <q-btn color="grey" class="padding-right"
                       glossy v-if="form.核准日 && form.核准日!= ''"
@@ -84,6 +74,18 @@
                   <q-btn color="grey" class="padding-right"
                       glossy v-if="!form.核准日 || form.核准日== ''"
                       :loading="loading" @click="validate(true)">核准</q-btn> &nbsp;
+              </div>
+              <div v-if="(hasAllAuth ||(auth && auth.輸出))">
+                  <!-- <div class="padding-right"> -->
+                    <q-btn color="grey" class="padding-right"
+                      glossy
+                      :loading="loading">列印</q-btn> &nbsp;
+                  <!-- </div> -->
+                  <!-- <div class="padding-right"> -->
+                    <q-btn color="grey" class="padding-right"
+                      glossy
+                      :loading="loading">列印(英)</q-btn>
+                  <!-- </div> -->
               </div>
             </q-card-actions>
           </div>

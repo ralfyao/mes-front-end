@@ -29,18 +29,6 @@
               glossy @click="openARDialog('預覽')"
                 :loading="loading">其他收入預覽</q-btn> &nbsp;
         </div>
-        <div v-if="(hasAllAuth ||(auth && auth.輸出))">
-            <!-- <div class="padding-right"> -->
-              <q-btn color="grey" class="padding-right"
-                glossy
-                :loading="loading">列印</q-btn> &nbsp;
-            <!-- </div> -->
-            <!-- <div class="padding-right"> -->
-              <q-btn color="grey" class="padding-right"
-                glossy
-                :loading="loading">列印(英)</q-btn>
-            <!-- </div> -->
-        </div>
       </div>
       <div class="row justify-start padding-top">
         <div class="col-6 col-md-6"  style="max-width: 500px">
@@ -72,11 +60,23 @@
             {{mode}}其他收入單
             <div v-if="mode == '修改'">
             </div>
-            <q-card-actions align="right">
+            <q-card-actions class="col-12 flex" align="right">
               <q-btn flat label="取消" color="negative" @click="close" />
               <q-btn v-if="!preview" label="送出" color="primary" @click="handleOtherAction" />
               <q-btn v-if="(auth.核准 || hasAllAuth) && mode == '修改' && !form.核准日" label="覆核" color="grey" @click="validate(true)"/>
               <q-btn v-if="(auth.核准 || hasAllAuth) && mode == '修改' && form.核准日" label="取消覆核" color="grey" @click="validate(false)"/>
+              <!-- <div> -->
+            <!-- <div class="padding-right"> -->
+                  <q-btn v-if="(hasAllAuth ||(auth && auth.輸出))" color="grey" class="padding-right"
+                      glossy
+                      :loading="loading">列印</q-btn> &nbsp;
+                  <!-- </div> -->
+                  <!-- <div class="padding-right"> -->
+                  <q-btn v-if="(hasAllAuth ||(auth && auth.輸出))" color="grey" class="padding-right"
+                      glossy
+                      :loading="loading">列印(英)</q-btn>
+                  <!-- </div> -->
+              <!-- </div> -->
             </q-card-actions>
           </div>
         </q-card-section>

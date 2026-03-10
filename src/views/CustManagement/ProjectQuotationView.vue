@@ -29,19 +29,6 @@
             glossy @click="openCustomerDialog('預覽')"
             :loading="loading">預覽報價單</q-btn>&nbsp;
         </div>
-
-        <div v-if="(hasAllAuth ||(auth && auth.輸出))">
-            <!-- <div class="padding-right"> -->
-            <q-btn color="grey" class="padding-right"
-                glossy
-                :loading="loading">列印</q-btn> &nbsp;
-            <!-- </div> -->
-            <!-- <div class="padding-right"> -->
-            <q-btn color="grey" class="padding-right"
-                glossy
-                :loading="loading">列印(英)</q-btn>
-            <!-- </div> -->
-        </div>
       </div>
       <div class="row justify-start padding-top">
         <div class="col-6 col-md-6"  style="max-width: 500px">

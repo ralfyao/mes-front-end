@@ -29,18 +29,6 @@
                        :loading="loading">預覽詢問函</q-btn>&nbsp;
         <!-- </div> -->
         </div>
-        <div v-if="(hasAllAuth ||(auth && auth.輸出))">
-            <!-- <div class="padding-right"> -->
-              <q-btn color="grey" class="padding-right"
-                glossy
-                :loading="loading">列印</q-btn> &nbsp;
-            <!-- </div> -->
-            <!-- <div class="padding-right"> -->
-              <q-btn color="grey" class="padding-right"
-                glossy
-                :loading="loading">列印(英)</q-btn>
-            <!-- </div> -->
-        </div>
       </div>
       <div class="row justify-start padding-top">
         <div class="col-6 col-md-6"  style="max-width: 500px">
@@ -75,6 +63,18 @@
             <q-card-actions align="right">
               <q-btn flat label="取消" color="negative" @click="close" />
               <q-btn v-if="!preview" label="送出" color="primary" @click="handleOtherAction" />
+              <div v-if="(hasAllAuth ||(auth && auth.輸出))">
+                  <!-- <div class="padding-right"> -->
+                    <q-btn color="grey" class="padding-right"
+                      glossy
+                      :loading="loading">列印</q-btn> &nbsp;
+                  <!-- </div> -->
+                  <!-- <div class="padding-right"> -->
+                    <q-btn color="grey" class="padding-right"
+                      glossy
+                      :loading="loading">列印(英)</q-btn>
+                  <!-- </div> -->
+              </div>
             </q-card-actions>
           </div>
         </q-card-section>

@@ -1,19 +1,34 @@
 <template>
   <q-card class="q-pa-md"  style="width: 1500px; max-width: 95vw;">
       <q-card-section>
-        <div class="text-h4">{{props.mode!=''&&props.mode!=''?props.mode:'新增'}}報價單</div>
-        <div v-if="props.mode=='修改'">
-          <q-btn  dense outlined label="複製" color="warning" @click="copy" />&nbsp;
-          <q-btn  dense outlined label="轉開訂單" color="primary" @click="transferToSalesOrder" />&nbsp;
-          <q-btn  dense outlined label="取消停用" color="green" v-if="!props.preview && (!quotationForm.核准 || quotationForm.核准 == '')" @click="updateExpiryFlag('Y')" />
-          <q-btn  dense outlined label="停用" color="negative" v-if="!props.preview && (quotationForm.核准 && quotationForm.核准 != '')" @click="updateExpiryFlag('N')" />
-          <div v-if="(props.hasAllAuth ||(props.auth && props.auth.核准)) && !preview">
+        <div class="row">
+          <div class="col-2 flex text-h4">{{props.mode!=''&&props.mode!=''?props.mode:'新增'}}報價單</div>
+          <div class="col-3 flex" v-if="props.mode=='修改'">
+            <q-btn  dense outlined label="複製" color="warning" @click="copy" />&nbsp;
+            <q-btn  dense outlined label="轉開訂單" color="primary" @click="transferToSalesOrder" />&nbsp;
+            <q-btn  dense outlined label="取消停用" color="green" v-if="!props.preview && (!quotationForm.核准 || quotationForm.核准 == '')" @click="updateExpiryFlag('Y')" />
+            <q-btn  dense outlined label="停用" color="negative" v-if="!props.preview && (quotationForm.核准 && quotationForm.核准 != '')" @click="updateExpiryFlag('N')" />
+            <div v-if="(props.hasAllAuth ||(props.auth && props.auth.核准)) && !preview">
+              <q-btn color="grey" class="padding-right"
+                    glossy v-if="quotationForm.核准日 && quotationForm.核准日!= ''"
+                    :loading="loading" @click="validate(false)">取消核准</q-btn> &nbsp;
             <q-btn color="grey" class="padding-right"
-                  glossy v-if="quotationForm.核准日 && quotationForm.核准日!= ''"
-                  :loading="loading" @click="validate(false)">取消核准</q-btn> &nbsp;
-           <q-btn color="grey" class="padding-right"
-                  glossy v-if="!quotationForm.核准日 || quotationForm.核准日== ''"
-                  :loading="loading" @click="validate(true)">核准</q-btn> &nbsp;
+                    glossy v-if="!quotationForm.核准日 || quotationForm.核准日== ''"
+                    :loading="loading" @click="validate(true)">核准</q-btn> &nbsp;
+            </div>
+
+          </div>
+          <div class="flex col-7" v-if="(props.hasAllAuth ||(props.auth && props.auth.輸出))">
+                <!-- <div class="padding-right"> -->
+                <q-btn color="grey" class="padding-right"
+                    glossy
+                    :loading="loading">列印</q-btn> &nbsp;
+                <!-- </div> -->
+                <!-- <div class="padding-right"> -->
+                <q-btn color="grey" class="padding-right"
+                    glossy
+                    :loading="loading">列印(英)</q-btn>
+                <!-- </div> -->
           </div>
         </div>
       </q-card-section>

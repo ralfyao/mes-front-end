@@ -30,18 +30,6 @@
                   :loading="loading">訂單預覽</q-btn>&nbsp;
           <!-- </div> -->
         </div>
-        <div v-if="(hasAllAuth ||(auth && auth.輸出))">
-            <!-- <div class="padding-right"> -->
-              <q-btn color="grey" class="padding-right"
-                glossy
-                :loading="loading">列印</q-btn> &nbsp;
-            <!-- </div> -->
-            <!-- <div class="padding-right"> -->
-              <q-btn color="grey" class="padding-right"
-                glossy
-                :loading="loading">列印(英)</q-btn>
-            <!-- </div> -->
-          </div>
       </div>
       <div class="row justify-start padding-top">
         <div class="col-6 col-md-6"  style="max-width: 500px">
@@ -71,21 +59,33 @@
     <q-dialog v-model="showForm" persistent >
       <q-card  class="q-pa-md"  style="width: 1500px; max-width: 95vw;">
         <q-card-section>
-          <div class="text-h4">
+          <div class="col-3 flex text-h4">
             {{mode}}訂單
-            <div v-if="mode == '修改'">
+            <div class="col-3 flex" v-if="mode == '修改'">
               <q-checkbox v-model="salesOrderForm.結案" label="結案" :readonly="readonly || preview" @update:model-value="updateCloseFlag"/>
               <q-btn v-if="!preview" label="報價單分配" color="green" glossy densed @click="quotationDistribution"/>&nbsp;
               <q-btn v-if="!preview" label="轉製令工件" color="primary" glossy densed/>&nbsp;
               <q-btn v-if="!preview" label="轉開出貨單" color="brown" glossy densed @click="transferToShipOrder"/>
             </div>
-            <div v-if="(hasAllAuth ||(auth && auth.核准)) && !preview">
+            <div class="col-3 flex" v-if="(hasAllAuth ||(auth && auth.核准)) && !preview">
               <q-btn color="grey" class="padding-right"
                       glossy v-if="salesOrderForm.核准日 && salesOrderForm.核准日!= ''"
                       :loading="loading" @click="validate(false)">取消核准</q-btn> &nbsp;
               <q-btn color="grey" class="padding-right"
                       glossy v-if="!salesOrderForm.核准日 || salesOrderForm.核准日== ''"
                       :loading="loading" @click="validate(true)">核准</q-btn> &nbsp;
+            </div>
+            <div class="col-3 flex" v-if="(hasAllAuth ||(auth && auth.輸出))">
+                <!-- <div class="padding-right"> -->
+                  <q-btn color="grey" class="padding-right"
+                    glossy
+                    :loading="loading">列印</q-btn> &nbsp;
+                <!-- </div> -->
+                <!-- <div class="padding-right"> -->
+                  <q-btn color="grey" class="padding-right"
+                    glossy
+                    :loading="loading">列印(英)</q-btn>
+                <!-- </div> -->
             </div>
             <q-card-actions align="right">
               <q-btn flat label="取消" color="negative" @click="close" />

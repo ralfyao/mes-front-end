@@ -789,6 +789,16 @@ export const useCustStore = defineStore('',  {
       }
       return null;
     },
+    async getRepairFormNo(){
+      const constant = Constant();
+      console.log('APIUrl', constant.APIUrl)
+      const response =await axios.get(constant.APIUrl+'api/GetRepairFormNo')
+      console.log('response', response)
+      if (response){
+        return response.data.result;
+      }
+      return null;
+    },
     async deleteSalesOrder (salesOrderNo) {
       const constant = Constant();
       console.log('APIUrl', constant.APIUrl)
@@ -1200,6 +1210,203 @@ export const useCustStore = defineStore('',  {
         headers: { 'Content-Type': 'application/json' }
       });
       return response;
-    }
+    },
+    async getRepairTestList(){
+      const constant = Constant();
+      console.log('APIUrl', constant.APIUrl)
+      const response =await axios.get(constant.APIUrl+'api/RepairTestList')
+      console.log('response', response)
+      if (response){
+        return response.data.resultList;
+      }
+      return null;
+    },
+    async addRepairForm(form){
+      const constant = Constant();
+      console.log('APIUrl', constant.APIUrl)
+      const payload = { ...toRaw(form.value) };
+      console.log('APIUrl', constant.APIUrl)
+      console.log('payload', payload);
+      const param = {
+        單號:payload.單號,
+        申請日期:payload.申請日期,
+        維修檢查人員:payload.維修檢查人員,
+        服務型態:payload.服務型態,
+        客戶簡稱:payload.客戶簡稱,
+        客戶名稱:payload.客戶名稱,
+        專案序號:payload.專案序號,
+        機台型號:payload.機台型號,
+        機台名稱:payload.機台名稱,
+        機台類型:payload.機台類型,
+        客戶聯絡窗口:payload.客戶聯絡窗口,
+        維修地點:payload.維修地點,
+        希望服務日期:payload.希望服務日期,
+        實際服務日期:payload.實際服務日期,
+        故障情形:payload.故障情形,
+        處置建議:payload.處置建議,
+        零件工令編號:payload.零件工令編號,
+        客戶反應:payload.客戶反應,
+        維修結案日期:payload.維修結案日期,
+        維修服務時數:payload.維修服務時數,
+        轉零件申請:payload.轉零件申請,
+        建檔:payload.建檔,
+        原因類別1:payload.原因類別1,
+        原因類別2:payload.原因類別2,
+        原因類別3:payload.原因類別3,
+        簡要描述1:payload.簡要描述1,
+        簡要描述2:payload.簡要描述2,
+        簡要描述3:payload.簡要描述3,
+        原因鑑定1:payload.原因鑑定1,
+        原因鑑定2:payload.原因鑑定2,
+        原因鑑定3:payload.原因鑑定3,
+      }
+      console.log('param', param)
+      const response = await axios.post(constant.APIUrl + 'api/SaveRepairTest', param, {
+        headers: { 'Content-Type': 'application/json' }
+      });
+      return response;
+    },
+    async updateRepairForm(form){
+      const constant = Constant();
+      console.log('APIUrl', constant.APIUrl)
+      const payload = { ...toRaw(form.value) };
+      console.log('APIUrl', constant.APIUrl)
+      console.log('payload', payload);
+      const param = {
+        單號:payload.單號,
+        申請日期:payload.申請日期,
+        維修檢查人員:payload.維修檢查人員,
+        服務型態:payload.服務型態,
+        客戶簡稱:payload.客戶簡稱,
+        客戶名稱:payload.客戶名稱,
+        專案序號:payload.專案序號,
+        機台型號:payload.機台型號,
+        機台名稱:payload.機台名稱,
+        機台類型:payload.機台類型,
+        客戶聯絡窗口:payload.客戶聯絡窗口,
+        維修地點:payload.維修地點,
+        希望服務日期:payload.希望服務日期,
+        實際服務日期:payload.實際服務日期,
+        故障情形:payload.故障情形,
+        處置建議:payload.處置建議,
+        零件工令編號:payload.零件工令編號,
+        客戶反應:payload.客戶反應,
+        維修結案日期:payload.維修結案日期,
+        維修服務時數:payload.維修服務時數,
+        轉零件申請:payload.轉零件申請,
+        修改:payload.修改,
+        原因類別1:payload.原因類別1,
+        原因類別2:payload.原因類別2,
+        原因類別3:payload.原因類別3,
+        簡要描述1:payload.簡要描述1,
+        簡要描述2:payload.簡要描述2,
+        簡要描述3:payload.簡要描述3,
+        原因鑑定1:payload.原因鑑定1,
+        原因鑑定2:payload.原因鑑定2,
+        原因鑑定3:payload.原因鑑定3,
+      }
+      console.log('param', param)
+      const response = await axios.post(constant.APIUrl + 'api/UpdateRepairTest', param, {
+        headers: { 'Content-Type': 'application/json' }
+      });
+      return response;
+    },
+    async deleteRepairTestForm(form){
+      const constant = Constant();
+      console.log('APIUrl', constant.APIUrl)
+      const payload = { ...toRaw(form.value) };
+      console.log('APIUrl', constant.APIUrl)
+      console.log('payload', payload);
+      const param = {
+        單號:payload.單號,
+        申請日期:payload.申請日期,
+        維修檢查人員:payload.維修檢查人員,
+        服務型態:payload.服務型態,
+        客戶簡稱:payload.客戶簡稱,
+        客戶名稱:payload.客戶名稱,
+        專案序號:payload.專案序號,
+        機台型號:payload.機台型號,
+        機台名稱:payload.機台名稱,
+        機台類型:payload.機台類型,
+        客戶聯絡窗口:payload.客戶聯絡窗口,
+        維修地點:payload.維修地點,
+        希望服務日期:payload.希望服務日期,
+        實際服務日期:payload.實際服務日期,
+        故障情形:payload.故障情形,
+        處置建議:payload.處置建議,
+        零件工令編號:payload.零件工令編號,
+        客戶反應:payload.客戶反應,
+        維修結案日期:payload.維修結案日期,
+        維修服務時數:payload.維修服務時數,
+        轉零件申請:payload.轉零件申請,
+        修改:payload.修改,
+        原因類別1:payload.原因類別1,
+        原因類別2:payload.原因類別2,
+        原因類別3:payload.原因類別3,
+        簡要描述1:payload.簡要描述1,
+        簡要描述2:payload.簡要描述2,
+        簡要描述3:payload.簡要描述3,
+        原因鑑定1:payload.原因鑑定1,
+        原因鑑定2:payload.原因鑑定2,
+        原因鑑定3:payload.原因鑑定3,
+      }
+      console.log('param', param)
+      const response = await axios.post(constant.APIUrl + 'api/DeleteRepairTest', param, {
+        headers: { 'Content-Type': 'application/json' }
+      });
+      return response;
+    },
+    async validateRepairForm(formNo, valid, account){
+      const constant = Constant();
+      const response = await axios.get(constant.APIUrl + 'api/ValidateRepairForm?formNo='+formNo+'&valid='+valid+'&account='+account, {
+        headers: { 'Content-Type': 'application/json' }
+      });
+      return response;
+    },
+    async transferToWorkOrder(form){
+      const constant = Constant();
+      console.log('APIUrl', constant.APIUrl)
+      const payload = { ...toRaw(form.value) };
+      console.log('APIUrl', constant.APIUrl)
+      console.log('payload', payload);
+      const param = {
+        單號:payload.單號,
+        申請日期:payload.申請日期,
+        維修檢查人員:payload.維修檢查人員,
+        服務型態:payload.服務型態,
+        客戶簡稱:payload.客戶簡稱,
+        客戶名稱:payload.客戶名稱,
+        專案序號:payload.專案序號,
+        機台型號:payload.機台型號,
+        機台名稱:payload.機台名稱,
+        機台類型:payload.機台類型,
+        客戶聯絡窗口:payload.客戶聯絡窗口,
+        維修地點:payload.維修地點,
+        希望服務日期:payload.希望服務日期,
+        實際服務日期:payload.實際服務日期,
+        故障情形:payload.故障情形,
+        處置建議:payload.處置建議,
+        零件工令編號:payload.零件工令編號,
+        客戶反應:payload.客戶反應,
+        維修結案日期:payload.維修結案日期,
+        維修服務時數:payload.維修服務時數,
+        轉零件申請:payload.轉零件申請,
+        修改:payload.修改,
+        原因類別1:payload.原因類別1,
+        原因類別2:payload.原因類別2,
+        原因類別3:payload.原因類別3,
+        簡要描述1:payload.簡要描述1,
+        簡要描述2:payload.簡要描述2,
+        簡要描述3:payload.簡要描述3,
+        原因鑑定1:payload.原因鑑定1,
+        原因鑑定2:payload.原因鑑定2,
+        原因鑑定3:payload.原因鑑定3,
+      }
+      console.log('param', param)
+      const response = await axios.post(constant.APIUrl + 'api/TransferRepairToWorkOrder', param, {
+        headers: { 'Content-Type': 'application/json' }
+      });
+      return response;
+    },
   }
 })

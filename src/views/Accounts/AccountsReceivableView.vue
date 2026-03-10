@@ -25,26 +25,6 @@
               glossy @click="openARDialog('預覽')"
                 :loading="loading">立帳單預覽</q-btn>&nbsp;
         </div>
-        <div v-if="(hasAllAuth ||(auth && auth.輸出))">
-            <!-- <div class="padding-right"> -->
-              <q-btn color="grey" class="padding-right"
-                glossy
-                :loading="loading">列印</q-btn> &nbsp;
-            <!-- </div> -->
-            <!-- <div class="padding-right"> -->
-              <q-btn color="grey" class="padding-right"
-                glossy
-                :loading="loading">列印(英)</q-btn>
-            <!-- </div> -->
-          </div>
-          <div v-if="(hasAllAuth ||(auth && auth.核准)) && !preview">
-            <q-btn color="grey" class="padding-right"
-                glossy v-if="form.核准日 && form.核准日!= ''"
-                :loading="loading" @click="validate(false)">取消核准</q-btn> &nbsp;
-            <q-btn color="grey" class="padding-right"
-                glossy v-if="!form.核准日 || form.核准日== ''"
-                :loading="loading" @click="validate(true)">核准</q-btn> &nbsp;
-          </div>
       </div>
       <div class="row justify-start padding-top">
         <div class="col-6 col-md-6"  style="max-width: 500px">
@@ -75,13 +55,29 @@
         <q-card-section>
           <div class="text-h4">
             {{mode}}立帳單
-            <div v-if="mode == '修改'">
-              <q-checkbox v-model="form.結案" label="結案" :readonly="readonly || preview" @update:model-value="updateCloseFlag"/>
-              <q-btn v-if="!preview" label="出納收款" color="green" glossy densed @click="quotationDistribution"/>&nbsp;
-              <q-btn v-if="!preview" label="收款明細導入" color="primary" glossy densed/>&nbsp;
-              <q-btn v-if="!preview" label="會計傳票" color="brown" glossy densed/>
-              <q-btn v-if="(auth.核准 || hasAllAuth) && mode == '修改' && !form.核准日" label="覆核" color="grey" @click="validate(true)"/>
-              <q-btn v-if="(auth.核准 || hasAllAuth) && mode == '修改' && form.核准日" label="取消覆核" color="grey" @click="validate(false)"/>
+            <div class="row q-col-gutter-md">
+              <div v-if="mode == '修改'">
+                <div class="col-6 flex">
+                  <q-checkbox v-model="form.結案" label="結案" :readonly="readonly || preview" @update:model-value="updateCloseFlag"/>
+                  <q-btn v-if="!preview" label="出納收款" color="green" glossy densed @click="quotationDistribution"/>&nbsp;
+                  <q-btn v-if="!preview" label="收款明細導入" color="primary" glossy densed/>&nbsp;
+                  <q-btn v-if="!preview" label="會計傳票" color="brown" glossy densed/>
+                  <q-btn v-if="(auth.核准 || hasAllAuth) && mode == '修改' && !form.核准日" label="覆核" color="grey" @click="validate(true)"/>
+                  <q-btn v-if="(auth.核准 || hasAllAuth) && mode == '修改' && form.核准日" label="取消覆核" color="grey" @click="validate(false)"/>
+                </div>
+              </div>
+              <div class="col-6 flex" v-if="(hasAllAuth ||(auth && auth.輸出))">
+                    <!-- <div class="padding-right"> -->
+                      <q-btn color="grey" class="padding-right"
+                        glossy
+                        :loading="loading">列印</q-btn> &nbsp;
+                    <!-- </div> -->
+                    <!-- <div class="padding-right"> -->
+                      <q-btn color="grey" class="padding-right"
+                        glossy
+                        :loading="loading">列印(英)</q-btn>
+                    <!-- </div> -->
+              </div>
             </div>
           </div>
         </q-card-section>

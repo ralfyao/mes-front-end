@@ -36,18 +36,6 @@
                 :loading="loading">客戶搜尋</q-btn>&nbsp;
           <!-- </div> -->
           </div>
-          <div v-if="(hasAllAuth ||(auth && auth.輸出))">
-            <!-- <div class="padding-right"> -->
-              <q-btn color="grey" class="padding-right"
-                glossy
-                :loading="loading">列印</q-btn> &nbsp;
-            <!-- </div> -->
-            <!-- <div class="padding-right"> -->
-              <q-btn color="grey" class="padding-right"
-                glossy
-                :loading="loading">列印(英)</q-btn>
-            <!-- </div> -->
-          </div>
         <!-- </div> -->
       </div>
       <div class="row justify-start padding-top">
@@ -86,6 +74,18 @@
                     </div>
                     <div class="padding-right">
                       <q-btn label="報價歷程" color="brown" @click="openQuotationList"/>
+                    </div>
+                    <div v-if="(hasAllAuth ||(auth && auth.輸出))">
+                      <!-- <div class="padding-right"> -->
+                        <q-btn color="grey" class="padding-right"
+                          glossy
+                          :loading="loading">列印</q-btn> &nbsp;
+                      <!-- </div> -->
+                      <!-- <div class="padding-right"> -->
+                        <q-btn color="grey" class="padding-right"
+                          glossy
+                          :loading="loading">列印(英)</q-btn>
+                      <!-- </div> -->
                     </div>
                   </div>
                 </div>
