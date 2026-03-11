@@ -5,23 +5,23 @@
         <div class="col-2 col-md-2">
           <q-icon name="play_circle" size="30px" >{{ formName }}</q-icon>
         </div>
-        <div v-if="(hasAllAuth ||(auth && auth.編修))">
-          <q-btn color="primary" class="padding-right"
-            glossy @click="openCARDialog('新增')"
-            :loading="loading">新增維修單</q-btn>&nbsp;
-          <q-btn color="info" class="padding-right"
-            glossy @click="openCARDialog('修改')"
-            :loading="loading">修改維修單</q-btn>&nbsp;
-          <q-btn color="red" class="padding-right"
-              glossy @click="deleteCAR"
-              :loading="loading">刪除維修單</q-btn>&nbsp;
-        </div>
-        <div v-if="(hasAllAuth ||(auth && auth.查詢))">
-        <!-- <div class="padding-right"> -->
-          <q-btn color="green" class="padding-right"
-              glossy @click="openCARDialog('預覽')"
-                :loading="loading">維修單預覽</q-btn>&nbsp;
-        </div>
+          <div v-if="(hasAllAuth ||(auth && auth.編修))">
+            <q-btn color="primary" class="padding-right"
+              glossy @click="openCARDialog('新增')"
+              :loading="loading">新增維修單</q-btn>&nbsp;
+            <q-btn color="info" class="padding-right"
+              glossy @click="openCARDialog('修改')"
+              :loading="loading">修改維修單</q-btn>&nbsp;
+            <q-btn color="red" class="padding-right"
+                glossy @click="deleteCAR"
+                :loading="loading">刪除維修單</q-btn>&nbsp;
+          </div>
+          <div v-if="(hasAllAuth ||(auth && auth.查詢))">
+          <!-- <div class="padding-right"> -->
+            <q-btn color="green" class="padding-right"
+                glossy @click="openCARDialog('預覽')"
+                  :loading="loading">維修單預覽</q-btn>&nbsp;
+          </div>
       </div>
       <div class="row justify-start padding-top">
         <div class="text-left text-red">{{ errorMessage }}</div>
@@ -336,7 +336,7 @@
   <LoadingComponent v-model="secondDialog"/>
 </template>
 <script setup>
-// import block start
+// #region import block start
 import {
     QIcon
   , QLayout
@@ -363,9 +363,9 @@ import { useCustStore } from '@/composables/useCust';
 import dayjs from 'dayjs';
 import CustListQueryView from '@/components/customer/query/CustListQueryView.vue'
 import LoadingComponent from '@/components/LoadingComponent.vue';
-// import block end
+// #endregion import block end
 
-// variable block start
+// #region variable block start
 const formName = ref('檢測維修');
 const showForm = ref(false);
 const myForm = ref(null);
@@ -439,9 +439,9 @@ const columns = ref([
   { name: '機台型號', label: '機台型號', align: 'left', field: '機台型號', sortable: true },
   { name: '客戶簡稱', label: '客戶簡稱', align: 'left', field: '客戶簡稱', sortable: true },
 ]);
-// variable block end
+// #endregion variable block end
 
-// function block start
+// #region function block start
 onMounted(()=>{
   init();
 })
@@ -705,5 +705,5 @@ watch(
   },
   { deep: true, immediate: true }
 )
-// function bloxk end
+// #endregion function bloxk end
 </script>

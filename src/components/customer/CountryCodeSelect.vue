@@ -45,9 +45,9 @@ const emits = defineEmits(['update:country']);
 // function block start
 const getCountryName = (acountry) =>{
   console.log('country', acountry);
-  country.value = countryList.value.find(x => (x?.國別??'') === (acountry?.國別 ? acountry?.國別.trim() :  acountry.trim()))
+  country.value = countryList.value.find(x => (x?.國別??'') === (acountry?.國別 ? acountry?.國別.trim() :  acountry?.trim()))
   console.log('country.value', country?.value );
-  countryname.value = (country.value?.code? country.value?.code : country.value);
+  countryname.value = (country.value?.code? country.value?.code : country?.value);
   emits("update:country", country.value);
 }
 onMounted(async ()=>{
