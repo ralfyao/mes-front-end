@@ -170,8 +170,8 @@
                 <q-input v-model="form.R3" :readonly="readonly || preview" label="個人手機" outlined dense />
               </div>
               <div class="col-3 col-md-3" style="max-width: 150px">
-                <q-btn label="停用" v-if="!readonly && !preview" color="red" outlined dense />
-                <q-btn label="取消停用" v-if="!readonly && !preview" color="primary" outlined dense />
+                <q-btn label="停用" v-if="!readonly && !preview && !form.停用" color="red" outlined dense />
+                <q-btn label="取消停用" v-if="!readonly && !preview && form.停用" color="primary" outlined dense />
               </div>
             </div>
             <br>
@@ -233,7 +233,16 @@ const auth = ref({});const columns = ref([
   { name: '廠商編號', label: '廠商編號', align: 'left', field: '廠商編號', sortable: true },
   { name: '廠商簡稱', label: '廠商簡稱', align: 'left', field: '廠商簡稱', sortable: true },
   { name: '廠商名稱', label: '廠商名稱', align: 'left', field: '廠商名稱', sortable: true },
-  { name: '國別', label: '國別', align: 'left', field: '國別', sortable: true },
+  { name: '統一編號', label: '統一編號', align: 'left', field: '統一編號', sortable: true },
+  { name: '電話', label: '電話', align: 'left', field: '電話', sortable: true },
+  { name: '傳真', label: '傳真', align: 'left', field: '傳真', sortable: true },
+  { name: '聯絡人', label: '聯絡人', align: 'left', field: '聯絡人', sortable: true },
+  { name: '職稱', label: '職稱', align: 'left', field: '職稱', sortable: true },
+  { name: '所屬業別', label: '所屬業別', align: 'left', field: '所屬業別', sortable: true },
+  { name: '管理分類', label: '管理分類', align: 'left', field: '管理分類', sortable: true },
+  { name: '等級', label: '等級', align: 'left', field: '等級', sortable: true },
+  { name: '核准', label: '核准', align: 'left', field: '核准', sortable: true },
+  { name: '停用', label: '停用', align: 'left', field: '停用', sortable: true },
 ]);
 const list = ref([]);
 const listDetail = ref([])
@@ -265,7 +274,8 @@ const form = ref({
   R1:'',
   R2:'',
   R3:'',
-  建檔:'',
+  停用:false,
+  建檔:authStore.getUser().account,
   修改:'',
   核准:'',
   建檔日:'',
@@ -292,10 +302,12 @@ const columnsDetail = ref([
 
 // #region--------------------------------------function block start---------------------------------//
 onMounted(async ()=>{
+  secondDialog.value = true;
   auth.value = authStore.getAuth(formName);
   hasAllAuth.value = authStore.hasAllAuth(formName);
   await supplierStpre.getSupplierList().then((data)=>{
     list.value = data;
+    secondDialog.value = false;
   })
 })
 const close = () =>{
@@ -326,6 +338,7 @@ const openCARDialog = (type) => {
       R1:'',
       R2:'',
       R3:'',
+      停用:false,
       建檔:'',
       修改:'',
       核准:'',

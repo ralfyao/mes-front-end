@@ -347,7 +347,7 @@
   <LoadingComponent v-model="secondDialog"/>
 </template>
 <script setup>
-//import block start
+// #region import block start
 import { useCustStore } from '@/composables/useCust';
 import BankInfoView from '@/components/customer/salesorder/BankInfoView.vue';
 import SalesOrderDistributionView from '@/components/customer/salesorder/SalesOrderDistributionView.vue';
@@ -372,9 +372,10 @@ import {
 import { ref, onMounted, watch } from 'vue';
 import dayjs from 'dayjs'
 import CustListQueryView from '@/components/customer/query/CustListQueryView.vue'
-//import block end
+import LoadingComponent from '@/components/LoadingComponent.vue';
+// #endregion import block end
 
-//variable block start
+// #region variable block start
 const showSearchCustNoForm = ref(false);
 const formName = '銷貨出庫';
 const auth = ref({});
@@ -407,10 +408,18 @@ const showForm = ref(false);
 const showBankInfo = ref(false);
 const mode = ref('');
 const columns = [
-  { name: '日期', label: '出貨單日期', align: 'left', field: '日期', sortable: true },
   { name: '單號', label: '出貨單號', align: 'left', field: '單號', sortable: true },
-  { name: '原定交貨日', label: '原定交貨日', align: 'left', field: '原定交貨日', sortable: true },
+  { name: '日期', label: '出貨單日期', align: 'left', field: '日期', sortable: true },
   { name: '客戶編號', label: '客戶編號', align: 'left', field: '客戶編號', sortable: true },
+  { name: '客戶簡稱', label: '客戶簡稱', align: 'left', field: '客戶簡稱', sortable: true },
+  { name: '總額', label: '出貨單總額', align: 'left', field: '總額', sortable: true },
+  { name: '原定交貨日期', label: '原定交貨日期', align: 'left', field: '原定交貨日期', sortable: true },
+  { name: '付款方式', label: '交易條件', align: 'left', field: '付款方式', sortable: true },
+  { name: '交貨方式', label: '運輸方式', align: 'left', field: '交貨方式', sortable: true },
+  { name: '價格條件', label: '貿易條件', align: 'left', field: '價格條件', sortable: true },
+  { name: '業務員', label: '業代', align: 'left', field: '業務員', sortable: true },
+  { name: '業務人員', label: '業務人員', align: 'left', field: '業務人員', sortable: true },
+  { name: '核准', label: '核准', align: 'left', field: '核准', sortable: true },
 ];
 const custStore = useCustStore();
 const form = ref({
@@ -447,9 +456,9 @@ const bankAccountCheckForm = ref({
   SwiftCode:'',
   電話:'',
 });
-//variable block end
+// #endregion variable block end
 
-//function block start
+// #region function block start
 const openCustomDialog = async (type) => {
   console.log('type', type)
   mode.value = type;
@@ -519,6 +528,7 @@ const init = async () =>{
    await custStore.getShipOrderList().then((data)=>{
     list.value = data;
     list.value.forEach((x)=>x.日期 = dayjs(x.日期, "MM/DD/YYYY HH:mm:ss").format("YYYY/MM/DD"))
+    list.value.forEach((x)=>x.原定交貨日期 = dayjs(x.原定交貨日期, "MM/DD/YYYY HH:mm:ss").format("YYYY/MM/DD"))
   });
   await custStore.getCustNumberList().then((data)=>{
     console.log('custNumberList', data);
@@ -708,5 +718,5 @@ watch(
   },
   { deep: true, immediate: true }
 )
-//function block end
+// #endregion function block end
 </script>

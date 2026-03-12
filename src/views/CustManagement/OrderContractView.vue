@@ -22,13 +22,15 @@
                 :loading="loading">刪除訂單</q-btn>&nbsp;
           <!-- </div> -->
         </div>
-
         <div v-if="(hasAllAuth ||(auth && auth.查詢))">
           <!-- <div class="padding-right"> -->
             <q-btn color="green" class="padding-right"
                 glossy @click="openCustomerDialog('預覽')"
                   :loading="loading">訂單預覽</q-btn>&nbsp;
           <!-- </div> -->
+          <q-btn color="blue-6" class="padding-right"
+                glossy @click="openSearchForm"
+                  :loading="loading">訂單查詢</q-btn>&nbsp;
         </div>
       </div>
       <div class="row justify-start padding-top">
@@ -55,6 +57,10 @@
 
       </q-page>
     </q-page-container>
+    <!--查詢條件表單-->
+    <q-dialog v-model="showQueryForm" persistent >
+      <OrderQueryForm v-model:showForm="showQueryForm" v-model:list="list"/>
+    </q-dialog>
     <!--主表單-->
     <q-dialog v-model="showForm" persistent >
       <q-card  class="q-pa-md"  style="width: 1500px; max-width: 95vw;">
@@ -67,7 +73,7 @@
               <q-btn v-if="!preview" label="轉製令工件" color="primary" glossy densed/>&nbsp;
               <q-btn v-if="!preview" label="轉開出貨單" color="brown" glossy densed @click="transferToShipOrder"/>
             </div>
-            <div class="col-3 flex" v-if="(hasAllAuth ||(auth && auth.核准)) && !preview">
+            <div class="col-3 flex" v-if="(hasAllAuth ||(auth && auth.核准)) && !preview && mode == '修改'">
               <q-btn color="grey" class="padding-right"
                       glossy v-if="salesOrderForm.核准日 && salesOrderForm.核准日!= ''"
                       :loading="loading" @click="validate(false)">取消核准</q-btn> &nbsp;
@@ -445,7 +451,7 @@
   </q-layout>
 </template>
 <script setup>
-//import block start
+// #region import block start
 import dayjs from 'dayjs'
 import LoadingComponent from '@/components/LoadingComponent.vue';
 import {
@@ -472,9 +478,10 @@ import {ref, onMounted, watch} from 'vue'
 import { useCustStore } from '@/composables/useCust';
 import BankInfoView from '@/components/customer/salesorder/BankInfoView.vue';
 import CustListQueryView from '@/components/customer/query/CustListQueryView.vue'
-//import block end
+import OrderQueryForm from '@/components/customer/query/OrderQueryForm.vue';
+// #endregion import block end
 
-//variable block start
+// #region variable block start
 const showSearchCustNoForm = ref(false);
 const formName = '訂單合約';
 const theUser = ref([]);
@@ -482,6 +489,7 @@ const auth = ref({});
 const hasAllAuth = ref(false);
 const custStore = useCustStore();
 const showETDPopup = ref(false);
+const showQueryForm = ref(false);
 const preview = ref(false);
 const showCheckForm = ref(false);
 const showQuotationDistributionForm = ref(false);
@@ -514,8 +522,19 @@ const columns =
 [
   // { name: 'quono', label: '報價單號', align: 'left', field: 'quono', sortable: true },
   { name: '單號', label: '訂單單號', align: 'left', field: '單號', sortable: true },
-  { name: '客戶編號', label: '客戶編號', align: 'left', field: '客戶編號', sortable: true },
   { name: '日期', label: '日期', align: 'left', field: '日期', sortable: true },
+  { name: '客戶編號', label: '客戶編號', align: 'left', field: '客戶編號', sortable: true },
+  { name: '客戶全稱', label: '客戶全稱', align: 'left', field: '客戶全稱', sortable: true },
+  { name: '指配國別', label: '國別', align: 'left', field: '指配國別', sortable: true },
+  { name: '總額', label: '訂單總額', align: 'left', field: '總額', sortable: true },
+  { name: '要望日期', label: '預交日', align: 'left', field: '要望日期', sortable: true },
+  { name: '付款方式', label: '交易條件', align: 'left', field: '付款方式', sortable: true },
+  { name: '交貨方式', label: '運輸方式', align: 'left', field: '交貨方式', sortable: true },
+  { name: '價格條件', label: '貿易條件', align: 'left', field: '價格條件', sortable: true },
+  { name: '業務員', label: '業代', align: 'left', field: '業務員', sortable: true },
+  { name: '業務人員', label: '業務人員', align: 'left', field: '業務人員', sortable: true },
+  { name: '核准', label: '核准', align: 'left', field: '核准', sortable: true },
+  { name: '結案', label: '結案', align: 'left', field: '結案', sortable: true },
 ];
 
 const quotColumns =
@@ -569,9 +588,12 @@ const bankAccountCheckForm = ref({
   SwiftCode:'',
   電話:'',
 });
-//variable block end
+// #endregion variable block end
 
-//function block start
+// #region function block start
+const openSearchForm = () =>{
+  showQueryForm.value = true;
+}
 const onSelection = () =>{
 
 }
@@ -671,6 +693,7 @@ const deleteCustomer = async () =>{
   }
 }
 const init = async () =>{
+  secondDialog.value = true;
   await custStore.getSalesOrderList().then((data)=>{
     console.log('data list', data);
     list.value = data;
@@ -1080,5 +1103,5 @@ const validate = async(valid) =>{
     init();
   })
 }
-//function block end
+// #endregion function block end
 </script>

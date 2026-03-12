@@ -316,7 +316,7 @@
   </q-layout>
 </template>
 <script setup>
-//import block start
+// #region import block start
 import {
     QIcon
   , QLayout
@@ -345,9 +345,10 @@ import BankCodeSelect from '@/components/customer/BankCodeSelect.vue';
 import CountryCodeSelect from '@/components/customer/CountryCodeSelect.vue';
 import ChangeNameForm from '@/components/customer/ChangeNameForm.vue';
 import IndustryListForm from '@/components/customer/IndustryListForm.vue';
-//import block end
+import LoadingComponent from '@/components/LoadingComponent.vue';
+// #endregion import block end
 
-//variable block start
+// #region variable block start
 const formName = '客戶維護';
 const auth = ref({});
 const hasAllAuth = ref(false);
@@ -422,9 +423,9 @@ const form = ref({
 const myForm = ref(null)
 const showQuotationListForm = ref(false);
 const showIndustryListForm = ref(false);
-//variable block end
+// #endregion variable block end
 
-//function block start
+// #region function block start
 const openSearchDialog = () =>{
   showSearchForm.value = true;
 }
@@ -457,14 +458,29 @@ const init = async () =>{
   hasAllAuth.value =
       (!auth.value.高管 && !auth.value.核准 && !auth.value.編修 && !auth.value.報表 && !auth.value.輸出);
   console.log('auth', auth.value);
-  list.value = await custStore.getCustList() ;
-  console.log('list.value', list.value)
-  countryList.value = await custStore.getCountryList();
-  industryList.value = await custStore.getIndustryList();
-  console.log('industryList', industryList.value);
-  bankList.value = await custStore.getBankList();
-  salesList.value = await custStore.getSalesList();
-  agentList.value =  await custStore.getAgentOptions();
+  secondDialog.value = true;
+  await custStore.getCustList().then((data)=>{
+    list.value = data;
+    custStore.getCountryList().then((data)=>{
+      countryList.value = data;
+      custStore.getIndustryList().then((data)=>{
+        industryList.value =data;
+        custStore.getBankList().then((data)=>{
+          bankList.value = data;
+          custStore.getSalesList().then((data)=>{
+            salesList.value = data;
+            custStore.getSalesList().then((data)=>{
+              salesList.value = data;
+              custStore.getAgentOptions().then((data)=>{
+                agentList.value =  data;
+                secondDialog.value = false;
+              })
+            })
+          })
+        })
+      })
+    })
+  }) ;
   form.value = {
   識別: '',
   company: '',
@@ -497,7 +513,6 @@ const init = async () =>{
   contactDetails:[]};
   console.log('銀行列表:', bankList.value);
   selected.value = [];
-  loading.value = false;
 }
 
 const openRfqList = () =>{
@@ -764,5 +779,5 @@ const changeCustName = () =>{
 const openIndustryForm = () =>{
   showIndustryListForm.value = true;
 }
-//function block end
+// #endregion function block end
 </script>

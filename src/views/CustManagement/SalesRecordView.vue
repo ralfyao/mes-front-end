@@ -228,6 +228,7 @@
   </q-layout>
 </template>
 <script setup>
+// #region import
 import {
     QIcon
   , QLayout
@@ -256,7 +257,9 @@ import SalesWorkRecordList from '@/components/customer/SalesWorkRecordList.vue';
 import QuotationView from '@/components/customer/quotation/QuotationView.vue';
 import dayjs  from 'dayjs';
 import IndustryCodeSelect from '@/components/customer/IndustryCodeSelect.vue';
-//變數
+//  #endregion import
+
+// #region 變數
 const formName = '客戶詢問函';
 const auth = ref({});
 const hasAllAuth = ref(false);
@@ -320,10 +323,9 @@ const agentOptions = ref([]);
 const countryList = ref([]);
 const showQuotationForm = ref(false);
 const preview = ref(false);
-//變數
+// #endregion 變數
 
-
-//functions
+// #region functions
 const openCustomerDialog = async (amode) => {
   console.log('Open Customer Dialog in mode:', amode);
   mode.value = amode;
@@ -500,6 +502,7 @@ const updateStatus = (pam) =>{
 }
 const init = async () => {
   list.value = [];
+  secondDialog.value = true
   list.value = await custStore.getSalesRecordList();
   // console.log('Fetched Sales Record List:', list.value);
   companyList.value = await custStore.getCompanyList();
@@ -509,6 +512,7 @@ const init = async () => {
   statusList.value = await custStore.getStatusList();
   agentOptions.value = await custStore.getAgentOptions();
   countryList.value = await custStore.getCountryList();
+  secondDialog.value = false;
   // console.log('Fetched Company List:', companyList.value);
   theUser.value = SessionStorage.getItem('Account');
   auth.value = theUser.value.authList.find((x)=>x.menuSubName == formName);
@@ -572,5 +576,5 @@ const close = () =>{
   showForm.value = false
   preview.value = false;
 }
-//functions
+// #endregion functions
 </script>

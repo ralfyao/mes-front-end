@@ -277,7 +277,7 @@
   <LoadingComponent v-model="secondDialog"/>
 </template>
 <script setup>
-// import block start
+// #region import block start
 import {
   QLayout,
   QIcon,
@@ -301,9 +301,9 @@ import { ref, onMounted } from 'vue';
 import { useCustStore } from '@/composables/useCust';
 import BankInfoView from '@/components/customer/salesorder/BankInfoView.vue';
 import { useARStore } from '@/composables/useAR';
-// import block end
+// #endregion import block end
 
-// variable block start
+// #region variable block start
 const account = SessionStorage.getItem('Account');
 const formName = '客戶未收查詢';
 const auth = ref({});
@@ -375,9 +375,9 @@ const bankAccountCheckForm = ref({
   電話:'',
 });
 const preview = ref(false);
-// variable block end
+// #endregion variable block end
 
-// function block start
+// #region function block start
 const AddOtherIncomeItem = () =>{
   if (!Array.isArray(form.value.detailList)) {
     form.value.detailList = []
@@ -558,6 +558,7 @@ const openAccountCheck = async () =>{
 }
 
 const init = async () =>{
+  secondDialog.value = true;
   await custStore.getCustNumberList().then((data)=>{
     console.log('custNumberList', data);
     custNumberList.value = data;
@@ -659,7 +660,6 @@ const deleteAR = async () =>{
 }
 
 onMounted(async () =>{
-  secondDialog.value = true;
   init();
 })
 
@@ -676,5 +676,5 @@ const validate = async (valid) =>{
 }
 
 
-// function block end
+// #endregion function block end
 </script>

@@ -504,6 +504,7 @@ const submitForm = async()=>{
 }
 
 const init = async () =>{
+  secondDialog.value = true;
   await custStore.getRepairTestList().then((data)=>{
     list.value = data;
     list.value.forEach((x)=> x.申請日期 = dayjs(x.申請日期, "MM/DD/YYYY HH:mm:ss").format("YYYY/MM/DD"))
@@ -532,6 +533,8 @@ const init = async () =>{
     repairatorList.value = data;
     console.log('repairatorList', repairatorList.value);
   })
+
+  secondDialog.value = false;
   custAliasList.value = custAliasList.value.sort((x, y)=>x.正航編號 - y.正航編號);
   selected.value = [];
   salesname.value = '';

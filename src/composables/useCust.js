@@ -43,6 +43,38 @@ export const useCustStore = defineStore('',  {
       });
       return response;
     },
+    async querySalesOrderByCondition(param){
+      const constant = Constant();
+      const payload = { ...toRaw(param.value) };
+      console.log('APIUrl', constant.APIUrl)
+      console.log('payload', payload);
+      const paramA = {
+        company:payload.company,
+        country:payload.country?.國別 ? payload.country?.國別 : payload.country,
+        itemNo:payload.itemNo,
+      }
+      console.log('paramA', paramA);
+      const response = await axios.post(constant.APIUrl + 'api/QueryOrderListByCondition', JSON.stringify(paramA), {
+        headers: { 'Content-Type': 'application/json' }
+      });
+      return response;
+    },
+    async queryQuotationList(param){
+      const constant = Constant();
+      const payload = { ...toRaw(param.value) };
+      console.log('APIUrl', constant.APIUrl)
+      console.log('payload', payload);
+      const paramA = {
+        quono:payload.quono,
+        company:payload.company,
+        itemNo:payload.itemNo,
+      }
+      console.log('paramA', paramA);
+      const response = await axios.post(constant.APIUrl + 'api/QueryQuotationListByCondition', JSON.stringify(paramA), {
+        headers: { 'Content-Type': 'application/json' }
+      });
+      return response;
+    },
     async getProjectSerial(custNo){
       const constant = Constant()
       console.log('APIUrl', constant.APIUrl)

@@ -575,6 +575,7 @@ const onSelection = async (val) =>{
   });
 }
 const init = async () => {
+  secondDialog.value = true;
   await custStore.getCustList().then((data)=>{
     for(var i = 0; i < data.length; i++){
       if (data[i].正航編號 != '')
@@ -596,6 +597,7 @@ const init = async () => {
     repairatorList.value = data;
     console.log('repairatorList', repairatorList.value);
   })
+  secondDialog.value = false;
   custAliasList.value = custAliasList.value.sort((x, y)=>x.正航編號 - y.正航編號);
   selected.value = [];
   salesname.value = '';

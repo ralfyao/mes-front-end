@@ -263,7 +263,7 @@
   <LoadingComponent v-model="secondDialog"/>
 </template>
 <script setup>
-// import block start
+// #region import block start
 import { useCustStore } from '@/composables/useCust';
 import { useARStore } from '@/composables/useAR';
 import {
@@ -286,9 +286,10 @@ import {
 } from 'quasar'
 import { ref, onMounted, watch } from 'vue'
 import CustListQueryView from '@/components/customer/query/CustListQueryView.vue';
-// import block end
+import LoadingComponent from '@/components/LoadingComponent.vue';
+// #endregion import block end
 
-//variable block start
+// #region variable block start
 const showSearchCustNoForm = ref(false);
 const formName = '應收立帳';
 const auth = ref({});
@@ -296,10 +297,21 @@ const hasAllAuth = ref(false);
 const theUser = ref({});
 const columns =
 [
-  { name: '日期', label: '日期', align: 'left', field: '日期', sortable: true },
   { name: '單號', label: '單號', align: 'left', field: '單號', sortable: true },
-  { name: '收款類別', label: '收款類別', align: 'left', field: '類別', sortable: true },
-  { name: '憑證種類', label: '憑證種類', align: 'left', field: 'machineno', sortable: true },
+  { name: '日期', label: '日期', align: 'left', field: '日期', sortable: true },
+  { name: '客戶編號', label: '客戶編號', align: 'left', field: '客戶編號', sortable: true },
+  { name: '客戶名稱', label: '客戶名稱', align: 'left', field: '客戶名稱', sortable: true },
+  { name: '幣別', label: '幣別', align: 'left', field: '幣別', sortable: true },
+  { name: '類別', label: '類別', align: 'left', field: '類別', sortable: true },
+  { name: '收款日期', label: '發票日期', align: 'left', field: '收款日期', sortable: true },
+  { name: '發票號碼', label: '發票日期', align: 'left', field: '發票號碼', sortable: true },
+  { name: 'machineno', label: '憑證種類', align: 'left', field: 'machineno', sortable: true },
+  { name: '銀轉金額', label: '未稅金額', align: 'left', field: '銀轉金額', sortable: true },
+  { name: '收票金額', label: '稅額', align: 'left', field: '收票金額', sortable: true },
+  { name: '收款總額', label: '應收金額', align: 'left', field: '收款總額', sortable: true },
+  { name: '傳票', label: '傳票', align: 'left', field: '傳票', sortable: true },
+  { name: '核准', label: '財務覆核', align: 'left', field: '核准', sortable: true },
+  { name: '結案', label: '結案', align: 'left', field: '結案', sortable: true },
 ];
 const currencyList  = ref([]);
 const exRateList    = ref([]);
@@ -347,9 +359,9 @@ const form = ref({
   收款總額:0.0,
   arListDetail:[],
 });
-//variable block end
+// #endregion variable block end
 
-//function block start
+// #region function block start
 const openARDialog = async (type) =>{
   console.log(type)
   mode.value = type;
@@ -550,7 +562,7 @@ console.log('account receivable form:', form);
       類別:'',
       收現金額:0.0,
       銀轉金額:0.0,
-      憑證種類:'',
+      machineno:'',
       發票號碼:'',
       收票金額:0.0,
       傳票:'',
@@ -577,6 +589,7 @@ onMounted(async ()=>{
   init();
 })
 const init = async () =>{
+  secondDialog.value = true;
   await custStore.getCustNumberList().then((data)=>{
     console.log('custNumberList', data);
     custNumberList.value = data;
@@ -642,5 +655,5 @@ watch(
   },
   { deep: true, immediate: true }
 )
-//function block end
+// #endregion function block end
 </script>

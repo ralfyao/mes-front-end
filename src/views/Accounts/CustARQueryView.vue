@@ -106,7 +106,7 @@
   <LoadingComponent v-model="secondDialog"/>
 </template>
 <script setup>
-// import block start
+// #region import block start
 import { useARStore } from '@/composables/useAR';
 import {
   QLayout,
@@ -122,9 +122,10 @@ import {
   QCardActions,SessionStorage,
 } from 'quasar'
 import { ref, onMounted } from 'vue'
-// import block end
+import LoadingComponent from '@/components/LoadingComponent.vue';
+// #endregion  import block end
 
-// variable block start
+// #region  variable block start
 const formName = '客戶未收查詢';
 const auth = ref({});
 const hasAllAuth = ref(false);
@@ -184,9 +185,9 @@ const data = ref({
   detailList:[],
 });
 const secondDialog = ref(false);
-// variable block end
+// #endregion  variable block end
 
-// function block start
+// #region  function block start
 const openARDialog = (type) =>{
   console.log(type);
   if(selected.value.length == 0){
@@ -215,5 +216,5 @@ onMounted(async ()=>{
       (!auth.value.高管 && !auth.value.核准 && !auth.value.編修 && !auth.value.報表 && !auth.value.輸出);
   console.log('auth', auth.value);
 })
-// function block end
+// #endregion  function block end
 </script>

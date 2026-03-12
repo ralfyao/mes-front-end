@@ -28,6 +28,9 @@
           <q-btn color="green" class="padding-right"
             glossy @click="openCustomerDialog('預覽')"
             :loading="loading">預覽報價單</q-btn>&nbsp;
+          <q-btn color="blue-6" class="padding-right"
+            glossy @click="openSearchForm"
+            :loading="loading">報價單查詢</q-btn>&nbsp;
         </div>
       </div>
       <div class="row justify-start padding-top">
@@ -40,7 +43,7 @@
       <q-page>
         <q-table  class="rounded-borders my-sticky-header-table"
                 :columns="columns"
-                row-key="quono"
+                row-key="idno"
                 :rows="list"
                 flat
                 bordered
@@ -50,7 +53,18 @@
                 v-model:selected="selected"
                 @selection="onSelection"
                 :pagination="{ rowsPerPage: 5 }"
-        ></q-table >
+        >
+          <template v-slot:body-cell-明細查詢="props">
+            <q-td :props="props">
+              <q-btn
+                color="primary"
+                label="查看"
+                dense outline
+                @click="viewDetail(props.row)"
+              />
+            </q-td>
+          </template>
+        </q-table >
       </q-page>
     </q-page-container>
     <q-dialog v-model="showForm" persistent >
@@ -63,11 +77,17 @@
         v-model:hasAllAuth="hasAllAuth"
         v-model:showForm="showForm"/>
     </q-dialog>
+    <q-dialog v-model="showSearchForm" persistent >
+      <QuotationQueryForm v-model:showForm="showSearchForm" v-model:list="list"/>
+    </q-dialog>
+    <q-dialog v-model="showDetailForm" persistent >
+      <ShowQuotationDetailView v-model:show-form="showDetailForm" v-model:list="rowDetail"/>
+    </q-dialog>
   </q-layout>
   <LoadingComponent v-model="secondDialog"/>
 </template>
 <script setup>
-//import block start
+// #region import block start
 import dayjs from 'dayjs'
 import QuotationView from '@/components/customer/quotation/QuotationView.vue';
 import LoadingComponent from '@/components/LoadingComponent.vue'
@@ -83,9 +103,11 @@ import {
 } from 'quasar'
 import { ref, onMounted } from 'vue'
 import { useCustStore } from '@/composables/useCust';
-//import block end
+import QuotationQueryForm from '@/components/customer/query/QuotationQueryForm.vue';
+import ShowQuotationDetailView from '@/components/customer/query/ShowQuotationDetailView.vue';
+// #endregion import block end
 
-//variable block start
+// #region variable block start
 const formName = '專案報價';
 const auth = ref({});
 const hasAllAuth = ref(false);
@@ -93,6 +115,9 @@ const theUser = ref({});
 const custStore = useCustStore();
 const secondDialog = ref(false);
 const showForm = ref(false);
+const rowDetail = ref([]);
+const showDetailForm = ref(false);
+const showSearchForm = ref(false);
 const preview = ref(false);
 const errorMessage = ref('');
 const selected = ref([]);
@@ -100,10 +125,16 @@ const list = ref([]);
 const mode = ref('');
 const columns =
 [
-  { name: 'quodate', label: '報價單日期', align: 'left', field: 'quodate', sortable: true },
   { name: 'quono', label: '報價單號', align: 'left', field: 'quono', sortable: true },
-  { name: 'condate', label: '報價有效日期', align: 'left', field: 'condate', sortable: true },
-  { name: 'rfqno', label: '詢價單號', align: 'left', field: 'rfqno', sortable: true },
+  { name: 'quodate', label: '報價單日期', align: 'left', field: 'quodate', sortable: true },
+  { name: 'company', label: '客戶', align: 'left', field: 'company', sortable: true },
+  { name: 'contact', label: '聯絡人', align: 'left', field: 'contact', sortable: true },
+  { name: 'mtype', label: '機台類別', align: 'left', field: 'mtype', sortable: true },
+  { name: '明細查詢', label: '明細查詢', align: 'left', field: '明細查詢', sortable: true },
+  { name: 'amount', label: '報價總額', align: 'left', field: 'amount', sortable: true },
+  { name: 'daddress', label: '業代', align: 'left', field: 'daddress', sortable: true },
+  { name: '業務人員', label: '業務人員', align: 'left', field: '業務人員', sortable: true },
+  { name: 'QUODATE', label: '報價有效日期', align: 'left', field: 'QUODATE', sortable: true },
 ];
 const quotationForm = ref({
   idno		:'',
@@ -139,9 +170,9 @@ const quotationForm = ref({
   核准日      :'',
   quotationDetailFormList:[],
 });
-//variable block end
+// #endregion variable block end
 
-//function block start
+// #region function block start
 const openCustomerDialog = (type) =>{
   mode.value = type;
   errorMessage.value = "";
@@ -224,9 +255,12 @@ const onSelection = () =>{
 
 }
 onMounted(async ()=>{
+  secondDialog.value = true;
   await custStore.getQuotationList('').then((data)=>{
     list.value = data;
     list.value.forEach((x)=>x.quodate = dayjs(x.quodate, "MM/DD/YYYY HH:mm:ss").format("YYYY/MM/DD"));
+
+    secondDialog.value = false;
   });
   theUser.value = SessionStorage.getItem('Account');
   auth.value = theUser.value.authList.find((x)=>x.menuSubName == formName);
@@ -234,5 +268,14 @@ onMounted(async ()=>{
   hasAllAuth.value =
       (!auth.value.高管 && !auth.value.核准 && !auth.value.編修 && !auth.value.報表 && !auth.value.輸出);
 })
-//function block end
+const openSearchForm = () =>{
+  showSearchForm.value = true;
+}
+const viewDetail = (row) => {
+  console.log('row', row);
+  console.log('row quotationDetailFormList', row.quotationDetailFormList);
+  rowDetail.value = row.quotationDetailFormList;
+  showDetailForm.value = true;
+}
+// #endregion function block end
 </script>
