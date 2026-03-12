@@ -1440,5 +1440,15 @@ export const useCustStore = defineStore('',  {
       });
       return response;
     },
+    async queryRepairTestFormByCondition(param){
+      const constant = Constant();
+      console.log('paramA', param)
+      const response =await axios.get(constant.APIUrl+'api/QueryRepairTestFormByCondition?custNo='+param)
+      console.log('response', response)
+      if (response){
+        return response.data.resultList;
+      }
+      return null;
+    }
   }
 })

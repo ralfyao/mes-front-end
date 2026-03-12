@@ -24,6 +24,9 @@
             <q-btn color="green" class="padding-right"
                 glossy @click="openCARDialog('預覽')"
                   :loading="loading">供應商預覽</q-btn>&nbsp;
+            <q-btn color="blue-6" class="padding-right"
+                  glossy @click="openSearchForm"
+                  :loading="loading">供應商查詢</q-btn>&nbsp;
         </div>
       </div>
       <div class="row justify-start padding-top">
@@ -192,6 +195,9 @@
         </q-card-section>
       </q-card>
     </q-dialog>
+    <q-dialog v-model="showSearchForm" persistent>
+      <SupplierQueryForm v-model:showForm="showSearchForm" v-model:list="list"/>
+    </q-dialog>
   </q-layout>
   <LoadingComponent  v-model="secondDialog"/>
 </template>
@@ -221,12 +227,13 @@ import {
   ref,
   onMounted,
 } from 'vue'
-
+import SupplierQueryForm from '@/components/customer/query/SupplierQueryForm.vue';
 // #endregion--------------------------------------import block end---------------------------------//
 
 // #region--------------------------------------variable block start---------------------------------//
 const supplierStpre = useSupplierStore();
 const errorMessage = ref('');
+const showSearchForm = ref(false);
 const formName = '供應廠商';
 const hasAllAuth = ref(false);
 const auth = ref({});const columns = ref([
@@ -315,7 +322,6 @@ const close = () =>{
 }
 const openCARDialog = (type) => {
   mode.value = type;
-  showForm.value = true;
   if (type == '新增') {
     form.value = {
       廠商編號:'',
@@ -346,9 +352,11 @@ const openCARDialog = (type) => {
       修改日:'',
       核准日:'',
     }
+    showForm.value = true;
   } else if (type == '修改' || type == '預覽') {
     if (selected.value.length == 0){
       errorMessage.value = '請選取一筆資料修改!';
+      showForm.value = false;
       return;
     }
     form.value = selected.value[0];
@@ -359,10 +367,14 @@ const openCARDialog = (type) => {
     } else {
       preview.value = false;
     }
+    showForm.value = true;
   }
 }
 const handleOtherAction = async () =>{
 
+}
+const openSearchForm = () =>{
+  showSearchForm.value  =true;
 }
 // #endregion--------------------------------------function block end---------------------------------//
 </script>

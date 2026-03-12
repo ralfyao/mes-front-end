@@ -21,8 +21,12 @@
             <q-btn color="green" class="padding-right"
                 glossy @click="openCARDialog('預覽')"
                   :loading="loading">維修單預覽</q-btn>&nbsp;
+
+            <q-btn color="blue-6" class="padding-right"
+                  glossy @click="openSearchForm"
+                  :loading="loading">維修單查詢</q-btn>&nbsp;
           </div>
-      </div>
+        </div>
       <div class="row justify-start padding-top">
         <div class="text-left text-red">{{ errorMessage }}</div>
       </div>
@@ -332,6 +336,9 @@
         </q-form>
       </q-card>
     </q-dialog>
+    <q-dialog v-model="showSearchForm" persistent>
+      <RepairTestQueryForm v-model:showForm="showSearchForm" v-model:list="list" v-model:custAliasList="custAliasList"/>
+    </q-dialog>
   </q-layout>
   <LoadingComponent v-model="secondDialog"/>
 </template>
@@ -363,6 +370,7 @@ import { useCustStore } from '@/composables/useCust';
 import dayjs from 'dayjs';
 import CustListQueryView from '@/components/customer/query/CustListQueryView.vue'
 import LoadingComponent from '@/components/LoadingComponent.vue';
+import RepairTestQueryForm from '@/components/customer/query/RepairTestQueryForm.vue';
 // #endregion import block end
 
 // #region variable block start
@@ -414,6 +422,7 @@ const form = ref({
 const showStartServiceDatePopup = ref(false);
 const showEndServiceDatePopup = ref(false);
 const custStore = useCustStore();
+const showSearchForm = ref(false);
 const list = ref([]);
 const serviceTypeList = ref([]);
 const mode = ref('');
@@ -434,10 +443,18 @@ const repairatorList = ref([]);
 const showDatePopup = ref(false);
 const showServiceDatePopup = ref(false);
 const columns = ref([
-  { name: '申請日期', label: '日期', align: 'left', field: '申請日期', sortable: true },
   { name: '單號', label: '單號', align: 'left', field: '單號', sortable: true },
-  { name: '機台型號', label: '機台型號', align: 'left', field: '機台型號', sortable: true },
+  { name: '申請日期', label: '日期', align: 'left', field: '申請日期', sortable: true },
   { name: '客戶簡稱', label: '客戶簡稱', align: 'left', field: '客戶簡稱', sortable: true },
+  { name: '專案序號', label: '專案序號', align: 'left', field: '專案序號', sortable: true },
+  { name: '機台型號', label: '機台型號', align: 'left', field: '機台型號', sortable: true },
+  { name: '機台名稱', label: '機台名稱', align: 'left', field: '機台名稱', sortable: true },
+  { name: '服務型態', label: '服務型態', align: 'left', field: '服務型態', sortable: true },
+  { name: '原因鑑定1', label: '故障原因判定', align: 'left', field: '原因鑑定1', sortable: true },
+  { name: '處置建議', label: '初步建議', align: 'left', field: '處置建議', sortable: true },
+  { name: '實際服務日期', label: '實際服務日期', align: 'left', field: '實際服務日期', sortable: true },
+  { name: '客戶反應', label: '客戶意見', align: 'left', field: '客戶反應', sortable: true },
+  { name: '零件工令編號', label: '零件工件編號', align: 'left', field: '零件工令編號', sortable: true },
 ]);
 // #endregion variable block end
 
@@ -508,6 +525,7 @@ const init = async () =>{
   await custStore.getRepairTestList().then((data)=>{
     list.value = data;
     list.value.forEach((x)=> x.申請日期 = dayjs(x.申請日期, "MM/DD/YYYY HH:mm:ss").format("YYYY/MM/DD"))
+    list.value.forEach((x)=> x.實際服務日期 = dayjs(x.實際服務日期, "MM/DD/YYYY HH:mm:ss").format("YYYY/MM/DD"))
   })
   theUser.value = SessionStorage.getItem('Account');
   console.log('theUser.value', theUser.value)
@@ -612,6 +630,7 @@ const openCARDialog = async (type) =>{
   } else {
     if (selected.value.length == 0){
       errorMessage.value = '請選取一筆作'+type+'!';
+      showForm.value = false;
       return;
     }
     if (type == '預覽')
@@ -708,5 +727,9 @@ watch(
   },
   { deep: true, immediate: true }
 )
+
+const openSearchForm = () =>{
+  showSearchForm.value = true;
+}
 // #endregion function bloxk end
 </script>

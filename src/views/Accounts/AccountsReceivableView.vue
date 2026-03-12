@@ -24,6 +24,8 @@
           <q-btn color="green" class="padding-right"
               glossy @click="openARDialog('預覽')"
                 :loading="loading">立帳單預覽</q-btn>&nbsp;
+          <q-checkbox v-model="queryFinished" label="已結案" @update:model-value="refreshList"/>
+          <q-checkbox v-model="queryUnFinished" label="未結案" @update:model-value="refreshList"/>
         </div>
       </div>
       <div class="row justify-start padding-top">
@@ -282,7 +284,7 @@ import {
   QInput,
   QDate,
   QPopupProxy,
-  SessionStorage
+  SessionStorage,QCheckbox
 } from 'quasar'
 import { ref, onMounted, watch } from 'vue'
 import CustListQueryView from '@/components/customer/query/CustListQueryView.vue';
@@ -338,6 +340,8 @@ const preview = ref(false);
 const myForm = ref(null);
 const showDatePopup = ref(false);
 const showRcvDatePopup = ref(false);
+const queryFinished = ref(false);
+const queryUnFinished = ref(false);
 const form = ref({
   識別碼:0,
   結案:false,
@@ -503,6 +507,21 @@ const updateCloseFlag = async () =>{
       alert('停用成功');
     }
     secondDialog.value = false;
+  })
+}
+
+const refreshList = async() =>{
+  await arStore.getArList().then((data)=>{
+    list.value = data;
+    if (!queryFinished.value || !queryUnFinished.value){
+      if (queryFinished.value){
+        list.value = data.filter((x)=>x.結案 == 1);
+        queryUnFinished.value = false;
+      } else if (queryUnFinished.value) {
+        list.value = data.filter((x)=>x.結案 != 1);
+        queryFinished.value = false;
+      }
+    }
   })
 }
 

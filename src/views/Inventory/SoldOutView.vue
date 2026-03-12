@@ -28,6 +28,9 @@
           <q-btn color="green" class="padding-right"
                        glossy @click="openCustomDialog('預覽')"
                        :loading="loading">預覽出貨單</q-btn>&nbsp;
+          <q-btn color="blue-6" class="padding-right"
+                  glossy @click="openSearchForm"
+                  :loading="loading">出貨單查詢</q-btn>&nbsp;
         </div>
       </div>
       <div class="row justify-start padding-top">
@@ -343,6 +346,9 @@
     <q-dialog v-model="showSODistribution" persistent>
       <SalesOrderDistributionView />
     </q-dialog>
+    <q-dialog v-model="showSearchForm" persistent>
+      <SoldOutQueryForm v-model:showForm="showSearchForm" v-model:list="list"/>
+    </q-dialog>
   </q-layout>
   <LoadingComponent v-model="secondDialog"/>
 </template>
@@ -373,11 +379,13 @@ import { ref, onMounted, watch } from 'vue';
 import dayjs from 'dayjs'
 import CustListQueryView from '@/components/customer/query/CustListQueryView.vue'
 import LoadingComponent from '@/components/LoadingComponent.vue';
+import SoldOutQueryForm from '@/components/inventory/query/SoldOutQueryForm.vue';
 // #endregion import block end
 
 // #region variable block start
 const showSearchCustNoForm = ref(false);
 const formName = '銷貨出庫';
+const showSearchForm = ref(false);
 const auth = ref({});
 const hasAllAuth = ref(false);
 const theUser = ref({});
@@ -707,6 +715,10 @@ const validate = async (valid) => {
     close();
     init();
   })
+}
+
+const openSearchForm = () =>{
+  showSearchForm.value = true;
 }
 
 watch(
