@@ -647,6 +647,7 @@ const getIndustryName = (code) => {
 const openCustomerDialog = (action) => {
   console.log('開啟客戶表單，操作:', action);
   errorMessage.value = "";
+  secondDialog.value = true;
   if (action === '修改' || action == '預覽') {
     if (selected.value.length === 0) {
       errorMessage.value = `請先選擇要${action}的客戶`;
@@ -713,7 +714,7 @@ const openCustomerDialog = (action) => {
   mode.value = action;
   showForm.value = true;
   errorMessage.value = '';
-  secondDialog.value = true;
+  secondDialog.value = false;
 };
 const getCountryName = (code) => {
   console.log('選擇的國別代碼:', code);

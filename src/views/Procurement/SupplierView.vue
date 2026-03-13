@@ -15,7 +15,7 @@
             glossy @click="openCARDialog('修改')"
             :loading="loading">修改供應商</q-btn>&nbsp;
           <q-btn color="red" class="padding-right"
-              glossy @click="deleteCAR"
+              glossy @click="deleteSupplier"
               :loading="loading">刪除供應商</q-btn>&nbsp;
         </div>
         <!--查詢-->
@@ -47,7 +47,13 @@
                 selection="single"
                 v-model:selected="selected"
                 :pagination="{ rowsPerPage: 5 }"
-        ></q-table >
+        >
+        <template  v-slot:body-cell-停用="props">
+          <q-td :props="props">
+            {{(props.row.停用 == "False" ? "否" : "是")}}
+          </q-td>
+        </template>
+        </q-table >
       </q-page>
     </q-page-container>
     <!--表單本體-->
@@ -57,7 +63,7 @@
           <div class="text-h4">
             {{mode}}{{ formName }}
             <q-card-actions align="right">
-              <div>
+              <div v-if="(hasAllAuth || auth.編修) && !preview">
                 <q-btn color="green" class="padding-right"
                       glossy
                       :loading="loading">廠商評鑑</q-btn> &nbsp;
@@ -106,7 +112,7 @@
                 <q-input v-model="form.廠商名稱" label="廠商名稱" outlined dense />
               </div>
               <div class="col-3 col-md-3" style="max-width: 300px">
-                <country-code-select v-model:country="form.國別"/>
+                <country-code-select v-model:country="form.國別"  :readonly="readonly || preview"/>
               </div>
             </div>
             <br>
@@ -148,13 +154,23 @@
                 <q-input v-model="form.傳真" :readonly="readonly || preview" label="傳真" outlined dense />
               </div>
               <div class="col-2 col-md-2" style="max-width: 300px">
-                <industry-code-select v-model="form.所屬業別"/>
+                <!-- <industry-code-select v-model="form.所屬業別"/> -->
+                <q-select v-model="form.所屬業別"
+                :options="industryList"
+                map-options emit-value :readonly="readonly || preview"
+                outlined dense/>
               </div>
               <div class="col-2 col-md-2" style="max-width: 300px">
-                <q-select v-model="form.管理分類" :readonly="readonly || preview" label="管理分類" outlined dense />
+                <q-select v-model="form.管理分類" :readonly="readonly || preview" label="管理分類" outlined dense
+                emit-value map-options
+                :options="managementClassification"/>
               </div>
               <div class="col-2 col-md-2" style="max-width: 300px">
-                <q-select v-model="form.等級" :readonly="readonly || preview" label="評鑑等級" outlined dense />
+                <q-select v-model="form.等級" :readonly="readonly || preview" label="評鑑等級" outlined dense
+                :options="評鑑等級List"
+                option-label="name"
+                option-value="value"
+                emit-value map-options/>
               </div>
             </div>
             <br>
@@ -173,15 +189,15 @@
                 <q-input v-model="form.R3" :readonly="readonly || preview" label="個人手機" outlined dense />
               </div>
               <div class="col-3 col-md-3" style="max-width: 150px">
-                <q-btn label="停用" v-if="!readonly && !preview && !form.停用" color="red" outlined dense />
-                <q-btn label="取消停用" v-if="!readonly && !preview && form.停用" color="primary" outlined dense />
+                <q-btn label="停用" v-if="!readonly && !preview && (form.停用 == 'False')" color="red" outlined dense />
+                <q-btn label="取消停用" v-if="!readonly && !preview && (form.停用 == 'True')" color="primary" outlined dense />
               </div>
             </div>
             <br>
           </q-card-section>
         </q-form>
         <q-card-section>
-          <div class="text-h5">供料詢價明細紀錄</div>
+          <div class="text-h5">供料詢價明細紀錄&nbsp;<q-btn label="列印詢價單" color="blue-8" outlined dense v-if="!preview" /></div>
           <q-table  class="rounded-borders my-sticky-header-table"
                 :columns="columnsDetail"
                 row-key="識別"
@@ -204,7 +220,7 @@
 <script setup>
 // #region--------------------------------------import block start---------------------------------//
 import CountryCodeSelect from '@/components/customer/CountryCodeSelect.vue';
-import IndustryCodeSelect from '@/components/customer/IndustryCodeSelect.vue';
+// import IndustryCodeSelect from '@/components/customer/IndustryCodeSelect.vue';
 import LoadingComponent from '@/components/LoadingComponent.vue';
 import { useAuth } from '@/composables/useAuth';
 import { useSupplierStore } from '@/composables/useSupplier';
@@ -236,6 +252,23 @@ const errorMessage = ref('');
 const showSearchForm = ref(false);
 const formName = '供應廠商';
 const hasAllAuth = ref(false);
+const 評鑑等級List = ref([
+  {name:'A(81~100)', value:'A'},
+  {name:'B(61~80)', value:'B'},
+  {name:'C(41~60)', value:'C'},
+  {name:'D(21~40)', value:'D'},
+  {name:'E(0~20)', value:'E'},
+]);
+const managementClassification = ref([
+  '代工廠',
+  '製造商',
+  '批發商',
+  '零售商',
+  '物流業',
+  '運輸業',
+  '服務業',
+  '公用事業',
+]);
 const auth = ref({});const columns = ref([
   { name: '廠商編號', label: '廠商編號', align: 'left', field: '廠商編號', sortable: true },
   { name: '廠商簡稱', label: '廠商簡稱', align: 'left', field: '廠商簡稱', sortable: true },
@@ -309,6 +342,9 @@ const columnsDetail = ref([
 
 // #region--------------------------------------function block start---------------------------------//
 onMounted(async ()=>{
+  init();
+})
+const init = async () =>{
   secondDialog.value = true;
   auth.value = authStore.getAuth(formName);
   hasAllAuth.value = authStore.hasAllAuth(formName);
@@ -316,7 +352,7 @@ onMounted(async ()=>{
     list.value = data;
     secondDialog.value = false;
   })
-})
+}
 const close = () =>{
   showForm.value = false;
 }
@@ -370,9 +406,68 @@ const openCARDialog = (type) => {
     showForm.value = true;
   }
 }
-const handleOtherAction = async () =>{
-
+const handleOtherAction = async () => {
+  const success = await myForm.value.validate()
+  if (success) {
+    submitForm();
+  } else {
+    return;
+  }
 }
+
+const submitForm = async () =>{
+  secondDialog.value = true;
+  if (mode.value == '新增') {
+    console.log(form.value);
+    await supplierStpre.addSupplier(form).then((data)=>{
+      if (data.data.errorMessage){
+        alert(data.data.errorMessage);
+      } else {
+        alert(mode.value+'成功');
+      }
+      secondDialog.value = false;
+      showForm.value = false;
+      init();
+    });
+  } else if (mode.value == '修改') {
+    console.log(form.value);
+    await supplierStpre.updateSupplier(form).then((data)=>{
+      if (data.data.errorMessage){
+        alert(data.data.errorMessage);
+      } else {
+        alert(mode.value+'成功');
+      }
+      secondDialog.value = false;
+      showForm.value = false;
+      init();
+    });
+  }
+}
+
+const deleteSupplier = async() =>{
+  if (selected.value.length == 0)
+  {
+    errorMessage.value = '請選取一筆資料做刪除!';
+    return;
+  }
+  if (!confirm('確認刪除?'))
+  {
+    return;
+  }
+  secondDialog.value = true;
+  form.value = selected.value[0];
+  await supplierStpre.deleteSupplier(form).then((data)=>{
+    if (data.data.errorMessage){
+        alert(data.data.errorMessage);
+      } else {
+        alert('刪除成功');
+      }
+      secondDialog.value = false;
+      showForm.value = false;
+      init();
+  })
+}
+
 const openSearchForm = () =>{
   showSearchForm.value  =true;
 }

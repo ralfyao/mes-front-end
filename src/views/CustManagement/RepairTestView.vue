@@ -424,7 +424,9 @@ const showEndServiceDatePopup = ref(false);
 const custStore = useCustStore();
 const showSearchForm = ref(false);
 const list = ref([]);
-const serviceTypeList = ref([]);
+const serviceTypeList = ref([
+  '外派維修','後送內修','線上指導','視訊教學'
+]);
 const mode = ref('');
 const errorMessage = ref('');
 const preview = ref(false);
