@@ -40,27 +40,28 @@
         <div class="text-left text-red">{{ errorMessage }}</div>
       </div>
     </h5>
+    <!--#region 列表-->
+    <q-page-container>
+      <q-page>
+          <q-table  class="rounded-borders my-sticky-header-table"
+                  :columns="columns"
+                  row-key="識別"
+                  :rows="list"
+                  flat
+                  bordered
+                  style="height: 400px"
+                  virtual-scroll
+                  selection="single"
+                  v-model:selected="selected"
+                  @selection="onSelection"
+                  :pagination="{ rowsPerPage: 5 }"
+          ></q-table >
+      </q-page>
+    </q-page-container>
+    <!--#endregion-->
   </q-layout>
   <!--#endregion-->
-  <!--#region 列表-->
-  <q-page-container>
-    <q-page>
-        <q-table  class="rounded-borders my-sticky-header-table"
-                :columns="columns"
-                row-key="識別"
-                :rows="list"
-                flat
-                bordered
-                style="height: 400px"
-                virtual-scroll
-                selection="single"
-                v-model:selected="selected"
-                @selection="onSelection"
-                :pagination="{ rowsPerPage: 5 }"
-        ></q-table >
-    </q-page>
-  </q-page-container>
-  <!--#endregion-->
+
   <!--#region 表單本體-->
   <q-dialog v-model="showForm" persistent >
     <q-card  class="q-pa-md"  style="width: 1500px; max-width: 95vw;">
@@ -95,6 +96,8 @@
 <script setup>
 //#region import
 import { useAuth } from '@/composables/useAuth';
+import { useSupplierStore } from '@/composables/useSupplier';
+import dayjs from 'dayjs';
 import {
     QIcon
   , QLayout
@@ -120,7 +123,21 @@ const hasAllAuth = ref(false);
 const errorMessage = ref('');
 const selected = ref([]);
 const list = ref([]);
-const columns = ref([]);
+const columns = ref([
+  { name: '詢價日期', label: '詢價日期', align: 'left', field: '詢價日期', sortable: true },
+  { name: '品項編號', label: '品項編號', align: 'left', field: '品項編號', sortable: true },
+  { name: '品名規格', label: '品名規格', align: 'left', field: '品名規格', sortable: true },
+  { name: '廠商編號', label: '廠商編號', align: 'left', field: '廠商編號', sortable: true },
+  { name: '廠商簡稱', label: '廠商簡稱', align: 'left', field: '廠商簡稱', sortable: true },
+  { name: '單價', label: '單價', align: 'left', field: '單價', sortable: true },
+  { name: '幣別', label: '幣別', align: 'left', field: '幣別', sortable: true },
+  { name: '採購單位', label: '採購單位', align: 'left', field: '採購單位', sortable: true },
+  { name: '最低採購量', label: '最低採購量', align: 'left', field: '最低採購量', sortable: true },
+  { name: '最大採購量', label: '最大採購量', align: 'left', field: '最大採購量', sortable: true },
+  { name: '詢價人員', label: '詢價人員', align: 'left', field: '詢價人員', sortable: true },
+  { name: '報價有效日期', label: '報價有效日期', align: 'left', field: '報價有效日期', sortable: true },
+  { name: '場商品號', label: '場商品號', align: 'left', field: '場商品號', sortable: true },
+]);
 const preview = ref(false);
 const showForm = ref(false);
 const mode = ref('');
@@ -129,13 +146,25 @@ const form = ref({
   產品編號:'',
 
 });
+
+const supplierStore = useSupplierStore();
 //#endregion
 
 //#region function
 onMounted(()=>{
+  init();
+})
+
+const init = async () =>{
   auth.value = authStore.getAuth(formName);
   hasAllAuth.value = authStore.hasAllAuth(formName);
-})
+  await supplierStore.getSupplierQuotationList().then((data)=>{
+    list.value = data;
+    list.value.forEach((x) => {
+      x.詢價日期 = dayjs(x.詢價日期, "MM/DD/YYYY HH:mm:ss").format("YYYY/MM/DD")
+    })
+  })
+}
 
 const openDialog = async (type) =>{
   mode.value = type;

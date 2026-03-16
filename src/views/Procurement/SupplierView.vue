@@ -48,9 +48,9 @@
                 v-model:selected="selected"
                 :pagination="{ rowsPerPage: 5 }"
         >
-        <template  v-slot:body-cell-停用="props">
+        <template  v-slot:body-cell-核准="props">
           <q-td :props="props">
-            {{(props.row.停用 == "False" || props.row.停用 == ""? "否" : "是")}}
+            {{(props.row.核准 && props.row.核准 != ""? "是" : "否")}}
           </q-td>
         </template>
         </q-table >
@@ -77,10 +77,10 @@
               </div>
               <div v-if="(hasAllAuth ||(auth && auth.核准)) && !preview">
                 <q-btn color="grey" class="padding-right"
-                        glossy v-if="form.核准日 && form.核准日!= ''"
+                        glossy v-if="form.核准 && form.核准!= ''"
                         :loading="loading" @click="validate(false)">取消核准</q-btn> &nbsp;
                 <q-btn color="grey" class="padding-right"
-                        glossy v-if="!form.核准日 || form.核准日== ''"
+                        glossy v-if="!form.核准 || form.核准== ''"
                         :loading="loading" @click="validate(true)">核准</q-btn> &nbsp;
               </div>
               <div v-if="(hasAllAuth ||(auth && auth.輸出))">
@@ -279,7 +279,8 @@ const managementClassification = ref([
   '公用事業',
 ]);
 const showEvaluateForm = ref(false);
-const auth = ref({});const columns = ref([
+const auth = ref({});
+const columns = ref([
   { name: '廠商編號', label: '廠商編號', align: 'left', field: '廠商編號', sortable: true },
   { name: '廠商簡稱', label: '廠商簡稱', align: 'left', field: '廠商簡稱', sortable: true },
   { name: '廠商名稱', label: '廠商名稱', align: 'left', field: '廠商名稱', sortable: true },
@@ -292,7 +293,6 @@ const auth = ref({});const columns = ref([
   { name: '管理分類', label: '管理分類', align: 'left', field: '管理分類', sortable: true },
   { name: '等級', label: '等級', align: 'left', field: '等級', sortable: true },
   { name: '核准', label: '核准', align: 'left', field: '核准', sortable: true },
-  { name: '停用', label: '停用', align: 'left', field: '停用', sortable: true },
 ]);
 const list = ref([]);
 const listDetail = ref([])
@@ -356,6 +356,8 @@ onMounted(async ()=>{
 })
 const init = async () =>{
   secondDialog.value = true;
+  list.value = [];
+  errorMessage.value = '';
   auth.value = authStore.getAuth(formName);
   hasAllAuth.value = authStore.hasAllAuth(formName);
   await supplierStpre.getSupplierList().then((data)=>{
@@ -423,6 +425,24 @@ const handleOtherAction = async () => {
   } else {
     return;
   }
+}
+
+const validate = async (validate)  =>{
+  secondDialog.value = true;
+  const user = authStore.getUser().account;
+  await supplierStpre.validateSupplier(form.value.廠商編號, validate, user).then((data)=>{
+    console.log('validate data', data);
+    if(data.data.errorMessage){
+      alert(data.data.errorMessage)
+    } else {
+      alert(validate?'核准完成' : '取消核准完成');
+    }
+    secondDialog.value = false;
+    showForm.value = false;
+    form.value.核准 = validate ? user : '';
+
+  })
+  await init();
 }
 
 const submitForm = async () =>{

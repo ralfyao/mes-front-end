@@ -214,6 +214,22 @@ export const useSupplierStore = defineStore('supplier', {
         return response
       }
       return null;
-    }
+    },
+    async validateSupplier(formNo, validate, user){
+      const constant = Constant()
+      const response = await axios.get(constant.APIUrl + `api/ValidateSupplier?formNo=${formNo}&validate=${validate}&user=${user}`);
+      if (response) {
+        return response
+      }
+      return null;
+    },
+    async getSupplierQuotationList(){
+      const constant = Constant()
+      const response = await axios.get(constant.APIUrl + `api/GetSupplierQuotationList`);
+      if (response.data.resultList) {
+        return response.data.resultList
+      }
+      return null;
+    },
   }
 })
