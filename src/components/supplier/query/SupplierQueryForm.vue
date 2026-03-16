@@ -1,7 +1,7 @@
 <template>
   <q-card  class="q-pa-md"  style="width: 500px; max-width: 95vw;">
     <q-card-section>
-      <div class="text-h4">維修單搜尋</div>
+      <div class="text-h4">供應商搜尋</div>
     </q-card-section>
     <q-card-section>
       <div class="row">

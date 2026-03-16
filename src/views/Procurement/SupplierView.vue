@@ -50,7 +50,7 @@
         >
         <template  v-slot:body-cell-停用="props">
           <q-td :props="props">
-            {{(props.row.停用 == "False" ? "否" : "是")}}
+            {{(props.row.停用 == "False" || props.row.停用 == ""? "否" : "是")}}
           </q-td>
         </template>
         </q-table >
@@ -65,7 +65,7 @@
             <q-card-actions align="right">
               <div v-if="(hasAllAuth || auth.編修) && !preview">
                 <q-btn color="green" class="padding-right"
-                      glossy
+                      glossy @click="openEvaluateForm"
                       :loading="loading">廠商評鑑</q-btn> &nbsp;
                 <q-btn color="blue" class="padding-right"
                       glossy
@@ -156,7 +156,6 @@
               <div class="col-2 col-md-2" style="max-width: 300px">
                 <!-- <industry-code-select v-model="form.所屬業別"/> -->
                 <q-select v-model="form.所屬業別"
-                :options="industryList"
                 map-options emit-value :readonly="readonly || preview"
                 outlined dense/>
               </div>
@@ -211,8 +210,14 @@
         </q-card-section>
       </q-card>
     </q-dialog>
+    <!--搜尋視窗-->
     <q-dialog v-model="showSearchForm" persistent>
       <SupplierQueryForm v-model:showForm="showSearchForm" v-model:list="list"/>
+    </q-dialog>
+    <!--廠商評鑑表-->
+    <q-dialog v-model="showEvaluateForm" persistent>
+      <SupplierEvaluateForm v-model:supplier="form" v-model:showForm="showEvaluateForm"
+      v-model:formName="formName"/>
     </q-dialog>
   </q-layout>
   <LoadingComponent  v-model="secondDialog"/>
@@ -243,11 +248,15 @@ import {
   ref,
   onMounted,
 } from 'vue'
-import SupplierQueryForm from '@/components/customer/query/SupplierQueryForm.vue';
+import SupplierEvaluateForm from '@/components/supplier/SupplierEvaluateForm.vue';
+import SupplierQueryForm from '@/components/supplier/query/SupplierQueryForm.vue';
 // #endregion--------------------------------------import block end---------------------------------//
 
 // #region--------------------------------------variable block start---------------------------------//
 const supplierStpre = useSupplierStore();
+const openEvaluateForm = () =>{
+  showEvaluateForm.value = true;
+}
 const errorMessage = ref('');
 const showSearchForm = ref(false);
 const formName = '供應廠商';
@@ -269,6 +278,7 @@ const managementClassification = ref([
   '服務業',
   '公用事業',
 ]);
+const showEvaluateForm = ref(false);
 const auth = ref({});const columns = ref([
   { name: '廠商編號', label: '廠商編號', align: 'left', field: '廠商編號', sortable: true },
   { name: '廠商簡稱', label: '廠商簡稱', align: 'left', field: '廠商簡稱', sortable: true },
