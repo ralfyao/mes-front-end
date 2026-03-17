@@ -1,5 +1,5 @@
 import { defineStore } from "pinia"
-import axios from 'axios'
+import apiClient from '@/apis/apiClient'
 import { Constant } from './Constant'
 import { toRaw } from "vue";
 export const usePrivilegeStore = defineStore('roles',{
@@ -9,9 +9,9 @@ export const usePrivilegeStore = defineStore('roles',{
   actions:{
     async getAllPrivileges(){
       const constant = Constant();
-      const response = axios.get(constant.APIUrl+'api/GetAllPrivilege')
+      const response = apiClient.get(constant.APIUrl+'api/GetAllPrivilege')
       console.log('response', response);
-      const { data } = await axios.get(constant.APIUrl + 'api/GetAllPrivilege')
+      const { data } = await apiClient.get(constant.APIUrl + 'api/GetAllPrivilege')
 
       if (data && data.result) {
         this.roles = data.result
@@ -28,7 +28,7 @@ export const usePrivilegeStore = defineStore('roles',{
         privList: privList
       }
       console.log('param', param);
-      const response = await axios.post(constant.APIUrl + 'api/UpdateUserPrivileges',JSON.stringify(param), {
+      const response = await apiClient.post(constant.APIUrl + 'api/UpdateUserPrivileges',JSON.stringify(param), {
         headers: { 'Content-Type': 'application/json' }
       });
       if (response.data.errorMessage !== '') {
@@ -40,7 +40,7 @@ export const usePrivilegeStore = defineStore('roles',{
     async getPrivMenuByRole(roleName){
       const constant = Constant();
       console.log('getPrivMenuByRole APIUrl', constant.APIUrl);
-      const response = await axios.get(constant.APIUrl + 'api/GetPrivMenuByRole?roleName=' + roleName);
+      const response = await apiClient.get(constant.APIUrl + 'api/GetPrivMenuByRole?roleName=' + roleName);
       console.log('getPrivMenuByRole response', response);
       if (response.data.resultList) {
         console.log('response.data.resultList', response.data.resultList);
@@ -51,7 +51,7 @@ export const usePrivilegeStore = defineStore('roles',{
     async getUserPrivileges(account){
       const constant = Constant();
       console.log('APIUrl', constant.APIUrl)
-      const response = await axios.get(constant.APIUrl + 'api/GetUserPrivileges?account=' + account);
+      const response = await apiClient.get(constant.APIUrl + 'api/GetUserPrivileges?account=' + account);
       console.log('response', response);
       if (response.data.resultList) {
         return response.data.resultList;
@@ -76,7 +76,7 @@ export const usePrivilegeStore = defineStore('roles',{
         }))
       }
       console.log('param', param);
-      const response = await axios.post(constant.APIUrl+'api/SaveRolePrivilege',JSON.stringify(param), {
+      const response = await apiClient.post(constant.APIUrl+'api/SaveRolePrivilege',JSON.stringify(param), {
         headers: { 'Content-Type': 'application/json' }
       });
       if (response.data.errorMessage !== '') {
@@ -108,9 +108,9 @@ export const usePrivilegeStore = defineStore('roles',{
       console.log('param', param);
       // console.log(payload);
       // return;
-      // const response = axios.get(constant.APIUrl+'api/GetAllPrivilege')
+      // const response = apiClient.get(constant.APIUrl+'api/GetAllPrivilege')
       // console.log('response', response);
-      const response = await axios.post(constant.APIUrl + 'api/UpdateRoleMenu',JSON.stringify(param), {
+      const response = await apiClient.post(constant.APIUrl + 'api/UpdateRoleMenu',JSON.stringify(param), {
         headers: { 'Content-Type': 'application/json' }});
        if (response.data.errorMessage !== '') {
         return response.data.errorMessage
@@ -120,7 +120,7 @@ export const usePrivilegeStore = defineStore('roles',{
     },
     async deleteRolePrivilege(roleName){
       const constant = Constant();
-      const response = await axios.delete(constant.APIUrl + 'api/DeleteRolePrivilege?roleName=' + roleName);
+      const response = await apiClient.delete(constant.APIUrl + 'api/DeleteRolePrivilege?roleName=' + roleName);
       if (response.data.errorMessage !== '') {
         return response.data.errorMessage
       } else {

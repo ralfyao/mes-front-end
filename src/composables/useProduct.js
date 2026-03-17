@@ -1,5 +1,5 @@
 import {defineStore} from 'pinia';
-import axios from 'axios';
+import apiClient from '@/apis/apiClient'
 import {Constant} from './Constant';
 import { SessionStorage } from 'quasar';
 export const useProductStore = defineStore('product', {
@@ -15,7 +15,7 @@ export const useProductStore = defineStore('product', {
     async getAllProducts() {
       const constant = Constant()
       console.log('APIUrl', constant.APIUrl)
-      const response = await axios.get(constant.APIUrl + 'api/ProductList')
+      const response = await apiClient.get(constant.APIUrl + 'api/ProductList')
       console.log('response', response)
       if (response.data.errorMessage !== '') {
         return []
@@ -40,14 +40,14 @@ export const useProductStore = defineStore('product', {
       console.log('request', request);
       const constant = Constant()
       console.log('APIUrl', constant.APIUrl);
-      const response = await axios.post(constant.APIUrl + 'api/AddProductSpec', JSON.stringify(request), {
+      const response = await apiClient.post(constant.APIUrl + 'api/AddProductSpec', JSON.stringify(request), {
         headers: { 'Content-Type': 'application/json' }
       });
       return response.data;
     },
     async getProductSpecById(id){
       const constant = Constant();
-      const response = await axios.get(constant.APIUrl+'api/GetProductSpecByID?id='+id);
+      const response = await apiClient.get(constant.APIUrl+'api/GetProductSpecByID?id='+id);
       console.log('response', response);
       if (response.data.errorMessage !== '') {
         return []
@@ -61,7 +61,7 @@ export const useProductStore = defineStore('product', {
     async getAllProductSpecs(){
       const constant = Constant()
       console.log('APIUrl', constant.APIUrl)
-      const response = await axios.get(constant.APIUrl + 'api/ProductSpecList')
+      const response = await apiClient.get(constant.APIUrl + 'api/ProductSpecList')
       console.log('response', response)
       if (response.data.errorMessage !== '') {
         return []

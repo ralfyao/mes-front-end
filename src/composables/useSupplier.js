@@ -2,6 +2,7 @@ import { defineStore } from "pinia";
 import axios from 'axios'
 import { Constant } from './Constant';
 import { toRaw } from "vue";
+import apiClient from '@/apis/apiClient'
 
 export const useSupplierStore = defineStore('supplier', {
   actions:{
@@ -223,6 +224,14 @@ export const useSupplierStore = defineStore('supplier', {
       }
       return null;
     },
+    async activateSupplier(formNo, validate, user){
+      const constant = Constant()
+      const response = await axios.get(constant.APIUrl + `api/ActivateSupplier?formNo=${formNo}&validate=${validate}&user=${user}`);
+      if (response) {
+        return response
+      }
+      return null;
+    },
     async getSupplierQuotationList(){
       const constant = Constant()
       const response = await axios.get(constant.APIUrl + `api/GetSupplierQuotationList`);
@@ -231,5 +240,65 @@ export const useSupplierStore = defineStore('supplier', {
       }
       return null;
     },
+    async addSupplierQuotation(form){
+      const constant = Constant();
+      const payload = { ...toRaw(form.value) };
+      console.log('APIUrl', constant.APIUrl)
+      console.log('payload', payload);
+      const param ={
+        識別:payload.識別,
+        廠商編號:payload.廠商編號,
+        詢價日期:payload.詢價日期,
+        品項編號:payload.品項編號,
+        採購單位:payload.採購單位,
+        最低採購量:payload.最低採購量,
+        最大採購量:payload.最大採購量,
+        單價:payload.單價,
+        幣別:payload.幣別,
+        詢價人員:payload.詢價人員,
+        報價有效日期:payload.報價有效日期,
+        廠商品號:payload.廠商品號,
+      }
+      console.log('param', param);
+      const response = await axios.post(constant.APIUrl + 'api/AddSupplierQuotation', param, {
+        headers: { 'Content-Type': 'application/json' }
+      });
+      return response;
+    },
+    async getQuotationByItem (itemNo) {
+      const constant = Constant();
+      console.log('APIUrl', constant.APIUrl)
+      const response = await axios.get(constant.APIUrl + `api/QuotationByItem?itemNo=${itemNo}`);
+      if (response.data.result) {
+        return response.data.result
+      }
+      return null;
+    },
+    async updateSupplierQuotation(quotationData){
+      const constant = Constant();
+      console.log('quotationData', quotationData);
+      const payload = toRaw(quotationData.value.materialList) ;
+      console.log('APIUrl', constant.APIUrl)
+      console.log('payload', payload);
+      const param = payload.map(item=>({
+          識別:item.識別,
+          廠商編號		:item.廠商編號			,
+          詢價日期		:item.詢價日期	        ,
+          品項編號		:item.品項編號	        ,
+          採購單位		:item.採購單位	        ,
+          最低採購量	    :item.最低採購量	    ,
+          最大採購量	    :item.最大採購量	    ,
+          單價			:item.單價		        ,
+          幣別			:item.幣別		        ,
+          詢價人員		:item.詢價人員	        ,
+          報價有效日期	:item.報價有效日期      ,
+          廠商品號		:item.廠商品號	        ,
+      }));
+      console.log('param', param);
+      const response = await apiClient.post(constant.APIUrl + 'api/UpdateSupplierQuotationList', JSON.stringify(param), {
+        headers: { 'Content-Type': 'application/json' }
+      });
+      return response;
+    }
   }
 })

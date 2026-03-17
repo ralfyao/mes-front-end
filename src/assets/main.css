@@ -17,3 +17,18 @@
   z-index: 1;
   background: white;
 }
+
+.cell-tight {
+  vertical-align: middle;
+}
+.cell-tight .q-field__control {
+  min-height: 32px; /* 依你要的高度調整 */
+  height: 32px;
+}
+.cell-tight .q-field__control-container {
+  min-height: 32px;
+}
+.cell-tight .q-field__native,
+.cell-tight .q-field__input {
+  line-height: 32px;
+}

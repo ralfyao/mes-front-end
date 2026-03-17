@@ -53,6 +53,11 @@
             {{(props.row.核准 && props.row.核准 != ""? "是" : "否")}}
           </q-td>
         </template>
+        <template  v-slot:body-cell-停用="props">
+          <q-td :props="props">
+            {{(props.row.停用 ? "是" : "否")}}
+          </q-td>
+        </template>
         </q-table >
       </q-page>
     </q-page-container>
@@ -68,7 +73,7 @@
                       glossy @click="openEvaluateForm"
                       :loading="loading">廠商評鑑</q-btn> &nbsp;
                 <q-btn color="blue" class="padding-right"
-                      glossy
+                      glossy @click="openRFQForm"
                       :loading="loading">供料詢價</q-btn> &nbsp;
               </div>
               <div>
@@ -82,6 +87,13 @@
                 <q-btn color="grey" class="padding-right"
                         glossy v-if="!form.核准 || form.核准== ''"
                         :loading="loading" @click="validate(true)">核准</q-btn> &nbsp;
+
+                <q-btn color="grey" class="padding-right"
+                        glossy v-if="form.停用"
+                        :loading="loading" @click="activate(true)">取消停用</q-btn> &nbsp;
+                <q-btn color="grey" class="padding-right"
+                        glossy v-if="!form.停用 || form.停用== ''"
+                        :loading="loading" @click="activate(false)">停用</q-btn> &nbsp;
               </div>
               <div v-if="(hasAllAuth ||(auth && auth.輸出))">
                   <!-- <div class="padding-right"> -->
@@ -203,7 +215,6 @@
                 :rows="listDetail"
                 flat
                 bordered
-                virtual-scroll
                 style="max-height: 500px"
                 :pagination="{ rowsPerPage: 5 }"
         ></q-table >
@@ -219,12 +230,17 @@
       <SupplierEvaluateForm v-model:supplier="form" v-model:showForm="showEvaluateForm"
       v-model:formName="formName"/>
     </q-dialog>
+    <!--廠商詢價寫入表-->
+    <q-dialog v-model="showRFQForm" persistent>
+      <SuuplierQuotationForm v-model:showForm="showRFQForm" v-model:supplier="form"/>
+    </q-dialog>
   </q-layout>
   <LoadingComponent  v-model="secondDialog"/>
 </template>
 <script setup>
 // #region--------------------------------------import block start---------------------------------//
 import CountryCodeSelect from '@/components/customer/CountryCodeSelect.vue';
+import SuuplierQuotationForm from '@/components/supplier/SuuplierQuotationForm.vue';
 // import IndustryCodeSelect from '@/components/customer/IndustryCodeSelect.vue';
 import LoadingComponent from '@/components/LoadingComponent.vue';
 import { useAuth } from '@/composables/useAuth';
@@ -250,6 +266,7 @@ import {
 } from 'vue'
 import SupplierEvaluateForm from '@/components/supplier/SupplierEvaluateForm.vue';
 import SupplierQueryForm from '@/components/supplier/query/SupplierQueryForm.vue';
+import dayjs from 'dayjs';
 // #endregion--------------------------------------import block end---------------------------------//
 
 // #region--------------------------------------variable block start---------------------------------//
@@ -293,6 +310,7 @@ const columns = ref([
   { name: '管理分類', label: '管理分類', align: 'left', field: '管理分類', sortable: true },
   { name: '等級', label: '等級', align: 'left', field: '等級', sortable: true },
   { name: '核准', label: '核准', align: 'left', field: '核准', sortable: true },
+  { name: '停用', label: '停用', align: 'left', field: '停用', sortable: true },
 ]);
 const list = ref([]);
 const listDetail = ref([])
@@ -302,6 +320,7 @@ const secondDialog = ref(false);
 const preview = ref(false);
 const showForm = ref(false);
 const mode = ref('');
+const showRFQForm = ref(false);
 const myForm = ref(null);
 const form = ref({
   廠商編號:'',
@@ -354,6 +373,11 @@ const columnsDetail = ref([
 onMounted(async ()=>{
   init();
 })
+const openRFQForm = () =>{
+  // if (confirm('您確定要新增詢價紀錄?')) {
+    showRFQForm.value = true;
+  // }
+}
 const init = async () =>{
   secondDialog.value = true;
   list.value = [];
@@ -368,6 +392,25 @@ const init = async () =>{
 const close = () =>{
   showForm.value = false;
 }
+
+const activate = async (activate) =>{
+  secondDialog.value = true;
+  const user = authStore.getUser().account;
+  await supplierStpre.activateSupplier(form.value.廠商編號, activate, user).then((data)=>{
+    console.log('activate data', data);
+    if(data.data.errorMessage){
+      alert(data.data.errorMessage)
+    } else {
+      alert(!activate?'停用完成' : '取消停用完成');
+    }
+    secondDialog.value = false;
+    showForm.value = false;
+    form.value.停用 = !activate;
+
+  })
+  await init();
+}
+
 const openCARDialog = (type) => {
   mode.value = type;
   if (type == '新增') {
@@ -410,6 +453,10 @@ const openCARDialog = (type) => {
     form.value = selected.value[0];
     console.log('select.value[0]', form.value);
     listDetail.value = form.value.supplyList;
+    listDetail.value.forEach((x)=>{
+      x.詢價日期 = dayjs(x.詢價日期, 'MM/DD/YYYY HH:mm:ss').format("YYYY/MM/DD")
+      x.報價有效日期 = dayjs(x.報價有效日期, 'MM/DD/YYYY HH:mm:ss').format("YYYY/MM/DD")
+    });
     if (type == '預覽') {
       preview.value = true;
     } else {

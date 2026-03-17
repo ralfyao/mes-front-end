@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import axios from 'axios'
+import apiClient from '@/apis/apiClient'
 import { Constant } from './Constant'
 import { toRaw } from "vue";
 export const useUserStore = defineStore('user', {
@@ -18,7 +18,7 @@ export const useUserStore = defineStore('user', {
       console.log('item', item)
       const constant = Constant()
       console.log('APIUrl', constant.APIUrl)
-      const response = await axios.post(constant.APIUrl + 'api/GetUser', item)
+      const response = await apiClient.post(constant.APIUrl + 'api/GetUser', item)
       if (response.data.result) {
         return response.data.result
       }
@@ -27,7 +27,7 @@ export const useUserStore = defineStore('user', {
     async loginUser () {
       const constant = Constant()
       console.log('APIUrl', constant.APIUrl)
-      const response = await axios.post(constant.APIUrl + 'api/Login', {
+      const response = await apiClient.post(constant.APIUrl + 'api/Login', {
         name: '',
         username: this.username,
         password: this.password,
@@ -42,7 +42,7 @@ export const useUserStore = defineStore('user', {
     async getAllUsers () {
       const constant = Constant()
       console.log('APIUrl', constant.APIUrl)
-      const response = await axios.get(constant.APIUrl + 'api/GetAllUsers')
+      const response = await apiClient.get(constant.APIUrl + 'api/GetAllUsers')
       console.log('response', response)
       if (response.data.errorMessage !== '') {
         return []
@@ -57,7 +57,7 @@ export const useUserStore = defineStore('user', {
       const constant = Constant()
       console.log('APIUrl', constant.APIUrl)
       console.log('user', user)
-      const response = await axios.post(constant.APIUrl + 'api/AddUser', user)
+      const response = await apiClient.post(constant.APIUrl + 'api/AddUser', user)
       if (response.data.errorMessage !== '') {
         return response.data.errorMessage
       } else {
@@ -68,7 +68,7 @@ export const useUserStore = defineStore('user', {
       const constant = Constant()
       console.log('APIUrl', constant.APIUrl)
       console.log('user', user)
-      const response = await axios.post(constant.APIUrl + 'api/UpdateUser', user)
+      const response = await apiClient.post(constant.APIUrl + 'api/UpdateUser', user)
       if (response.data.errorMessage !== '') {
         return response.data.errorMessage
       } else {
@@ -79,7 +79,7 @@ export const useUserStore = defineStore('user', {
       const constant = Constant()
       console.log('APIUrl', constant.APIUrl)
       console.log('user', user)
-      const response = await axios.post(constant.APIUrl + 'api/DeleteUser', user)
+      const response = await apiClient.post(constant.APIUrl + 'api/DeleteUser', user)
       if (response.data.errorMessage !== '') {
         return response.data.errorMessage
       } else {
@@ -89,7 +89,7 @@ export const useUserStore = defineStore('user', {
     async getUserRoles(account) {
       const constant = Constant()
       console.log('APIUrl', constant.APIUrl)
-      const response = await axios.post(constant.APIUrl + 'api/GetMenuFuncByAccount?account='+account)
+      const response = await apiClient.post(constant.APIUrl + 'api/GetMenuFuncByAccount?account='+account)
       if (response.data.errorMessage !== '') {
         return []
       } else {
@@ -102,7 +102,7 @@ export const useUserStore = defineStore('user', {
     async getRoleList() {
       const constant = Constant()
       console.log('APIUrl', constant.APIUrl)
-      const response = await axios.get(constant.APIUrl + 'api/GetAllPrivilege')
+      const response = await apiClient.get(constant.APIUrl + 'api/GetAllPrivilege')
       if (response.data.errorMessage !== '') {
         return []
       } else {
@@ -116,7 +116,7 @@ export const useUserStore = defineStore('user', {
       const constant = Constant()
       console.log('APIUrl', constant.APIUrl)
       // console.log('user', user)
-      const response = await axios.get(constant.APIUrl + 'api/UpdatePassword?account='+account+'&password='+password)
+      const response = await apiClient.get(constant.APIUrl + 'api/UpdatePassword?account='+account+'&password='+password)
       if (response !== null) {
         return response;
       }
@@ -126,7 +126,7 @@ export const useUserStore = defineStore('user', {
       const constant = Constant()
       console.log('APIUrl', constant.APIUrl)
       // console.log('user', user)
-      const response = await axios.get(constant.APIUrl + 'api/PositionList')
+      const response = await apiClient.get(constant.APIUrl + 'api/PositionList')
       if (response !== null) {
         return response.data.resultList;
       }
@@ -157,7 +157,7 @@ export const useUserStore = defineStore('user', {
         createUser:'',
       }));
       console.log('param', param);
-      const response = await axios.post(constant.APIUrl + 'api/UpdateUserAuth', JSON.stringify(param), {
+      const response = await apiClient.post(constant.APIUrl + 'api/UpdateUserAuth', JSON.stringify(param), {
         headers: { 'Content-Type': 'application/json' }
       });
       return response;
