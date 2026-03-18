@@ -68,6 +68,11 @@
     <!--#endregion-->
   </q-layout>
   <!--#endregion-->
+  <!--#region 搜尋視窗-->
+  <q-dialog v-model="showSearchForm" persistent >
+    <quotation-query-form v-model:list="list" v-model:showForm="showSearchForm" />
+  </q-dialog>
+  <!--#endregion-->
 
   <!--#region 表單本體-->
   <q-dialog v-model="showForm" persistent >
@@ -275,10 +280,12 @@ import { onMounted
  } from 'vue';
  import SupplierQueryForm from '@/components/supplier/query/SupplierQueryForm.vue';
 import ProductQueryForm from '@/components/product/ProductQueryForm.vue';
+import QuotationQueryForm from '@/components/supplier/query/QuotationQueryForm.vue';
 //#endregion
 
 //#region variable
 // const showETDPopup = ref(false);
+const showSearchForm = ref(false);
 const showItemQueryForm = ref(false);
 const showSupplierQueryForm = ref(false);
 const secondDialog = ref(false);
@@ -373,6 +380,10 @@ const addSupplier = () =>{
     廠商品號:'',
     supplierList:supplierList.value,
   })
+}
+
+const openSearchDialog = () =>{
+  showSearchForm.value = true;
 }
 
 const openItemQueryForm = () =>{
@@ -500,6 +511,39 @@ const openDialog = async (type) =>{
       showForm.value = true;
     } else if (type == '刪除') {
       console.log(type);
+      if (selected.value.length.length == 0){
+        alert('請選取一筆資料!');
+        return;
+      }
+      if (confirm('您是否確認要刪除?')){
+        console.log('');
+        try{
+          const date1 = dayjs(selected.value[0].詢價日期);
+          const date2 = dayjs(new Date().toString());
+          const diffDay = date2.diff(date1, 'day');
+          if (diffDay >= 7){
+            alert('詢價日期已超過7天，無法刪除');
+            return;
+          } else {
+            secondDialog.value = true;
+            console.log('selected.value[0]', selected.value[0]);
+            const formA = ref({});
+            formA.value = selected.value[0];
+            await supplierStore.deleteSupplierQuotation(formA).then((data)=>{
+              if (data.data.errorMessage){
+                alert(data.data.errorMessage);
+              } else {
+                alert('刪除成功');
+              }
+              secondDialog.value = false;
+              init();
+            })
+          }
+        }catch(e){
+          alert('無效的日期!'+e);
+          return;
+        }
+      }
     }
   }
 }

@@ -299,6 +299,34 @@ export const useSupplierStore = defineStore('supplier', {
         headers: { 'Content-Type': 'application/json' }
       });
       return response;
+    },
+    async deleteSupplierQuotation(form){
+      const constant = Constant();
+      const payload = { ...toRaw(form.value) };
+      console.log('APIUrl', form)
+      console.log('APIUrl', constant.APIUrl)
+      console.log('payload', payload);
+      const param = {
+        識別:form.value.識別,
+          廠商編號		:form.value.廠商編號			,
+          詢價日期		:form.value.詢價日期	        ,
+          品項編號		:form.value.品項編號	        ,
+          採購單位		:form.value.採購單位	        ,
+          最低採購量	    :form.value.最低採購量	    ,
+          最大採購量	    :form.value.最大採購量	    ,
+          單價			:form.value.單價		        ,
+          幣別			:form.value.幣別		        ,
+          詢價人員		:form.value.詢價人員	        ,
+          報價有效日期	:form.value.報價有效日期      ,
+          廠商品號		:form.value.廠商品號	        ,
+        產品編號:form.value.產品編號,
+
+      }
+      console.log('param', param);
+      const response = await axios.post(constant.APIUrl + 'api/DeleteSupplierQuotation', param, {
+        headers: { 'Content-Type': 'application/json' }
+      });
+      return response;
     }
   }
 })
