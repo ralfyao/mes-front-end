@@ -24,6 +24,9 @@
         <div v-if="(hasAllAuth ||(auth && auth.查詢))">
         <!-- </div> -->
         <!-- <div class="padding-right"> -->
+          <q-btn color="grey" class="padding-right"
+                       glossy @click="openCustomerDialog('查詢')"
+                       :loading="loading">查詢詢問函</q-btn>&nbsp;
           <q-btn color="green" class="padding-right"
                        glossy @click="openCustomerDialog('預覽')"
                        :loading="loading">預覽詢問函</q-btn>&nbsp;
@@ -224,6 +227,11 @@
     <q-dialog  class="q-pa-md"  style="width: 1000px; max-width: 80vw;" v-model="showQuotationForm" persistent>
       <QuotationView :form="form" :mode="'新增'" :custList="salesList" v-model:showForm="showQuotationForm" v-if="(hasAllAuth && auth.核准)"/>
     </q-dialog>
+    <!--#region 查詢畫面-->
+    <q-dialog v-model="showQueryForm" persistent>
+      <RFQQueryForm v-model:showForm="showQueryForm" v-model:list="list"/>
+    </q-dialog>
+    <!--#endregion -->
     <LoadingComponent v-model="secondDialog"/>
   </q-layout>
 </template>
@@ -257,6 +265,7 @@ import SalesWorkRecordList from '@/components/customer/SalesWorkRecordList.vue';
 import QuotationView from '@/components/customer/quotation/QuotationView.vue';
 import dayjs  from 'dayjs';
 import IndustryCodeSelect from '@/components/customer/IndustryCodeSelect.vue';
+import RFQQueryForm from '@/components/customer/rfq/RFQQueryForm.vue';
 //  #endregion import
 
 // #region 變數
@@ -280,10 +289,16 @@ const workRecordList = ref([]);
 const salesname = ref('');
 const columns =
 [
-  { name: 'rfqdate', label: '詢問函日期', align: 'left', field: 'rfqdate', sortable: true },
   { name: 'rfqno', label: '詢問函號', align: 'left', field: 'rfqno', sortable: true },
+  { name: 'rfqdate', label: '詢問函日期', align: 'left', field: 'rfqdate', sortable: true },
   //{ name: 'sales', label: '業務編號', align: 'left', field: 'sales', sortable: true },
   { name: 'company', label: '客戶名稱', align: 'left', field: 'company', sortable: true },
+  { name: 'contact', label: '聯絡人', align: 'left', field: 'contact', sortable: true },
+  { name: 'country', label: '國別', align: 'left', field: 'country', sortable: true },
+  { name: 'industrycode', label: '詢問業別', align: 'left', field: 'industrycode', sortable: true },
+  { name: 'status', label: '追蹤狀況', align: 'left', field: 'status', sortable: true },
+  { name: '', label: '預計再訪日', align: 'left', field: '', sortable: true },
+  { name: '業務人員', label: '業務人員', align: 'left', field: '業務人員', sortable: true },
 ];
 const form = ref({
   rfqno: '',
@@ -323,6 +338,7 @@ const agentOptions = ref([]);
 const countryList = ref([]);
 const showQuotationForm = ref(false);
 const preview = ref(false);
+const showQueryForm = ref(false);
 // #endregion 變數
 
 // #region functions
@@ -369,6 +385,8 @@ const openCustomerDialog = async (amode) => {
       form.value.rfqdate = dayjs(new Date(), "MM/DD/YYYY HH:mm:ss").format("YYYY/MM/DD")
     });
 
+    showForm.value = true;
+    init();
   } else if (mode.value === '修改' || mode.value == '預覽') {
       if (selected.value.length === 0) {
         errorMessage.value = `請先選擇要${mode.value}的詢問函`;
@@ -399,10 +417,13 @@ const openCustomerDialog = async (amode) => {
         // getSelectedRfqData();
         getSelectedCustomer();
       }
+
+      showForm.value = true;
+      init();
+    } else if (mode.value == '查詢'){
+      showQueryForm.value = true;
     }
 
-    showForm.value = true;
-    init();
     // 打開修改詢問函的對話框，並載入選中的詢問函資料
     console.log('Opening dialog for editing customer:', selected.value);
 }

@@ -1448,5 +1448,17 @@ export const custActions = {
         return response.data.resultList;
       }
       return null;
+    },
+
+    async querySalesRecordList(parap){
+      console.log('parap',parap);
+      const constant = Constant();
+      const response = await apiClient.post(constant.APIUrl + 'api/QuerySalesRecordList', parap, {
+        headers: { 'Content-Type': 'application/json' }
+      });
+      if (response){
+        return response.data.resultList;
+      }
+      return null;
     }
 }
