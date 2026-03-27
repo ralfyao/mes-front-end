@@ -1,5 +1,5 @@
 <template>
-  <q-select :readonly="props.readonly" v-model="sales" label="工號" outlined dense
+  <q-select :readonly="props.readonly" :style="width" v-model="sales" label="工號" outlined dense
                         :options="salesList"
                         option-value="工號"
                         option-label="工號" @update:model-value="changeSalesName"
@@ -36,6 +36,10 @@ const props = defineProps({
   sales:{
     type:String,
     default:()=>'',
+  },
+  width:{
+    type:String,
+    default:"width: 175px"
   }
 })
 const sales = ref('');

@@ -1460,5 +1460,56 @@ export const custActions = {
         return response.data.resultList;
       }
       return null;
+    },
+    async getJobClassification(){
+      const constant = Constant();
+      console.log('APIUrl', constant.APIUrl)
+      const response =await apiClient.get(constant.APIUrl+'api/GetRfqJobClassification')
+      console.log('response', response)
+      if (response){
+        return response.data.resultList;
+      }
+      return null;
+    },
+    async getJobList(){
+      const constant = Constant();
+      console.log('APIUrl', constant.APIUrl)
+      const response =await apiClient.get(constant.APIUrl+'api/GetRfqJob')
+      console.log('response', response)
+      if (response){
+        return response.data.resultList;
+      }
+      return null;
+    },
+    async insertRfqTrackingRecord(form){
+      const constant = Constant();
+      console.log('APIUrl', constant.APIUrl)
+      const payload = { ...toRaw(form.value) };
+      console.log('APIUrl', constant.APIUrl)
+      console.log('payload', payload);
+      const param = {
+         日誌單號  :payload.日誌單號
+        ,工作日期 :payload.工作日期
+        ,職務     :payload.職務
+        ,員工編號 :payload.員工編號
+        ,專案序號 :payload.專案序號
+        ,模組編碼 :payload.模組編碼
+        ,模組名稱 :payload.模組名稱
+        ,任務分類 :payload.任務分類
+        ,成效點數 :payload.成效點數
+        ,工作項目 :payload.工作項目
+        ,組裝零件 :payload.組裝零件
+        ,進度     :payload.進度
+        ,本日工時 :payload.本日工時
+        ,特別註記 :payload.特別註記
+        ,單價     :payload.單價
+        ,工作簡述 :payload.工作簡述
+        ,預計再訪 :payload.預計再訪
+      }
+      console.log('param', param)
+      const response = await apiClient.post(constant.APIUrl + 'api/AddRfqTrackingRecord', param, {
+        headers: { 'Content-Type': 'application/json' }
+      });
+      return response;
     }
 }

@@ -63,6 +63,7 @@
           <div class="text-h4">
             {{mode}}詢問函
             <q-btn v-if="!preview" color="info" glossy @click="openQuotationForm">新增報價單</q-btn>
+            <q-btn v-if="!preview" color="primary" glossy @click="openSalesRecordTrackingForm">撰寫詢問函追蹤紀錄</q-btn>
             <q-card-actions align="right">
               <q-btn flat label="取消" color="negative" @click="close" />
               <q-btn v-if="!preview" label="送出" color="primary" @click="handleOtherAction" />
@@ -84,10 +85,7 @@
         <q-form ref="myForm" >
           <q-card-section>
             <div class="row q-col-gutter-md">
-              <div class="col-6 col-md-6" style="max-width: 500px">
-                <q-input v-model="form.rfqno" :readonly="true" label="詢問函號" outlined dense/>
-              </div>
-              <div class="col-6 col-md-6" style="max-width: 500px">
+              <div class="col-3 col-md-3" style="max-width: 375px">
                 <q-input filled dense :readonly="preview" v-model="form.rfqdate" label="洽談日期" mask="####/##/##" :rules="[val =>  !!val || '洽談日期為必填欄位']">
                   <template v-slot:append>
                     <q-icon name="event" class="cursor-pointer">
@@ -102,83 +100,10 @@
                   </template>
                 </q-input>
               </div>
-            </div>
-            <br>
-            <div class="row q-col-gutter-md">
-              <div class="col-12 col-md-12" style="max-width: 1000px">
-                <CompanySelect v-model="form.company" :readonly="preview" :company-list="companyList" :label="'客戶全稱'" @update:model-value="getSelectedCustomer"/>
+              <div class="col-3 col-md-3" style="max-width: 375px">
+                <q-input v-model="form.rfqno" :readonly="true" label="詢問函號" outlined dense/>
               </div>
-            </div>
-            <br>
-            <div class="row q-col-gutter-md">
-              <div class="col-6 col-md-6" style="max-width: 500px">
-                <q-input v-model="alias" :readonly="preview" label="客戶簡稱" outlined dense/>
-              </div>
-              <div class="col-6 col-md-6" style="max-width: 500px">
-                <IndustryCodeSelect v-model:industrycode="form.industrycode" :readonly="preview"/>
-                <!-- <IndustrySelect v-model="form.industrycode" :readonly="preview" :industryList="industryList" :label="'產業別'" outlined dense/> -->
-              </div>
-            </div>
-            <br>
-            <div class="row q-col-gutter-md">
-              <div class="col-12 col-md-12" style="max-width: 1000px">
-                <q-select v-model="form.contact" label="聯絡人" :readonly="preview" :options="contactList" option-value="姓名" option-label="姓名" outlined dense></q-select>
-                <label class="text-red text-center" style=" font-size: 24px;">
-                  {{ position }}
-                </label>
-              </div>
-            </div>
-            <br>
-            <div class="row q-col-gutter-md">
-              <div class="col-6 col-md-6" style="max-width: 500px">
-                <q-input v-model="form.tel" :readonly="preview" label="聯絡電話" outlined dense/>
-              </div>
-              <div class="col-6 col-md-6" style="max-width: 500px">
-                <q-input v-model="form.country" :readonly="preview" label="國別" outlined dense/>
-                <label class="text-red text-center" style=" font-size: 24px;">
-                  {{ _country }}
-                </label>
-              </div>
-            </div>
-            <br>
-            <div class="row q-col-gutter-md">
-              <div class="col-6 col-md-6" style="max-width: 500px">
-                <q-input v-model="form.email" :readonly="preview" label="電子郵件" outlined dense/>
-              </div>
-              <div class="col-6 col-md-6" style="max-width: 500px">
-                <q-input v-model="form.ma" :readonly="preview" label="型態分類" outlined dense/>
-              </div>
-            </div>
-            <br>
-            <div class="row q-col-gutter-md">
-              <div class="col-6 col-md-6" style="max-width: 500px">
-                <q-select v-model="form.ranking" :readonly="preview" label="成交率"
-                  :options="rankginList"
-                  option-value="ratio"
-                  option-label="ranking"  outlined dense :rules="[val =>  !!val || '成交率為必填欄位']"
-                ></q-select>
-              </div>
-              <div class="col-6 col-md-6" style="max-width: 500px">
-                <q-input v-model="form.machine" :readonly="readonly" label="機台" outlined dense/>
-              </div>
-            </div>
-            <br>
-            <div class="row q-col-gutter-md">
-              <div class="col-12 col-md-12" style="max-width: 1000px">
-                <q-select v-model="form.status" :readonly="preview" label="狀態" outlined dense
-                  :options="statusList"
-                  option-value="狀況"
-                  option-label="狀況"
-                  @update:model-value="updateStatus"
-                />
-                <label class="text-red text-center" style=" font-size: 24px;">
-                  {{ custStatus }}
-                </label>
-              </div>
-            </div>
-            <br>
-            <div class="row q-col-gutter-md">
-              <div class="col-6 col-md-6" style="max-width: 500px">
+              <div class="col-3 col-md-3" style="max-width: 375px">
                 <q-select v-model="form.sales" :readonly="preview" label="業務編號" outlined dense
                     :options="salesList"
                             option-value="工號"
@@ -189,16 +114,87 @@
                   {{ salesname }}
                 </label>
               </div>
-              <div class="col-6 col-md-6" style="max-width: 500px">
+              <div class="col-3 col-md-3" style="max-width: 375px">
                 <q-input v-model="form.source" :readonly="readonly" label="開發來源" outlined dense/>
               </div>
             </div>
             <br>
             <div class="row q-col-gutter-md">
-              <div class="col-6 col-md-6" style="max-width: 500px">
+              <div class="col-6 col-md-6" style="max-width: 750px">
+                <CompanySelect v-model="form.company" :readonly="preview" :company-list="companyList" :label="'客戶全稱'" @update:model-value="getSelectedCustomer"/>
+              </div>
+              <div class="col-3 col-md-3" style="max-width: 375px">
+                <q-select v-model="form.ranking" :readonly="preview" label="成交率"
+                  :options="rankginList"
+                  option-value="ratio"
+                  option-label="ranking"  outlined dense :rules="[val =>  !!val || '成交率為必填欄位']"
+                ></q-select>
+              </div>
+              <div class="col-3 col-md-3" style="max-width: 375px">
+                <q-input v-model="form.machine" :readonly="readonly" label="機台" outlined dense/>
+              </div>
+            </div>
+            <br>
+            <div class="row q-col-gutter-md">
+              <div class="col-6 col-md-6" style="max-width: 750px">
+                <q-input v-model="alias" :readonly="preview" label="客戶簡稱" outlined dense/>
+              </div>
+              <div class="col-6 col-md-6" style="max-width: 750px">
+                <IndustryCodeSelect v-model:industrycode="form.industrycode" :readonly="preview"/>
+                <!-- <IndustrySelect v-model="form.industrycode" :readonly="preview" :industryList="industryList" :label="'產業別'" outlined dense/> -->
+              </div>
+            </div>
+            <br>
+            <div class="row q-col-gutter-md">
+              <div class="col-3 col-md-3" style="max-width: 375px">
+                <q-select v-model="form.contact" label="聯絡人" :readonly="preview" :options="contactList" option-value="姓名" option-label="姓名" outlined dense></q-select>
+                <!-- <label class="text-red text-center" style=" font-size: 24px;">
+                  {{ position }}
+                </label> -->
+              </div>
+              <div class="col-3 col-md-3" style="max-width: 375px">
+                <q-input v-model="form.position" :readonly="preview" label="職位" outlined dense/>
+              </div>
+
+              <div class="col-6 col-md-6 flex" style="max-width: 750px">
+                <q-select v-model="form.status" style="max-width: 375px" :readonly="preview" label="狀態" outlined dense
+                  :options="statusList"
+                  option-value="狀況"
+                  option-label="狀況"
+                  @update:model-value="updateStatus"
+                />
+                <label class="text-red text-center" style=" font-size: 24px;max-width: 375px">
+                  {{ custStatus }}
+                </label>
+              </div>
+            </div>
+            <br>
+            <div class="row q-col-gutter-md">
+              <div class="col-3 col-md-3" style="max-width: 375px">
+                <q-input v-model="form.tel" :readonly="preview" label="聯絡電話" outlined dense/>
+              </div>
+              <div class="col-3 col-md-3" style="max-width: 375px">
+                <q-input v-model="form.country" :readonly="preview" label="國別" outlined dense/>
+                <label class="text-red text-center" style=" font-size: 24px;">
+                  {{ _country }}
+                </label>
+              </div>
+              <div class="col-6 col-md-6" style="max-width: 750px">
+                <q-input v-model="form.description" :readonly="preview" label="備註" outlined dense/>
+              </div>
+            </div>
+            <br>
+            <div class="row q-col-gutter-md">
+              <div class="col-3 col-md-3" style="max-width: 375px">
+                <q-input v-model="form.email" :readonly="preview" label="電子郵件" outlined dense/>
+              </div>
+              <div class="col-3 col-md-3" style="max-width: 375px">
+                <q-input v-model="form.ma" :readonly="preview" label="型態分類" outlined dense/>
+              </div>
+              <div class="col-3 col-md-3" style="max-width: 375px">
                 <q-input v-model="form.enduser" :readonly="preview" label="終端使用" outlined dense/>
               </div>
-              <div class="col-6 col-md-6" style="max-width: 500px">
+              <div class="col-3 col-md-3" style="max-width: 375px">
                 <q-select v-model="form.agent" :readonly="preview" label="配合代理" outlined dense
                   :options="agentOptions"
                   option-value="agent"
@@ -206,19 +202,16 @@
                 />
               </div>
             </div>
-            <br>
+          </q-card-section>
+          <q-card-section>
             <div class="row q-col-gutter-md">
-              <div class="col-12 col-md-12" style="max-width: 1000px">
-                <q-input v-model="form.description" :readonly="preview" label="備註" outlined dense/>
+              <div class="col-6 col-md-6" style="max-width: 750px">
+                <QuotationList :quotationList="quotationList"/>
+              </div>
+              <div class="col-6 col-md-6" style="max-width: 750px">
+                <SalesWorkRecordList :workRecordList="workRecordList" />
               </div>
             </div>
-          </q-card-section>
-          <hr>
-          <q-card-section>
-            <QuotationList :quotationList="quotationList"/>
-          </q-card-section>
-          <q-card-section>
-            <SalesWorkRecordList :workRecordList="workRecordList" />
           </q-card-section>
         </q-form>
       </q-card>
@@ -230,6 +223,9 @@
     <!--#region 查詢畫面-->
     <q-dialog v-model="showQueryForm" persistent>
       <RFQQueryForm v-model:showForm="showQueryForm" v-model:list="list"/>
+    </q-dialog>
+    <q-dialog v-model="showSalesRecordTrackingForm" persistent>
+      <SalesRecordTrackingForm v-model:showForm="showSalesRecordTrackingForm" v-model:rfqno="form.rfqno" />
     </q-dialog>
     <!--#endregion -->
     <LoadingComponent v-model="secondDialog"/>
@@ -266,6 +262,7 @@ import QuotationView from '@/components/customer/quotation/QuotationView.vue';
 import dayjs  from 'dayjs';
 import IndustryCodeSelect from '@/components/customer/IndustryCodeSelect.vue';
 import RFQQueryForm from '@/components/customer/rfq/RFQQueryForm.vue';
+import SalesRecordTrackingForm from '@/components/customer/rfq/SalesRecordTrackingForm.vue'
 //  #endregion import
 
 // #region 變數
@@ -339,6 +336,7 @@ const countryList = ref([]);
 const showQuotationForm = ref(false);
 const preview = ref(false);
 const showQueryForm = ref(false);
+const showSalesRecordTrackingForm = ref(false);
 // #endregion 變數
 
 // #region functions
@@ -596,6 +594,10 @@ const openQuotationForm = () =>{
 const close = () =>{
   showForm.value = false
   preview.value = false;
+}
+
+const openSalesRecordTrackingForm = () =>{
+  showSalesRecordTrackingForm.value = true;
 }
 // #endregion functions
 </script>
