@@ -116,6 +116,7 @@ import {
   onMounted,
   defineProps,
 } from 'vue';
+// eslint-disable-next-line no-unused-vars
 import dayjs  from 'dayjs';
 import SalesSelect from '../SalesSelect.vue';
 import { useCustStore } from '@/composables/useCust';
@@ -158,7 +159,7 @@ const close = () =>{
   emits('update:showForm', false);
 }
 onMounted(async ()=>{
-  form.value.工作日期 = dayjs().format("YYYY/MM/DD");
+  form.value.工作日期 = ("YYYY/MM/DD");
   console.log('props.rfqno', props.rfqno);
   await custStore.getRfq(props.rfqno).then((data)=>{
     console.log('rfqList',data);

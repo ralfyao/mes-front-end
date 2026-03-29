@@ -34,9 +34,10 @@
       </q-card-section>
       <q-form ref="myForm">
         <q-card-section>
-          <!--日期、報價單號-->
+          <!--日期、報價單號、業務人員、開發來源-->
           <div class="row q-col-gutter-md">
-            <div class="col-6 col-md-6" style="max-width: 500px">
+            <!--日期-->
+            <div class="col-3 col-md-3" style="max-width: 375px">
               <q-input outlined dense v-model="quotationForm.quodate" :readonly="readonly || props.preview" label="日期" mask="####/##/##" :rules="[val => ! props.preview && !!val || '日期為必填欄位']">
                 <template v-slot:append>
                   <q-icon name="event" class="cursor-pointer">
@@ -51,13 +52,12 @@
                 </template>
               </q-input>
             </div>
-            <div class="col-6 col-md-6" style="max-width: 500px">
+            <!--報價單號-->
+            <div class="col-3 col-md-3" style="max-width: 375px">
               <q-input outlined dense v-model="quotationForm.quono" :readonly="readonly || props.preview" label="報價單號"/>
             </div>
-          </div>
-          <!--報價有效日期、詢問單號-->
-          <div class="row q-col-gutter-md">
-            <div class="col-6 col-md-6" style="max-width: 500px">
+            <!--報價有效日期-->
+            <div class="col-2 col-md-2" style="max-width: 250px">
               <q-input outlined dense v-model="quotationForm.condate" :readonly="readonly || props.preview" label="報價有效日期" mask="####/##/##" :rules="[ val =>!props.preview &&  !!val || '日期為必填欄位']">
                 <template v-slot:append>
                   <q-icon name="event" class="cursor-pointer">
@@ -72,47 +72,37 @@
                 </template>
               </q-input>
             </div>
-            <div class="col-6 col-md-6" style="max-width: 500px">
+            <!--詢問單號-->
+            <div class="col-2 col-md-2" style="max-width: 250px">
               <q-input outlined dense v-model="quotationForm.rfqno" :readonly="readonly || props.preview" label="詢價單號" :rules="[val => !props.preview && !!val || '詢價單為必填欄位']"/>
             </div>
-          </div>
-          <!--業務人員-->
-          <div class="row q-col-gutter-md">
-            <div class="col-6 col-md-6" style="max-width: 500px">
-              <q-select v-model="quotationForm.daddress" :readonly="readonly || props.preview" label="業務人員" outlined dense
+            <!--業務人員-->
+            <div class="col-2 col-md-2" style="max-width: 250px">
+              <q-select v-model="quotationForm.daddress" style="max-width: 150px" :readonly="readonly || props.preview" label="業務人員" outlined dense
                     :options="salesList"
                             option-value="工號" emit-value map-options
                             option-label="工號" @update:model-value="changeSalesName"
                             ></q-select>
-            </div>
-            <div class="col-6 col-md-6" style="max-width: 500px">
-              <label class="text-red text-center" style=" font-size: 24px;">
+              <label class="text-red text-center" style="max-width: 150px; font-size: 24px;">
                 {{ salesname }}
               </label>
             </div>
           </div>
-          <br>
-          <!--客戶編號、客戶簡稱-->
+          <!--客戶編號、客戶簡稱、客戶全名-->
           <div class="row q-col-gutter-md">
-            <div class="col-6 col-md-6" style="max-width: 500px">
+            <!--客戶編號-->
+            <div class="col-3 col-md-3" style="max-width: 375px">
               <q-input outlined dense v-model="companyNo" :readonly="readonly || props.preview" label="公司編號"/>
             </div>
-
-            <div class="col-6 col-md-6" style="max-width: 500px">
+            <!--客戶簡稱-->
+            <div class="col-3 col-md-3" style="max-width: 375px">
               <q-input outlined dense v-model="companyAlias" :readonly="readonly || props.preview" label="公司簡稱"/>
             </div>
-          </div>
-          <br>
-          <!--客戶全名-->
-          <div class="row q-col-gutter-md">
-            <div class="col-12 col-md-12" style="max-width: 1000px">
-              <q-input outlined dense v-model="companyName" :readonly="readonly || props.preview" label="客戶全名"/>
+            <!--客戶全名-->
+            <div class="col-4 col-md-4" style="max-width: 500px">
+             <q-input outlined dense v-model="companyName" :readonly="readonly || props.preview" label="客戶全名"/>
             </div>
-          </div>
-          <br>
-          <!--幣別、匯率--><!--匯率> 在dbo_F匯率中查詢=幣別[CURRENCY]的最近一筆紀錄-->
-          <div class="row q-col-gutter-md">
-            <div class="col-6 col-md-6" style="max-width: 500px">
+            <div class="col-1 col-md-1" style="max-width: 125px">
               <q-select outlined dense  label="幣別"
                 v-model="quotationForm.currency"
                 :options="currencyList"
@@ -121,7 +111,7 @@
                 @update:model-value="changeExRate" emit-value map-options
                  :rules="[val => !props.preview && !!val || '幣別為必填欄位']"/>
             </div>
-            <div class="col-6 col-md-6" style="max-width: 500px">
+            <div class="col-1 col-md-1" style="max-width: 125px">
               <q-select outlined dense  label="匯率"
                 :options="exRateList"
                 v-model="quotationForm.exrate"
@@ -134,33 +124,29 @@
           <br>
           <!--聯絡人、機台類別--><!--聯絡人[RANKING]> dbo_C客戶聯絡人清單--><!--機台類型[MTYPE]> dbo_A機台類型-->
           <div class="row q-col-gutter-md">
-            <div class="col-6 col-md-6" style="max-width: 500px">
+            <div class="col-4 col-md-4" style="max-width: 500px">
               <q-select  outlined dense v-model="quotationForm.ranking" emit-value map-options :readonly="readonly || props.preview"
               :options="contactList" option-label="姓名" option-value="姓名"  label="聯絡人"/>
             </div>
-            <div class="col-6 col-md-6" style="max-width: 500px">
+            <div class="col-2 col-md-2" style="max-width: 250px">
               <q-select  outlined dense :readonly="readonly || props.preview" v-model="quotationForm.mtype"  label="機台類別"
                 :options="eqpTypeList"
                 option-value="typeid"
                 option-label="type" emit-value map-options
                 :rules="[val => !props.preview && !!val || '機台類別為必填欄位']"/>
             </div>
-          </div>
-          <br>
-          <!--交貨地址-->
-          <div class="row q-col-gutter-md">
-            <div class="col-12 col-md-12" style="max-width: 1000px">
+            <div class="col-5 col-md-5" style="max-width: 625px">
               <q-input outlined dense v-model="quotationForm.address" label="交貨地址" :readonly="readonly || props.preview"/>
+            </div>
+            <div class="col-1 col-md-1" style="max-width: 125px">
+              <q-select  outlined dense v-model="quotationForm.稅率"  label="稅率" :readonly="readonly || props.preview"
+                :rules="[val => !props.preview && !!val || '稅率為必填欄位']"  emit-value map-options
+                :options="taxRateList"/>
             </div>
           </div>
           <br>
           <!--稅率、價格條件--><!--稅率> 選單直接寫入5%,0兩個選項-->
           <div class="row q-col-gutter-md">
-            <div class="col-6 col-md-6" style="max-width: 500px">
-              <q-select  outlined dense v-model="quotationForm.稅率"  label="稅率" :readonly="readonly || props.preview"
-                :rules="[val => !props.preview && !!val || '稅率為必填欄位']"  emit-value map-options
-                :options="taxRateList"/>
-            </div>
             <div class="col-6 col-md-6" style="max-width: 500px">
               <q-select  outlined dense v-model="quotationForm.價格條件"  label="價格條件" :readonly="readonly || props.preview"
                 :options="priceCondList"
@@ -168,25 +154,23 @@
                 option-value="條文編號"
                 option-label="條文名稱"/>
             </div>
-          </div>
-          <br>
-          <!--交期要求、報價總額-->
-          <div class="row q-col-gutter-md">
-            <div class="col-6 col-md-6" style="max-width: 500px">
+            <div class="col-4 col-md-4" style="max-width: 500px">
               <q-select  outlined dense  label="交期要求" :options="dueDateTerm" :readonly="readonly || props.preview" v-model="quotationForm.交貨日期"
                 :rules="[val => !props.preview && !!val || '交期要求為必填欄位']"  emit-value map-options
                 option-value="條文編號"
                 option-label="條文名稱"/>
             </div>
-            <div class="col-6 col-md-6" style="max-width: 500px">
+            <div class="col-1 col-md-1" style="max-width: 125px">
               <q-input  outlined dense readonly v-model="quotationForm.amount"  label="報價總額"/>
+            </div>
+            <div class="col-1 col-md-1" style="max-width: 125px">
               <label>台幣換算：{{ NTD }}</label>
             </div>
           </div>
           <br>
           <!--交貨方式、付款方式-->
           <div class="row q-col-gutter-md">
-            <div class="col-6 col-md-6" style="max-width: 500px">
+            <div class="col-6 col-md-6" style="max-width: 750px">
               <q-select  outlined v-model="quotationForm.交貨方式" dense  label="交貨方式"
                 :options="handMethod"
                 :rules="[val => !props.preview && !!val || '交貨方式為必填欄位']"
@@ -195,7 +179,7 @@
                 emit-value map-options
               />
             </div>
-            <div class="col-6 col-md-6" style="max-width: 500px">
+            <div class="col-6 col-md-6" style="max-width: 750px">
               <q-select  outlined v-model="quotationForm.付款方式" dense  label="付款方式"
                 :options="paymentTerm"
                 :rules="[val => !props.preview && ! props.preview && !!val || '付款方式為必填欄位']"
@@ -207,12 +191,14 @@
           <br>
           <!--備註-->
           <div class="row q-col-gutter-md">
-            <div class="col-12 col-md-12" style="max-width: 1000px">
+            <div class="col-10 col-md-10" style="max-width: 1250px">
               <q-input outlined dense v-model="quotationForm.remark" :readonly="readonly || props.preview" label="備註"/>
+            </div>
+            <div class="col-2 col-md-2" style="max-width: 250px">
+              <q-btn v-if="quotationForm.quono  && quotationForm.quono != ''" outlined dense color="blue" label="撰文對話" @click="openRemarkForm"/>
             </div>
           </div>
           <br>
-          <hr>
           <!--產品列表-->
           <h6>
             產品列表
@@ -257,6 +243,18 @@
         <q-btn v-if="!preview" label="送出" color="primary" @click="handleOtherAction" />
       </q-card-actions>
   </q-card>
+  <q-dialog v-model="showRemarkForm" persistent>
+    <RemarkForm
+      v-model:quotationNo="quotationForm.quono"
+      v-model:showForm="showRemarkForm"
+      v-model:rfqNo="quotationForm.rfqno"
+      v-model:custNo="companyNo"
+      v-model:custName="companyName"
+      />
+  </q-dialog>
+  <q-dialog v-model="showSalesOrderForm" persistent>
+    <SalesOrderForm v-model:salesOrderForm="salesOrderForm" v-model:showForm="showSalesOrderForm"/>
+  </q-dialog>
   <LoadingComponent v-model="secondDialog"/>
 </template>
 <script setup>
@@ -275,8 +273,12 @@ import {
   , QDate
   , QSelect
   , SessionStorage
+  , QDialog
 } from 'quasar';
 import {ref, defineProps, defineEmits, onMounted} from 'vue';
+import dayjs from 'dayjs';
+import RemarkForm from './RemarkForm.vue';
+import SalesOrderForm from '../salesorder/SalesOrderForm.vue';
 // import block
 
 // variable block
@@ -288,6 +290,8 @@ const salesList = ref([]);
 const companyNo = ref('');
 const companyAlias = ref('');
 const companyName = ref('');
+const showRemarkForm = ref(false);
+const showSalesOrderForm = ref(false);
 const NTD = ref('');
 const props = defineProps({
   mode:{
@@ -414,6 +418,9 @@ const close = () =>{
   emit('update:showForm', false);
   console.log('showForm', props.showForm);
 }
+const openRemarkForm = () =>{
+  showRemarkForm.value = true;
+}
 onMounted(async ()=>{
   console.log('props.mode',props.mode);
  await init();
@@ -444,6 +451,9 @@ const init =async () =>{
   if (props.form){
     console.log('form', props.form)
     mode.value = props.mode;
+    if (mode.value == '新增'){
+      quotationForm.value.quodate = dayjs().format('YYYY/MM/DD')
+    }
     console.log('rfqdate',props.form.rfqdate)
     // quotationForm.value = props.form ;
     console.log('rfqno',props.form.rfqno)
@@ -641,18 +651,24 @@ const updateExpiryFlag = async (type) =>{
   });
 }
 const transferToSalesOrder = async () =>{
-  secondDialog.value = true;
-  await custStore.transferToSalesOrder(quotationForm).then((data)=>{
-    if (!data.data.errorMessage || data.data.errorMessage == ''){
-      alert('轉開成功');
-      secondDialog.value = false;
-      emit("update:showForm", false);
-      init();
-    } else {
-      alert(data.data.errorMessage);
-      secondDialog.value = false;
-    }
-  })
+  // const success = await myForm.value.validate();
+  // if (success) {
+    if(!confirm('您是否確定轉開訂單?'))
+      return;
+    showSalesOrderForm.value = true;
+    // secondDialog.value = true;
+    // await custStore.transferToSalesOrder(quotationForm).then((data)=>{
+    //   if (!data.data.errorMessage || data.data.errorMessage == ''){
+    //     alert('轉開成功');
+    //     secondDialog.value = false;
+    //     emit("update:showForm", false);
+    //     init();
+    //   } else {
+    //     alert(data.data.errorMessage);
+    //     secondDialog.value = false;
+    //   }
+    // })
+  // }
 }
 const validate = async (valid) => {
   console.log('props.theUser.value', props.theUser.value);

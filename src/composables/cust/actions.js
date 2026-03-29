@@ -570,11 +570,11 @@ export const custActions = {
         rfqdate     :payload.rfqdate,
         ranking     :payload.ranking?.company?payload.ranking?.company:payload.ranking,
         address     :payload.address,
-        exrate      :payload.exrate.匯率?payload.exrate.匯率:payload.exrate,
-        daddress    :payload.daddress.工號?payload.daddress.工號:payload.daddress,
-        價格條件    :payload.價格條件.條文編號?payload.價格條件.條文編號:payload.價格條件,
-        交貨方式    :payload.交貨方式.條文編號?payload.交貨方式.條文編號:payload.交貨方式,
-        付款方式    :payload.付款方式.條文編號?payload.付款方式.條文編號:payload.付款方式,
+        exrate      :payload.exrate.匯率?payload.exrate?.匯率:payload.exrate,
+        daddress    :payload.daddress.工號?payload.daddress?.工號:payload.daddress,
+        價格條件    :payload.價格條件.條文編號?payload.價格條件?.條文編號:payload.價格條件,
+        交貨方式    :payload.交貨方式.條文編號?payload.交貨方式?.條文編號:payload.交貨方式,
+        付款方式    :payload.付款方式.條文編號?payload.付款方式?.條文編號:payload.付款方式,
         remark      :payload.remark,
         交貨日期    :payload.交貨日期.條文編號?payload.交貨日期.條文編號:payload.交貨日期,
         稅率        :payload.稅率,
@@ -588,6 +588,23 @@ export const custActions = {
       };
       console.log('param', param);
       const response = await apiClient.post(constant.APIUrl + 'api/UpdateQuotation', param, {
+        headers: { 'Content-Type': 'application/json' }
+      });
+      return response;
+    },
+    async updateQuotationRemark(form){
+      const constant = Constant();
+      const payload = { ...toRaw(form.value) };
+      console.log('APIUrl', constant.APIUrl)
+      console.log('payload', payload);
+      const param = {
+        idno		    :payload.idno,
+        quono       :payload.quono,
+        remark      :payload.remark,
+        修改         :payload.修改,
+      };
+      console.log('param', param);
+      const response = await apiClient.post(constant.APIUrl + 'api/UpdateQuotationRemark', param, {
         headers: { 'Content-Type': 'application/json' }
       });
       return response;

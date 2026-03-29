@@ -218,7 +218,7 @@
     </q-dialog>
     <!--報價單-->
     <q-dialog  class="q-pa-md"  style="width: 1000px; max-width: 80vw;" v-model="showQuotationForm" persistent>
-      <QuotationView :form="form" :mode="'新增'" :custList="salesList" v-model:showForm="showQuotationForm" v-if="(hasAllAuth && auth.核准)"/>
+      <QuotationView :form="form" :mode="'新增'" :custList="salesList" v-model:showForm="showQuotationForm" />
     </q-dialog>
     <!--#region 查詢畫面-->
     <q-dialog v-model="showQueryForm" persistent>
