@@ -6,6 +6,7 @@
           <div class="col-3 flex" v-if="props.mode=='修改'">
             <q-btn  dense outlined label="複製" color="warning" @click="copy" />&nbsp;
             <q-btn  dense outlined label="轉開訂單" color="primary" @click="transferToSalesOrder" />&nbsp;
+            <q-btn  dense outlined label="查詢已轉訂單" color="secondary" @click="queryTransferToSalesOrder" />&nbsp;
             <q-btn  dense outlined label="取消停用" color="green" v-if="!props.preview && (!quotationForm.核准 || quotationForm.核准 == '')" @click="updateExpiryFlag('Y')" />
             <q-btn  dense outlined label="停用" color="negative" v-if="!props.preview && (quotationForm.核准 && quotationForm.核准 != '')" @click="updateExpiryFlag('N')" />
             <div v-if="(props.hasAllAuth ||(props.auth && props.auth.核准)) && !preview">
@@ -253,7 +254,17 @@
       />
   </q-dialog>
   <q-dialog v-model="showSalesOrderForm" persistent>
-    <SalesOrderForm v-model:salesOrderForm="salesOrderForm" v-model:showForm="showSalesOrderForm"/>
+    <SalesOrderForm
+      v-model:salesOrderForm="salesOrderForm"
+      v-model:showForm="showSalesOrderForm"
+      v-model:quotationNo="quotationForm.quono"
+      v-model:custNo="companyNo"
+      v-model:salesNo="quotationForm.daddress"/>
+  </q-dialog>
+  <q-dialog v-model="showSalesDetailQuono" persistent>
+    <SalesDetailView
+      v-model:showForm="showSalesDetailQuono"
+      v-model:data="transToSalesOrderList"/>
   </q-dialog>
   <LoadingComponent v-model="secondDialog"/>
 </template>
@@ -261,6 +272,7 @@
 // import block
 import { useCustStore } from '@/composables/useCust';
 import LoadingComponent from '@/components/LoadingComponent.vue'
+import SalesDetailView from '@/components/customer/salesorder/SalesDetailView.vue';
 import {
   QCard
   , QCardSection
@@ -373,6 +385,8 @@ const priceCondList = ref([]);
 const dueDateTerm   = ref([]);
 const handMethod    = ref([]);
 const paymentTerm   = ref([]);
+const transToSalesOrderList = ref([]);
+const showSalesDetailQuono = ref(false);
 // const realExRate    = ref([]);
 // const customerAlias = ref('');
 const quotationForm = ref({
@@ -651,24 +665,9 @@ const updateExpiryFlag = async (type) =>{
   });
 }
 const transferToSalesOrder = async () =>{
-  // const success = await myForm.value.validate();
-  // if (success) {
     if(!confirm('您是否確定轉開訂單?'))
       return;
     showSalesOrderForm.value = true;
-    // secondDialog.value = true;
-    // await custStore.transferToSalesOrder(quotationForm).then((data)=>{
-    //   if (!data.data.errorMessage || data.data.errorMessage == ''){
-    //     alert('轉開成功');
-    //     secondDialog.value = false;
-    //     emit("update:showForm", false);
-    //     init();
-    //   } else {
-    //     alert(data.data.errorMessage);
-    //     secondDialog.value = false;
-    //   }
-    // })
-  // }
 }
 const validate = async (valid) => {
   console.log('props.theUser.value', props.theUser.value);
@@ -680,6 +679,17 @@ const validate = async (valid) => {
     }
     close();
     init();
+  })
+}
+const queryTransferToSalesOrder = async () =>{
+  await custStore.queryTransferToSalesOrder(quotationForm.value.quono).then((data)=>{
+    console.log('data', data);
+    // if (data?.data?.errorMessage){
+    //   alert(data?.data?.errorMessage);
+    // } else {
+      transToSalesOrderList.value = data;
+      showSalesDetailQuono.value = true;
+    // }
   })
 }
 // function block

@@ -212,6 +212,7 @@ const openCustomerDialog = (type) =>{
       核准日      :'',
       quotationDetailFormList:[],
     };
+    selected.value = [];
   } else {
     console.log('type', type);
     if (selected.value.length == 0){

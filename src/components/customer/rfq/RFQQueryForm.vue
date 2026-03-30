@@ -159,7 +159,7 @@ const query = async () =>{
     startDate:startDate.value,
     endDate:endDate.value,
     custName:custName.value,
-    country:country.value?.code.trim(),
+    country:country.value?.code?country.value?.code.trim():country.value?.trim(),
     industrycode:industrycode.value?.中分類碼,
     sales:sales.value,
     situation:situation.value,

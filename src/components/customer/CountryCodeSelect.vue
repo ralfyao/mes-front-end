@@ -2,7 +2,7 @@
   <q-select v-model="country" style="max-width: 500px" :readonly="readonly || preview" label="國別" outlined dense
     :options="countryList"
     option-value="code"
-    option-label="國別"
+    option-label="國別" emit-value map-options
     @update:model-value="getCountryName"
   >
   </q-select>

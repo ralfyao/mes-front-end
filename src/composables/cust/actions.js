@@ -1077,6 +1077,7 @@ export const custActions = {
       const payload = { ...toRaw(form) };
       console.log('APIUrl', constant.APIUrl)
       console.log('payload', payload);
+      payload.指配國別 = payload.指配國別?.code? payload.指配國別?.code : payload.指配國別;
       const response = await apiClient.post(constant.APIUrl + 'api/TransferReceivable', payload, {
         headers: { 'Content-Type': 'application/json' }
       });
@@ -1528,5 +1529,15 @@ export const custActions = {
         headers: { 'Content-Type': 'application/json' }
       });
       return response;
+    },
+    async queryTransferToSalesOrder(quono){
+      const constant = Constant();
+      console.log('APIUrl', constant.APIUrl)
+      const response =await apiClient.get(constant.APIUrl+'api/QueryTransferToSalesOrder?quono=' + quono)
+      console.log('response', response)
+      if (response){
+        return response.data.resultList;
+      }
+      return null;
     }
 }
