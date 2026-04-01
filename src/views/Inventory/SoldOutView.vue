@@ -56,6 +56,7 @@
         ></q-table >
       </q-page>
     </q-page-container>
+    <!--主畫面-->
     <q-dialog v-model="showForm" persistent >
       <q-card class="q-pa-md"  style="width: 1000px; max-width: 80vw;">
         <q-card-section>
@@ -340,12 +341,15 @@
         </q-form>
       </q-card>
     </q-dialog>
+    <!--銀行資訊核對-->
     <q-dialog v-model="showBankInfo" persistent>
       <BankInfoView v-model:showForm="showBankInfo" :bankAccountCheckForm="bankAccountCheckForm"/>
     </q-dialog>
+    <!--show訂單分配-->
     <q-dialog v-model="showSODistribution" persistent>
       <SalesOrderDistributionView />
     </q-dialog>
+    <!--顯示查詢畫面-->
     <q-dialog v-model="showSearchForm" persistent>
       <SoldOutQueryForm v-model:showForm="showSearchForm" v-model:list="list"/>
     </q-dialog>

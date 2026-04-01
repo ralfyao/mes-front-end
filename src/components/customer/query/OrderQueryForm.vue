@@ -16,7 +16,16 @@
       <br>
       <div class="row">
         <div class="col-10">
-          <q-input v-model="param.itemNo" outlined dense label="品號查詢"/>
+          <q-input v-model="param.itemNo" outlined dense label="品名查詢"/>
+        </div>
+      </div>
+      <br>
+      <div class="row">
+        <div class="col-10">
+          訂單日期：
+          <q-input v-model="param.orderDateFrom" outlined dense label="從" type="date"/>
+          ～
+          <q-input v-model="param.orderDateTo" outlined dense label="到" type="date"/>
         </div>
       </div>
       <br>
@@ -50,6 +59,8 @@ const param = ref({
   company:'',
   country:'',
   itemNo:'',
+  orderDateFrom:'',
+  orderDateTo:'',
 })
 const secondDialog = ref(false);
 // eslint-disable-next-line no-unused-vars

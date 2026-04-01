@@ -53,7 +53,13 @@
                 v-model:selected="selected"
                 @selection="onSelection"
                 :pagination="{ rowsPerPage: 5 }"
-        ></q-table >
+        >
+          <template v-slot:body-cell-單號="props">
+            <q-td :props="props">
+              <q-btn :label="props.row.單號" outlined dense @click="openOrderDetails(props.row.單號)"></q-btn>
+            </q-td>
+          </template>
+        </q-table >
 
       </q-page>
     </q-page-container>
@@ -65,38 +71,38 @@
     <q-dialog v-model="showForm" persistent >
       <q-card  class="q-pa-md"  style="width: 1500px; max-width: 95vw;">
         <q-card-section>
-       <div class="col-3 flex text-h4">
-         {{mode}}訂單
-         <div class="col-3 flex" v-if="mode == '修改'">
-           <q-checkbox v-model="salesOrderForm.結案" label="結案" :readonly="readonly || preview" @update:model-value="updateCloseFlag"/>
-           <q-btn v-if="!preview" label="報價單分配" color="green" glossy densed @click="quotationDistribution"/>&nbsp;
-           <q-btn v-if="!preview" label="轉製令工件" color="primary" glossy densed/>&nbsp;
-           <q-btn v-if="!preview" label="轉開出貨單" color="brown" glossy densed @click="transferToShipOrder"/>
-         </div>
-         <div class="col-3 flex" v-if="(hasAllAuth ||(auth && auth.核准)) && !preview && mode == '修改'">
-           <q-btn color="grey" class="padding-right"
-                   glossy v-if="salesOrderForm.核准日 && salesOrderForm.核准日!= ''"
-                   :loading="loading" @click="validate(false)">取消核准</q-btn> &nbsp;
-           <q-btn color="grey" class="padding-right"
-                   glossy v-if="!salesOrderForm.核准日 || salesOrderForm.核准日== ''"
-                   :loading="loading" @click="validate(true)">核准</q-btn> &nbsp;
-         </div>
-         <div class="col-3 flex" v-if="(hasAllAuth ||(auth && auth.輸出))">
-             <!-- <div class="padding-right"> -->
-               <q-btn color="grey" class="padding-right"
-                 glossy
-                 :loading="loading">列印</q-btn> &nbsp;
-             <!-- </div> -->
-             <!-- <div class="padding-right"> -->
-               <q-btn color="grey" class="padding-right"
-                 glossy
-                 :loading="loading">列印(英)</q-btn>
-             <!-- </div> -->
-         </div>
-         <q-card-actions align="right">
-           <q-btn flat label="取消" color="negative" @click="close" />
-           <q-btn v-if="!preview" label="送出" color="primary" @click="handleOtherAction" />
-         </q-card-actions>
+        <div class="col-3 flex text-h4">
+            {{mode}}訂單
+            <q-btn v-if="!preview && (salesOrderForm.客戶編號 != null && salesOrderForm.客戶編號 != '')" label="報價單分配" color="green" glossy densed @click="quotationDistribution"/>&nbsp;
+            <div class="col-3 flex" v-if="mode == '修改'">
+              <q-checkbox v-model="salesOrderForm.結案" label="結案" :readonly="readonly || preview" @update:model-value="updateCloseFlag"/>
+              <q-btn v-if="!preview" label="轉製令工件" color="primary" glossy densed/>&nbsp;
+              <q-btn v-if="!preview" label="轉開出貨單" color="brown" glossy densed @click="openTransToOrderForm"/>
+            </div>
+            <div class="col-3 flex" v-if="(hasAllAuth ||(auth && auth.核准)) && !preview && mode == '修改'">
+              <q-btn color="grey" class="padding-right"
+                      glossy v-if="salesOrderForm.核准日 && salesOrderForm.核准日!= ''"
+                      :loading="loading" @click="validate(false)">取消核准</q-btn> &nbsp;
+              <q-btn color="grey" class="padding-right"
+                      glossy v-if="!salesOrderForm.核准日 || salesOrderForm.核准日== ''"
+                      :loading="loading" @click="validate(true)">核准</q-btn> &nbsp;
+            </div>
+            <div class="col-3 flex" v-if="(hasAllAuth ||(auth && auth.輸出))">
+                <!-- <div class="padding-right"> -->
+                  <q-btn color="grey" class="padding-right"
+                    glossy
+                    :loading="loading">列印</q-btn> &nbsp;
+                <!-- </div> -->
+                <!-- <div class="padding-right"> -->
+                  <q-btn color="grey" class="padding-right"
+                    glossy
+                    :loading="loading">列印(英)</q-btn>
+                <!-- </div> -->
+            </div>
+            <q-card-actions align="right">
+              <q-btn flat label="取消" color="negative" @click="close" />
+              <q-btn v-if="!preview" label="送出" color="primary" @click="handleOtherAction" />
+            </q-card-actions>
        </div>
         </q-card-section>
         <q-form ref="myForm" >
@@ -362,14 +368,14 @@
                         :rules="[val =>  !!val || '單價為必填欄位']"/>
                       </div>
                       <div class="col-1 col-md-1" style="max-width: 180px">
-                        <q-input type="number" min="0" outlined dense :readonly="readonly || preview" v-model="item.金額1" label="金額"
+                        <q-input type="number" min="0" outlined dense readonly v-model="item.金額1" label="金額"
                         :rules="[val =>  !!val || '金額為必填欄位']"/>
                       </div>
                       <div class="col-1 col-md-1" style="max-width: 180px">
-                        <q-input type="number" min="0" outlined dense :readonly="readonly || preview" v-model="item.報價單價" label="報價單價"/>
+                        <q-input type="number" min="0" outlined dense :readonly="readonly || preview" v-model="item.報價單價" @blur="onBlur(item)" label="報價單價"/>
                       </div>
                       <div class="col-1 col-md-1" style="max-width: 180px">
-                        <q-input type="number" min="0" outlined dense :readonly="readonly || preview" v-model="item.折數" label="折數"/>
+                        <q-input type="number" min="0" outlined dense readonly v-model="item.折數" label="折數"/>
                       </div>
                       <div class="col-2 col-md-2" style="max-width: 300px">
                         <q-input outlined dense :readonly="readonly || preview" v-model="item.註記" label="註記"/>
@@ -380,7 +386,7 @@
                       <div class="col-2 col-md-2" style="max-width: 300px">
                         <q-select outlined dense :readonly="readonly || preview" v-model="item.mtype" label="機台類型"
                         :options="eqpTypeList"
-                        option-value="typeid"
+                        option-value="typeid" :display-value="getTypeLabel(item.mtype)"
                         option-label="type" emit-value map-options
                         :rules="[val =>  !!val || '機台類別為必填欄位']"/>
                       </div>
@@ -457,6 +463,10 @@
         </q-card-actions>
       </q-card>
     </q-dialog>
+    <!--轉出貨單視窗-->
+    <q-dialog v-model="transToOrderForm" persistent>
+      <TransToShipOrderForm v-model:showForm="transToOrderForm" v-model:salesOrderForm="salesOrderForm"/>
+    </q-dialog>
     <LoadingComponent v-model="secondDialog"/>
   </q-layout>
 </template>
@@ -483,12 +493,14 @@ import {
   , QSelect
   , QCheckbox
   , SessionStorage
+  , QTd
 } from 'quasar';
 import {ref, onMounted, watch} from 'vue'
 import { useCustStore } from '@/composables/useCust';
 import BankInfoView from '@/components/customer/salesorder/BankInfoView.vue';
 import CustListQueryView from '@/components/customer/query/CustListQueryView.vue'
 import OrderQueryForm from '@/components/customer/query/OrderQueryForm.vue';
+import TransToShipOrderForm from '@/components/customer/salesorder/TransToShipOrderForm.vue';
 // #endregion import block end
 
 // #region variable block start
@@ -528,23 +540,39 @@ const selectedQuotation = ref([]);
 const showDatePopup = ref(false);
 const showForm = ref(false);
 const custNumberList = ref([]);
+const transToOrderForm = ref(false);
 const columns =
 [
   // { name: 'quono', label: '報價單號', align: 'left', field: 'quono', sortable: true },
   { name: '單號', label: '訂單單號', align: 'left', field: '單號', sortable: true },
-  { name: '日期', label: '日期', align: 'left', field: '日期', sortable: true },
+  { name: '日期', label: '日期', align: 'left', field: '日期', sortable: true ,
+  format: val => val != null
+    ? dayjs(val).format('YYYY/MM/DD')
+    : '' },
   { name: '客戶編號', label: '客戶編號', align: 'left', field: '客戶編號', sortable: true },
   { name: '客戶全稱', label: '客戶全稱', align: 'left', field: '客戶全稱', sortable: true },
   { name: '指配國別', label: '國別', align: 'left', field: '指配國別', sortable: true },
-  { name: '總額', label: '訂單總額', align: 'left', field: '總額', sortable: true },
-  { name: '要望日期', label: '預交日', align: 'left', field: '要望日期', sortable: true },
-  { name: '付款方式', label: '交易條件', align: 'left', field: '付款方式', sortable: true },
-  { name: '交貨方式', label: '運輸方式', align: 'left', field: '交貨方式', sortable: true },
-  { name: '價格條件', label: '貿易條件', align: 'left', field: '價格條件', sortable: true },
+  { name: '總額', label: '訂單總額', align: 'right', field: '總額', sortable: true,
+  format: val => val != null
+    ? Number(val).toLocaleString('zh-TW')
+    : '' },
+  { name: '要望日期', label: '預交日', align: 'left', field: '要望日期', sortable: true,
+  format: val => val != null
+    ? dayjs(val).format('YYYY/MM/DD')
+    : ''  },
+  // { name: '付款方式', label: '交易條件', align: 'left', field: '付款方式', sortable: true },
+  // { name: '交貨方式', label: '運輸方式', align: 'left', field: '交貨方式', sortable: true },
+  // { name: '價格條件', label: '貿易條件', align: 'left', field: '價格條件', sortable: true },
+  { name: '幣別', label: '幣別', align: 'left', field: '幣別', sortable: true },
+  { name: '稅率', label: '稅率', align: 'left', field: '稅率', sortable: true },
+  { name: '目的港', label: '目的港', align: 'left', field: '目的港', sortable: true },
   { name: '業務員', label: '業代', align: 'left', field: '業務員', sortable: true },
   { name: '業務人員', label: '業務人員', align: 'left', field: '業務人員', sortable: true },
-  { name: '核准', label: '核准', align: 'left', field: '核准', sortable: true },
-  { name: '結案', label: '結案', align: 'left', field: '結案', sortable: true },
+  { name: '核准', label: '核准', align: 'left', field: '核准', sortable: true  },
+  { name: '結案', label: '結案', align: 'left', field: '結案', sortable: true ,
+  format: val => val != null
+    ? val ? 'Y' : 'N'
+    : 'N'},
 ];
 
 const quotColumns =
@@ -601,6 +629,21 @@ const bankAccountCheckForm = ref({
 // #endregion variable block end
 
 // #region function block start
+const openOrderDetails = async (orderNo)=>{
+  await custStore.getSalesOrderListByNo(orderNo).then((data)=>{
+    selected.value = [];
+    selected.value.push(data[0]);
+    console.log('selected.value', selected.value);
+    openCustomerDialog('預覽')
+    // console.log('order details', data);
+    // salesOrderForm.value = data;
+    // salesOrderForm.value.日期 = dayjs(salesOrderForm.value.日期, "MM/DD/YYYY HH:mm:ss").format("YYYY/MM/DD")
+    // companyName.value = custNumberList.value.find((x)=>x.正航編號==salesOrderForm.value.客戶編號)?.company;
+    // 收款帳號.value = custNumberList.value.find((x)=>x.正航編號==salesOrderForm.value.客戶編號)?.credibility;
+    // changeSalesName();
+    // showForm.value = true;
+  })
+}
 const openSearchForm = () =>{
   showQueryForm.value = true;
 }
@@ -616,6 +659,7 @@ const openCustomerDialog = (type) =>{
   errorMessage.value = "";
   if (type == '新增'){
     console.log('open type', type);
+    preview.value = false;
     salesOrderForm.value = {
       account:SessionStorage.getItem('Account').account,
       識別:'',
@@ -659,6 +703,7 @@ const openCustomerDialog = (type) =>{
       return;
     } else {
       salesOrderForm.value = selected.value[0];
+      salesOrderForm.value.orderListDetail.forEach((x)=> onBlur(x));
       console.log('selected customer:', salesOrderForm.value)
       console.log('custNumberList.value',custNumberList.value);
       console.log('salesOrderForm.value.客戶編號', salesOrderForm.value.客戶編號);
@@ -679,8 +724,9 @@ const openCustomerDialog = (type) =>{
 }
 const changeCustCompany = () =>{
   console.log('salesOrderForm.value.客戶編號', salesOrderForm.value.客戶編號);
-  companyName.value = custNumberList.value.find((x)=>x.正航編號==salesOrderForm.value.客戶編號).company;
-  收款帳號.value = custNumberList.value.find((x)=>x.正航編號==salesOrderForm.value.客戶編號).credibility;
+  console.log('!preview && salesOrderForm.value.客戶編號!=null && salesOrderForm.value.客戶編號 != "" ', !preview.value && salesOrderForm.value.客戶編號!=null && salesOrderForm.value.客戶編號 != "" );
+  companyName.value = custNumberList.value.find((x)=>x.正航編號==salesOrderForm.value.客戶編號)?.company;
+  收款帳號.value = custNumberList.value.find((x)=>x.正航編號==salesOrderForm.value.客戶編號)?.credibility;
   salesOrderForm.value.指配國別 = custNumberList.value.find((x)=>x.正航編號==salesOrderForm.value.客戶編號).country;
 }
 const deleteCustomer = async () =>{
@@ -994,7 +1040,10 @@ const openAccountCheck = async () =>{
   showCheckForm.value = true
   console.log('after set', showCheckForm.value)
 }
-
+const getTypeLabel = (item) =>{
+  console.log('getTypeLabel item', item);
+  return eqpTypeList.value.find((x)=>x.typeid == item.trim())?.type??'';
+}
 // const closeCheckAction = () =>{
 //   showCheckForm.value = false;
 // }
@@ -1016,12 +1065,18 @@ const carryToSalesOrder = () => {
 
   if (!salesOrderForm.value.orderListDetail)
     salesOrderForm.value.orderListDetail = [];
-
+  console.log('selectedQuotation.value', selectedQuotation.value);
   for (let i = 0; i < selectedQuotation.value.length; i++) {
 
     let item = selectedQuotation.value[i];
-
+    var duplicated = salesOrderForm.value.orderListDetail.find((x)=>x.識別碼 == item.識別碼);
+    if (duplicated){
+      alert('產品編號'+item.產品編號+'已存在訂單品項中，請勿重複帶入');
+      continue;
+    }
+    console.log('item', item);
     salesOrderForm.value.orderListDetail.push({
+      識別碼: item.識別碼.toString(),
       產品編號: item.產品編號,
       品名規格: item.品名規格,
       單位: item.單位,
@@ -1033,29 +1088,43 @@ const carryToSalesOrder = () => {
       註記: '',
       專案序號: item.quono,
       mtype: '',
-      佣金率: 0.0,
+      佣金率: "0.0",
       樣品別: '',
       描述: '',
       showDatePopup: false
     });
-    closeQuotationDistributionForm();
   }
+  closeQuotationDistributionForm();
 }
 
-const transferToShipOrder = async () => {
-  secondDialog.value = true;
-  await custStore.transferToShipOrder(salesOrderForm).then((data)=>{
-    console.log(data)
-    if(data.data.errorMessage){
-      alert(data.data.errorMessage)
-    } else {
-      alert('轉開成功')
-      init();
-      showForm.value = false;
-    }
-    secondDialog.value = false;
-  });
+const openTransToOrderForm = () =>{
+  transToOrderForm.value = true;
+  // close();
 }
+
+watch(
+  transToOrderForm, (newVal) => {
+    console.log('transToOrderForm', newVal);
+    if (!newVal){
+      close();
+    }
+  }
+)
+
+// const transferToShipOrder = async () => {
+//   secondDialog.value = true;
+//   await custStore.transferToShipOrder(salesOrderForm).then((data)=>{
+//     console.log(data)
+//     if(data.data.errorMessage){
+//       alert(data.data.errorMessage)
+//     } else {
+//       alert('轉開成功')
+//       init();
+//       showForm.value = false;
+//     }
+//     secondDialog.value = false;
+//   });
+// }
 
 const transferReceivable = async (item) =>{
   console.log('transferReceivable item', item);

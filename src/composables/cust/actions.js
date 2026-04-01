@@ -51,6 +51,8 @@ export const custActions = {
         company:payload.company,
         country:payload.country?.國別 ? payload.country?.國別 : payload.country,
         itemNo:payload.itemNo,
+        orderDateFrom:payload.orderDateFrom,
+        orderDateTo:payload.orderDateTo,
       }
       console.log('paramA', paramA);
       const response = await apiClient.post(constant.APIUrl + 'api/QueryOrderListByCondition', JSON.stringify(paramA), {
@@ -714,6 +716,16 @@ export const custActions = {
       const constant = Constant();
       console.log('APIUrl', constant.APIUrl)
       const response =await apiClient.get(constant.APIUrl+'api/GetSalesOrderList')
+      console.log('response', response)
+      if (response){
+        return response.data.resultList;
+      }
+      return null;
+    },
+    async getSalesOrderListByNo(orderNo){
+      const constant = Constant();
+      console.log('APIUrl', constant.APIUrl)
+      const response =await apiClient.get(constant.APIUrl+'api/GetSalesOrderListByNo?orderNo='+orderNo)
       console.log('response', response)
       if (response){
         return response.data.resultList;
@@ -1539,5 +1551,15 @@ export const custActions = {
         return response.data.resultList;
       }
       return null;
-    }
+    },
+    async getShipOrderListBySalesOrderId(salesOrderId){
+      const constant = Constant();
+      console.log('APIUrl', constant.APIUrl)
+      const response =await apiClient.get(constant.APIUrl+'api/GetShipOrderListBySalesOrderId?custNo=' + salesOrderId)
+      console.log('response', response)
+      if (response){
+        return response.data.resultList;
+      }
+      return null;
+    },
 }

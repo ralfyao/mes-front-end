@@ -131,10 +131,16 @@ const columns =
   { name: 'contact', label: '聯絡人', align: 'left', field: 'contact', sortable: true },
   { name: 'mtype', label: '機台類別', align: 'left', field: 'mtype', sortable: true },
   { name: '明細查詢', label: '明細查詢', align: 'left', field: '明細查詢', sortable: true },
-  { name: 'amount', label: '報價總額', align: 'left', field: 'amount', sortable: true },
+  { name: 'amount', label: '報價總額', align: 'right', field: 'amount', sortable: true ,
+  format: val => val != null
+    ? Number(val).toLocaleString('zh-TW')
+    : '' },
   { name: 'daddress', label: '業代', align: 'left', field: 'daddress', sortable: true },
   { name: '業務人員', label: '業務人員', align: 'left', field: '業務人員', sortable: true },
-  { name: 'QUODATE', label: '報價有效日期', align: 'left', field: 'QUODATE', sortable: true },
+  { name: 'condate', label: '報價有效日期', align: 'left', field: 'condate', sortable: true ,
+  format: val => val != null
+    ? dayjs(val).format('YYYY/MM/DD')
+    : ''  },
 ];
 const quotationForm = ref({
   idno		:'',
