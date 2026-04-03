@@ -1,36 +1,9 @@
 <template>
-  <q-layout class="q-pa-md padding  q-gutter-sm">
+  <q-layout >
     <h5 class="no-wrap text-left">
-      <div class="row justify-start padding-top">
+      <div class="row justify-start ">
         <div class="col-2 col-md-2">
           <q-icon name="play_circle" size="30px" >{{ formName }}</q-icon>
-        </div>
-        <div v-if="(hasAllAuth ||(auth && auth.編修))">
-          <!-- <div class="padding-right"> -->
-            <q-btn color="primary" class="padding-right"
-              glossy @click="openCustomerDialog('新增')"
-              :loading="loading">新增訂單</q-btn>&nbsp;
-          <!-- </div> -->
-          <!-- <div class="padding-right"> -->
-            <q-btn color="info" class="padding-right"
-              glossy @click="openCustomerDialog('修改')"
-              :loading="loading">修改訂單</q-btn>&nbsp;
-          <!-- </div> -->
-          <!-- <div class="padding-right"> -->
-              <q-btn color="red" class="padding-right"
-                glossy @click="deleteCustomer"
-                :loading="loading">刪除訂單</q-btn>&nbsp;
-          <!-- </div> -->
-        </div>
-        <div v-if="(hasAllAuth ||(auth && auth.查詢))">
-          <!-- <div class="padding-right"> -->
-            <q-btn color="green" class="padding-right"
-                glossy @click="openCustomerDialog('預覽')"
-                  :loading="loading">訂單預覽</q-btn>&nbsp;
-          <!-- </div> -->
-          <q-btn color="blue-6" class="padding-right"
-                glossy @click="openSearchForm"
-                  :loading="loading">訂單查詢</q-btn>&nbsp;
         </div>
       </div>
       <div class="row justify-start padding-top">
@@ -38,31 +11,80 @@
           <div class="text-left text-red">{{ errorMessage }}</div>
         </div>
       </div>
+      <div class="row justify-start padding-top">
+        <!--列表-->
+        <q-page-container>
+          <q-page class="full-height column">
+          <div class="col-12 col-md-12" >
+            <q-table  class="rounded-borders my-sticky-header-table"
+                    :columns="columns"
+                    row-key="識別"
+                    :rows="list"
+                    flat
+                    bordered
+                    style="max-height: 1000px"
+                    selection="single"
+                    v-model:selected="selected"
+                    @selection="onSelection"
+                    :pagination="{ rowsPerPage: 25 }"
+            >
+              <template v-slot:body-cell-單號="props">
+                <q-td :props="props">
+                  <q-btn :label="props.row.單號" outlined dense @click="openOrderDetails(props.row.單號)"></q-btn>
+                </q-td>
+              </template>
+            </q-table >
+          </div>
+          <!-- 浮動功能群 -->
+          <q-page-sticky position="bottom-right" :offset="[18, 18]">
+            <q-fab
+              icon="menu"
+              direction="up"
+              color="primary"
+              glossy
+              v-model="fabOpen"
+            >
+            <div v-if="(hasAllAuth ||(auth && auth.編修))">
+              <q-fab-action
+                color="primary"
+                icon="add"
+                @click="openCustomerDialog('新增')"
+                label="新增"
+              />
+              <q-fab-action
+                color="info"
+                icon="edit"
+                @click="openCustomerDialog('修改')"
+                label="修改"
+              />
+              <q-fab-action
+                color="negative"
+                icon="delete"
+                @click="deleteCustomer"
+                label="刪除"
+              />
+            </div>
+            <div v-if="(hasAllAuth ||(auth && auth.查詢))">
+              <q-fab-action
+                color="green"
+                icon="visibility"
+                @click="openCustomerDialog('預覽')"
+                label="預覽"
+              />
+              <q-fab-action
+                  color="blue-6"
+                  icon="search"
+                  @click="openSearchForm"
+                  label="查詢"
+                />
+            </div>
+            </q-fab>
+          </q-page-sticky>
+          </q-page>
+        </q-page-container>
+      </div>
     </h5>
-    <q-page-container>
-      <q-page>
-        <q-table  class="rounded-borders my-sticky-header-table"
-                :columns="columns"
-                row-key="識別"
-                :rows="list"
-                flat
-                bordered
-                virtual-scroll
-                style="max-height: 500px"
-                selection="single"
-                v-model:selected="selected"
-                @selection="onSelection"
-                :pagination="{ rowsPerPage: 5 }"
-        >
-          <template v-slot:body-cell-單號="props">
-            <q-td :props="props">
-              <q-btn :label="props.row.單號" outlined dense @click="openOrderDetails(props.row.單號)"></q-btn>
-            </q-td>
-          </template>
-        </q-table >
 
-      </q-page>
-    </q-page-container>
     <!--查詢條件表單-->
     <q-dialog v-model="showQueryForm" persistent >
       <OrderQueryForm v-model:showForm="showQueryForm" v-model:list="list"/>
@@ -76,7 +98,7 @@
             <q-btn v-if="!preview && (salesOrderForm.客戶編號 != null && salesOrderForm.客戶編號 != '')" label="報價單分配" color="green" glossy densed @click="quotationDistribution"/>&nbsp;
             <div class="col-3 flex" v-if="mode == '修改'">
               <q-checkbox v-model="salesOrderForm.結案" label="結案" :readonly="readonly || preview" @update:model-value="updateCloseFlag"/>
-              <q-btn v-if="!preview" label="轉製令工件" color="primary" glossy densed/>&nbsp;
+              <q-btn v-if="!preview" label="轉零件工令" color="primary" glossy densed @click="openTransToMiscForm"/>&nbsp;
               <q-btn v-if="!preview" label="轉開出貨單" color="brown" glossy densed @click="openTransToOrderForm"/>
             </div>
             <div class="col-3 flex" v-if="(hasAllAuth ||(auth && auth.核准)) && !preview && mode == '修改'">
@@ -407,7 +429,7 @@
           </q-card-section>
         </q-form>
         <q-card-section>
-          <label class="text-h4">
+          <label class="text-h5">
             <div class="row q-col-gutter-md">
               <div class="col-3 col-md-3 no-wrap"  style="max-width: 300px">
                 核准人員：{{ salesOrderForm.核准 }}
@@ -422,7 +444,7 @@
                 <q-input outlined dense v-model="salesOrderForm.建檔日" style="max-width: 150px"  readonly/>
               </div>
               <div class="col-3 col-md-3 no-wrap"  style="max-width: 300px">
-                製令工號{{ salesOrderForm.machineno }}
+                零件工令單號：{{ salesOrderForm.machineno }}
               </div>
             </div>
           </label>
@@ -467,12 +489,17 @@
     <q-dialog v-model="transToOrderForm" persistent>
       <TransToShipOrderForm v-model:showForm="transToOrderForm" v-model:salesOrderForm="salesOrderForm"/>
     </q-dialog>
+    <!--轉零件工令視窗-->
+    <q-dialog v-model="showTransToMiscForm" persistent>
+      <MiscMfgOrderForm v-model:showForm="showTransToMiscForm" v-model:salesOrderForm="salesOrderForm"/>
+    </q-dialog>
     <LoadingComponent v-model="secondDialog"/>
   </q-layout>
 </template>
 <script setup>
 // #region import block start
 import dayjs from 'dayjs'
+import MiscMfgOrderForm from '@/components/mfg/MiscMfgOrderForm.vue';
 import LoadingComponent from '@/components/LoadingComponent.vue';
 import {
     QIcon
@@ -486,6 +513,9 @@ import {
   , QCardSection
   , QForm
   , QInput
+  , QPageSticky
+  , QFab
+  , QFabAction
   // , QIcon
   , QPopupProxy
   , QDate
@@ -504,6 +534,7 @@ import TransToShipOrderForm from '@/components/customer/salesorder/TransToShipOr
 // #endregion import block end
 
 // #region variable block start
+const fabOpen = ref(true);
 const showSearchCustNoForm = ref(false);
 const formName = '訂單合約';
 const theUser = ref([]);
@@ -531,6 +562,7 @@ const installmentTypeList = ref([]);
 const 收款帳號 = ref('');
 const 單號 = ref('');
 const mode = ref('');
+const showTransToMiscForm = ref(false);
 const companyName = ref('');
 const errorMessage = ref('');
 const secondDialog = ref(false);
@@ -703,6 +735,9 @@ const openCustomerDialog = (type) =>{
       return;
     } else {
       salesOrderForm.value = selected.value[0];
+      salesOrderForm.value.建檔日 = dayjs(salesOrderForm.value.建檔日, "MM/DD/YYYY HH:mm:ss").format("YYYY/MM/DD")
+      salesOrderForm.value.修改日 = dayjs(salesOrderForm.value.修改日, "MM/DD/YYYY HH:mm:ss").format("YYYY/MM/DD")
+      salesOrderForm.value.核准日 = dayjs(salesOrderForm.value.核准日, "MM/DD/YYYY HH:mm:ss").format("YYYY/MM/DD")
       salesOrderForm.value.orderListDetail.forEach((x)=> onBlur(x));
       console.log('selected customer:', salesOrderForm.value)
       console.log('custNumberList.value',custNumberList.value);
@@ -857,7 +892,6 @@ const handleOtherAction = async () =>{
     return;
   }
 }
-
 const submitForm = async () =>{
   console.log('sales order form:', salesOrderForm);
   const Account = SessionStorage.getItem('Account');
@@ -924,7 +958,6 @@ const submitForm = async () =>{
           arListDetail: []
         };
 }
-
 const AddAR = () =>{
   salesOrderForm.value.arListDetail.push({
     識別:0,
@@ -935,7 +968,6 @@ const AddAR = () =>{
     請款單號:'',
   });
 }
-
 const updateCloseFlag = async () =>{//TO-DO
   secondDialog.value = true;
   await custStore.updateCloseFlag(salesOrderForm.value.結案, salesOrderForm.value.單號).then((data)=>{
@@ -953,11 +985,9 @@ const updateCloseFlag = async () =>{//TO-DO
     secondDialog.value = false;
   });
 }
-
 const changeSalesName = () =>{
   salesname.value = salesList.value.find((x)=>x.工號==salesOrderForm.value.業務員)?.姓名;
 }
-
 const close = () =>{
   showForm.value = false;
   preview.value = false;
@@ -1042,12 +1072,8 @@ const openAccountCheck = async () =>{
 }
 const getTypeLabel = (item) =>{
   console.log('getTypeLabel item', item);
-  return eqpTypeList.value.find((x)=>x.typeid == item.trim())?.type??'';
+  return eqpTypeList.value.find((x)=>x.typeid == item?.trim())?.type??'';
 }
-// const closeCheckAction = () =>{
-//   showCheckForm.value = false;
-// }
-
 const quotationDistribution = async () =>{
   console.log('salesOrderForm.value',salesOrderForm.value)
   await custStore.getQuotationDistributionList(salesOrderForm.value.客戶編號, salesOrderForm.value.日期).then((data)=>{
@@ -1055,12 +1081,10 @@ const quotationDistribution = async () =>{
   })
   showQuotationDistributionForm.value = true;
 }
-
 const closeQuotationDistributionForm = () =>{
   selectedQuotation.value = [];
   showQuotationDistributionForm.value = false;
 }
-
 const carryToSalesOrder = () => {
 
   if (!salesOrderForm.value.orderListDetail)
@@ -1096,12 +1120,10 @@ const carryToSalesOrder = () => {
   }
   closeQuotationDistributionForm();
 }
-
 const openTransToOrderForm = () =>{
   transToOrderForm.value = true;
   // close();
 }
-
 watch(
   transToOrderForm, (newVal) => {
     console.log('transToOrderForm', newVal);
@@ -1110,22 +1132,6 @@ watch(
     }
   }
 )
-
-// const transferToShipOrder = async () => {
-//   secondDialog.value = true;
-//   await custStore.transferToShipOrder(salesOrderForm).then((data)=>{
-//     console.log(data)
-//     if(data.data.errorMessage){
-//       alert(data.data.errorMessage)
-//     } else {
-//       alert('轉開成功')
-//       init();
-//       showForm.value = false;
-//     }
-//     secondDialog.value = false;
-//   });
-// }
-
 const transferReceivable = async (item) =>{
   console.log('transferReceivable item', item);
   console.log('transferReceivable salesOrderForm.value', salesOrderForm.value);
@@ -1155,12 +1161,10 @@ const transferReceivable = async (item) =>{
     secondDialog.value = false;
   })
 }
-
 const openSearcCustomerForm = () =>{
   // alert('openSearcCustomerForm');
   showSearchCustNoForm.value = true;
 }
-
 watch(
   () => salesOrderForm.value.客戶編號,
   (newVal) => {
@@ -1170,7 +1174,6 @@ watch(
   },
   { deep: true, immediate: true }
 )
-
 const validate = async(valid) =>{
   await custStore.validateSalesOrder(salesOrderForm.value.單號, valid, theUser.value.account).then((data)=>{
     if (data.data.errorMessage){
@@ -1181,6 +1184,16 @@ const validate = async(valid) =>{
     close();
     init();
   })
+}
+const openTransToMiscForm = () =>{
+  // alert('openTransToMiscForm');
+  if (salesOrderForm.value.machineno !== null && salesOrderForm.value.machineno.trim() !== ''){
+    alert('此訂單已轉開零件申請單，請查明!');
+    return;
+  }
+  if (confirm('您確定是否要轉零件工令?')) {
+    showTransToMiscForm.value = true;
+  }
 }
 // #endregion function block end
 </script>
