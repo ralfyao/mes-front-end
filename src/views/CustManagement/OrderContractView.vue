@@ -1,15 +1,44 @@
 <template>
-  <div class="row justify-start ">
-    <div class="col-2 col-md-2">
-      <h5 class="no-wrap text-left">
-        <q-icon name="play_circle" size="30px" >{{ formName }}</q-icon>
-      </h5>
-    </div>
-  </div>
   <div class="row justify-start">
-    <div class="col-6 col-md-6"  style="max-width: 500px">
-      <div class="text-left text-red">{{ errorMessage }}</div>
-    </div>
+    <!-- <div class="col-12" style="max-width:1500px"> -->
+      <!-- <h5> -->
+        <div class="col-3 justify-start" style="max-width:300px">
+          <q-icon name="play_circle" size="30px" >{{ formName }}</q-icon>
+        </div>
+        <div class="col-9 justify-start" style="max-width:1200px">
+          <!-- <div v-if="(hasAllAuth ||(auth && auth.編修))"> -->
+            <!-- <div class="padding-right"> -->
+              <q-btn v-if="(hasAllAuth ||(auth && auth.編修))" color="primary" class="padding-right"
+                glossy @click="openCustomerDialog('新增')"
+                :loading="loading">新增訂單</q-btn>&nbsp;
+            <!-- </div> -->
+            <!-- <div class="padding-right"> -->
+              <q-btn v-if="(hasAllAuth ||(auth && auth.編修))" color="info" class="padding-right"
+                glossy @click="openCustomerDialog('修改')"
+                :loading="loading">修改訂單</q-btn>&nbsp;
+            <!-- </div> -->
+            <!-- <div class="padding-right"> -->
+                <q-btn v-if="(hasAllAuth ||(auth && auth.編修))" color="red" class="padding-right"
+                  glossy @click="deleteCustomer"
+                  :loading="loading">刪除訂單</q-btn>&nbsp;
+            <!-- </div> -->
+          <!-- </div> -->
+          <!-- <div v-if="(hasAllAuth ||(auth && auth.查詢))"> -->
+          <!-- <div class="padding-right"> -->
+          <q-btn v-if="(hasAllAuth ||(auth && auth.查詢))" color="green" class="padding-right"
+                  glossy @click="openCustomerDialog('預覽')"
+                    :loading="loading">訂單預覽</q-btn>&nbsp;
+            <!-- </div> -->
+          <q-btn v-if="(hasAllAuth ||(auth && auth.查詢))" color="blue-6" class="padding-right"
+                  glossy @click="openSearchForm"
+                    :loading="loading">訂單查詢</q-btn>&nbsp;
+          <!-- </div> -->
+        </div>
+        <div class="col-12" style="max-width:3000px">
+          <div class="text-left text-red">{{ errorMessage }}</div>
+        </div>
+      <!-- </h5> -->
+    <!-- </div> -->
   </div>
   <div class="row justify-start">
     <div class="col-12 col-md-12"  style="max-width: 1500px">
@@ -31,51 +60,6 @@
           </q-td>
         </template>
       </q-table >
-      <!-- 浮動功能群 -->
-      <q-page-sticky position="bottom-right" :offset="[18, 18]">
-        <q-fab
-              icon="menu"
-              direction="up"
-              color="primary"
-              glossy
-              v-model="fabOpen"
-            >
-          <div v-if="(hasAllAuth ||(auth && auth.編修))">
-            <q-fab-action
-                color="primary"
-                icon="add"
-                @click="openCustomerDialog('新增')"
-                label="新增"
-              />
-            <q-fab-action
-                color="info"
-                icon="edit"
-                @click="openCustomerDialog('修改')"
-                label="修改"
-              />
-            <q-fab-action
-                color="negative"
-                icon="delete"
-                @click="deleteCustomer"
-                label="刪除"
-              />
-          </div>
-          <div v-if="(hasAllAuth ||(auth && auth.查詢))">
-            <q-fab-action
-                color="green"
-                icon="visibility"
-                @click="openCustomerDialog('預覽')"
-                label="預覽"
-              />
-            <q-fab-action
-                  color="blue-6"
-                  icon="search"
-                  @click="openSearchForm"
-                  label="查詢"
-                />
-          </div>
-        </q-fab>
-      </q-page-sticky>
     </div>
   </div>
   <!--查詢條件表單-->
@@ -502,9 +486,9 @@ import {
   , QCardSection
   , QForm
   , QInput
-  , QPageSticky
-  , QFab
-  , QFabAction
+  // , QPageSticky
+  // , QFab
+  // , QFabAction
   // , QIcon
   , QPopupProxy
   , QDate
@@ -523,7 +507,7 @@ import TransToShipOrderForm from '@/components/customer/salesorder/TransToShipOr
 // #endregion import block end
 
 // #region variable block start
-const fabOpen = true;
+// const fabOpen = ref(true);
 const showSearchCustNoForm = ref(false);
 const formName = '訂單合約';
 const theUser = ref([]);
@@ -656,13 +640,6 @@ const openOrderDetails = async (orderNo)=>{
     selected.value.push(data[0]);
     console.log('selected.value', selected.value);
     openCustomerDialog('預覽')
-    // console.log('order details', data);
-    // salesOrderForm.value = data;
-    // salesOrderForm.value.日期 = dayjs(salesOrderForm.value.日期, "MM/DD/YYYY HH:mm:ss").format("YYYY/MM/DD")
-    // companyName.value = custNumberList.value.find((x)=>x.正航編號==salesOrderForm.value.客戶編號)?.company;
-    // 收款帳號.value = custNumberList.value.find((x)=>x.正航編號==salesOrderForm.value.客戶編號)?.credibility;
-    // changeSalesName();
-    // showForm.value = true;
   })
 }
 const openSearchForm = () =>{
