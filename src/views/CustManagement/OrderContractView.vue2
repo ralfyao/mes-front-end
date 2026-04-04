@@ -1,19 +1,22 @@
 <template>
-  <div class="row justify-start ">
-    <div class="col-2 col-md-2">
-      <h5 class="no-wrap text-left">
-        <q-icon name="play_circle" size="30px" >{{ formName }}</q-icon>
-      </h5>
-    </div>
-  </div>
-  <div class="row justify-start">
-    <div class="col-6 col-md-6"  style="max-width: 500px">
-      <div class="text-left text-red">{{ errorMessage }}</div>
-    </div>
-  </div>
-  <div class="row justify-start">
-    <div class="col-12 col-md-12"  style="max-width: 1500px">
-      <q-table  class="rounded-borders my-sticky-header-table"
+  <q-layout >
+    <h5 class="no-wrap text-left">
+      <div class="row justify-start ">
+        <div class="col-2 col-md-2">
+          <q-icon name="play_circle" size="30px" >{{ formName }}</q-icon>
+        </div>
+      </div>
+      <div class="row justify-start padding-top">
+        <div class="col-6 col-md-6"  style="max-width: 500px">
+          <div class="text-left text-red">{{ errorMessage }}</div>
+        </div>
+      </div>
+      <div class="row justify-start padding-top">
+        <!--列表-->
+        <q-page-container>
+          <q-page class="full-height column">
+          <div class="col-12 col-md-12" >
+            <q-table  class="rounded-borders my-sticky-header-table"
                     :columns="columns"
                     row-key="識別"
                     :rows="list"
@@ -23,67 +26,71 @@
                     selection="single"
                     v-model:selected="selected"
                     @selection="onSelection"
-                    :pagination="{ rowsPerPage: 10 }"
+                    :pagination="{ rowsPerPage: 5 }"
             >
-        <template v-slot:body-cell-單號="props">
-          <q-td :props="props">
-            <q-btn :label="props.row.單號" outlined dense @click="openOrderDetails(props.row.單號)"></q-btn>
-          </q-td>
-        </template>
-      </q-table >
-      <!-- 浮動功能群 -->
-      <q-page-sticky position="bottom-right" :offset="[18, 18]">
-        <q-fab
+              <template v-slot:body-cell-單號="props">
+                <q-td :props="props">
+                  <q-btn :label="props.row.單號" outlined dense @click="openOrderDetails(props.row.單號)"></q-btn>
+                </q-td>
+              </template>
+            </q-table >
+          </div>
+          <!-- 浮動功能群 -->
+          <q-page-sticky position="bottom-right" :offset="[18, 18]">
+            <q-fab
               icon="menu"
               direction="up"
               color="primary"
               glossy
               v-model="fabOpen"
             >
-          <div v-if="(hasAllAuth ||(auth && auth.編修))">
-            <q-fab-action
+            <div v-if="(hasAllAuth ||(auth && auth.編修))">
+              <q-fab-action
                 color="primary"
                 icon="add"
                 @click="openCustomerDialog('新增')"
                 label="新增"
               />
-            <q-fab-action
+              <q-fab-action
                 color="info"
                 icon="edit"
                 @click="openCustomerDialog('修改')"
                 label="修改"
               />
-            <q-fab-action
+              <q-fab-action
                 color="negative"
                 icon="delete"
                 @click="deleteCustomer"
                 label="刪除"
               />
-          </div>
-          <div v-if="(hasAllAuth ||(auth && auth.查詢))">
-            <q-fab-action
+            </div>
+            <div v-if="(hasAllAuth ||(auth && auth.查詢))">
+              <q-fab-action
                 color="green"
                 icon="visibility"
                 @click="openCustomerDialog('預覽')"
                 label="預覽"
               />
-            <q-fab-action
+              <q-fab-action
                   color="blue-6"
                   icon="search"
                   @click="openSearchForm"
                   label="查詢"
                 />
-          </div>
-        </q-fab>
-      </q-page-sticky>
-    </div>
-  </div>
-  <!--查詢條件表單-->
-  <q-dialog v-model="showQueryForm" persistent >
+            </div>
+            </q-fab>
+          </q-page-sticky>
+          </q-page>
+        </q-page-container>
+      </div>
+    </h5>
+
+    <!--查詢條件表單-->
+    <q-dialog v-model="showQueryForm" persistent >
       <OrderQueryForm v-model:showForm="showQueryForm" v-model:list="list"/>
-  </q-dialog>
-  <!--主表單-->
-  <q-dialog v-model="showForm" persistent >
+    </q-dialog>
+    <!--主表單-->
+    <q-dialog v-model="showForm" persistent >
       <q-card  class="q-pa-md"  style="width: 1500px; max-width: 95vw;">
         <q-card-section>
         <div class="col-3 flex text-h4">
@@ -443,16 +450,16 @@
           </label>
         </q-card-section>
       </q-card>
-  </q-dialog>
-  <!--銀行帳戶核對-->
-  <q-dialog v-model="showCheckForm" persistent>
+    </q-dialog>
+    <!--銀行帳戶核對-->
+    <q-dialog v-model="showCheckForm" persistent>
       <BankInfoView
         v-model:showForm="showCheckForm"
         :bankAccountCheckForm="bankAccountCheckForm"
       />
-  </q-dialog>
-  <!--報價單分配-->
-  <q-dialog v-model="showQuotationDistributionForm">
+    </q-dialog>
+    <!--報價單分配-->
+    <q-dialog v-model="showQuotationDistributionForm">
       <q-card  class="q-pa-md"  style="width: 1500px; max-width: 95vw;">
         <q-card-section>
           <div class="text-h4">料號選擇</div>
@@ -477,16 +484,17 @@
           <q-btn flat label="取消" color="negative" @click="closeQuotationDistributionForm" />
         </q-card-actions>
       </q-card>
-  </q-dialog>
-  <!--轉出貨單視窗-->
-  <q-dialog v-model="transToOrderForm" persistent>
+    </q-dialog>
+    <!--轉出貨單視窗-->
+    <q-dialog v-model="transToOrderForm" persistent>
       <TransToShipOrderForm v-model:showForm="transToOrderForm" v-model:salesOrderForm="salesOrderForm"/>
-  </q-dialog>
-  <!--轉零件工令視窗-->
-  <q-dialog v-model="showTransToMiscForm" persistent>
+    </q-dialog>
+    <!--轉零件工令視窗-->
+    <q-dialog v-model="showTransToMiscForm" persistent>
       <MiscMfgOrderForm v-model:showForm="showTransToMiscForm" v-model:salesOrderForm="salesOrderForm"/>
-  </q-dialog>
-  <LoadingComponent v-model="secondDialog"/>
+    </q-dialog>
+    <LoadingComponent v-model="secondDialog"/>
+  </q-layout>
 </template>
 <script setup>
 // #region import block start
@@ -495,6 +503,9 @@ import MiscMfgOrderForm from '@/components/mfg/MiscMfgOrderForm.vue';
 import LoadingComponent from '@/components/LoadingComponent.vue';
 import {
     QIcon
+  , QLayout
+  , QPage
+  , QPageContainer
   , QTable
   , QBtn
   , QDialog
@@ -523,7 +534,7 @@ import TransToShipOrderForm from '@/components/customer/salesorder/TransToShipOr
 // #endregion import block end
 
 // #region variable block start
-const fabOpen = true;
+const fabOpen = ref(true);
 const showSearchCustNoForm = ref(false);
 const formName = '訂單合約';
 const theUser = ref([]);
