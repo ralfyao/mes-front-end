@@ -1,4 +1,5 @@
 <template>
+  <!--#region 標頭及維護按鈕-->
   <div class="row justify-start">
     <!-- <div class="col-12" style="max-width:1500px"> -->
       <!-- <h5> -->
@@ -40,6 +41,8 @@
       <!-- </h5> -->
     <!-- </div> -->
   </div>
+  <!--#endregion-->
+  <!--#region 訂單列表 -->
   <div class="row justify-start">
     <div class="col-12 col-md-12"  style="max-width: 1500px">
       <q-table  class="rounded-borders my-sticky-header-table"
@@ -62,11 +65,13 @@
       </q-table >
     </div>
   </div>
-  <!--查詢條件表單-->
+  <!--#endregion-->
+  <!--#region 查詢條件表單-->
   <q-dialog v-model="showQueryForm" persistent >
       <OrderQueryForm v-model:showForm="showQueryForm" v-model:list="list"/>
   </q-dialog>
-  <!--主表單-->
+  <!--#endregion-->
+  <!--#region 主表單-->
   <q-dialog v-model="showForm" persistent >
       <q-card  class="q-pa-md"  style="width: 1500px; max-width: 95vw;">
         <q-card-section>
@@ -90,12 +95,12 @@
                 <!-- <div class="padding-right"> -->
                   <q-btn color="grey" class="padding-right"
                     glossy
-                    :loading="loading">列印</q-btn> &nbsp;
+                    :loading="loading" @click="showPrintForm">列印</q-btn> &nbsp;
                 <!-- </div> -->
                 <!-- <div class="padding-right"> -->
-                  <q-btn color="grey" class="padding-right"
+                  <!-- <q-btn color="grey" class="padding-right"
                     glossy
-                    :loading="loading">列印(英)</q-btn>
+                    :loading="loading">列印(英)</q-btn> -->
                 <!-- </div> -->
             </div>
             <q-card-actions align="right">
@@ -289,43 +294,74 @@
                           收款列表
                           <q-btn v-if="!preview" dense outlined  label="新增收款" color="primary" glossy @click="AddAR"/>
                         </h6>
-                        <div v-for="item in salesOrderForm.arListDetail" v-bind:key="item.識別" class="row no-wrap q-col-gutter-md">
-                          <div class="col-1 col-md-1" style="max-width: 200px">
-                            <q-select dense outlined emit-value map-options label="款項期別"
-                              :readonly="readonly || preview"
-                              v-model="item.款項期別"
-                              :options="installmentTypeList"
-                              option-value="期別名稱"
-                              option-label="期別名稱"
-                            />
-                          </div>
-                          <div class="col-1 col-md-1 flex" style="max-width: 200px">
-                            <q-input
-                              type="number" dense outlined
-                              v-model="item.成數"
-                              label="成數"
-                              :min="0.0"
-                              :readonly="readonly || preview"/>
-                          </div>
-                          <div class="col-1 col-md-1 flex" style="max-width: 200px">
+                        <q-table
+                          :columns="arColumns"
+                          row-key="識別"
+                          :rows="salesOrderForm.arListDetail"
+                          selection="single"
+                          v-model:selected="selectedAr"
+                          flat
+                          bordered
+                          style="max-height: 70vh;max-width:600px"
+                        >
+                          <template v-slot:body-cell-款項期別="props">
+                            <q-td :props="props">
+                              <q-select dense outlined emit-value map-options label="款項期別"
+                                :readonly="readonly || preview"
+                                v-model="props.row.款項期別"
+                                :options="installmentTypeList"
+                                option-value="期別名稱"
+                                option-label="期別名稱"
+                              />
+                            </q-td>
+                          </template>
+                          <template v-slot:body-cell-成數="props">
+                            <q-td :props="props">
+                              <q-input
+                                type="number" dense outlined
+                                v-model="props.row.成數"
+                                label="成數"
+                                :min="0.0"
+                                :readonly="readonly || preview"
+                              />
+                            </q-td>
+                          </template>
+                          <template v-slot:body-cell-金額="props">
+                            <q-td :props="props">
                               <q-input
                               type="number" dense outlined
-                              v-model="item.金額"
+                              v-model="props.row.金額"
                               label="金額"
                               :min="0.0"
                               :readonly="readonly || preview"/>
-                          </div>
-                          <div class="col-2 col-md-2 flex" style="max-width: 300px">
-                            <q-input dense outlined
-                              v-model="item.請款單號"
+                            </q-td>
+                          </template>
+                          <template v-slot:body-cell-請款單號="props">
+                            <q-td :props="props">
+                              <q-input dense outlined
+                              v-model="props.row.請款單號"
                               label="立帳單號"
                               readonly/>
+                              <q-btn label="轉立帳單" color="green" glossy v-if="!preview && (props.row.請款單號 == '')" @click="transferReceivable(props.row)" />
+                            </q-td>
+                          </template>
+                            
+                        </q-table>
+                        <!-- <div v-for="item in salesOrderForm.arListDetail" v-bind:key="item.識別" class="row no-wrap q-col-gutter-md">
+                          <div class="col-1 col-md-1" style="max-width: 200px">
+                          </div>
+                          <div class="col-1 col-md-1 flex" style="max-width: 200px">
+                            
+                          </div>
+                          <div class="col-1 col-md-1 flex" style="max-width: 200px">
                           </div>
                           <div class="col-2 col-md-2 flex" style="max-width: 300px">
-                            <q-btn label="轉立帳單" color="green" glossy v-if="!preview && (item.請款單號 == '')" @click="transferReceivable(item)" />
+                            
+                          </div>
+                          <div class="col-2 col-md-2 flex" style="max-width: 300px">
                           </div>
                           <br>
-                        </div>
+                        </div> -->
                       <!-- </q-card-section> -->
                   <br>
                 </div>
@@ -425,6 +461,8 @@
         </q-card-section>
       </q-card>
   </q-dialog>
+  <!--#endregion-->
+  <!--#region 子表單-->
   <!--銀行帳戶核對-->
   <q-dialog v-model="showCheckForm" persistent>
       <BankInfoView
@@ -467,10 +505,16 @@
   <q-dialog v-model="showTransToMiscForm" persistent>
       <MiscMfgOrderForm v-model:showForm="showTransToMiscForm" v-model:salesOrderForm="salesOrderForm"/>
   </q-dialog>
+  <!--列印視窗-->
+  <q-dialog v-model="showPrintDialog" persistent>
+    <PrintForm v-model:showForm="showPrintDialog" v-model:salesOrderForm="salesOrderForm"/>
+  </q-dialog>
+  <!--#endregion-->
   <LoadingComponent v-model="secondDialog"/>
 </template>
 <script setup>
 // #region import block start
+import PrintForm from '@/components/customer/salesorder/PrintForm.vue';
 import dayjs from 'dayjs'
 import MiscMfgOrderForm from '@/components/mfg/MiscMfgOrderForm.vue';
 import LoadingComponent from '@/components/LoadingComponent.vue';
@@ -501,10 +545,11 @@ import BankInfoView from '@/components/customer/salesorder/BankInfoView.vue';
 import CustListQueryView from '@/components/customer/query/CustListQueryView.vue'
 import OrderQueryForm from '@/components/customer/query/OrderQueryForm.vue';
 import TransToShipOrderForm from '@/components/customer/salesorder/TransToShipOrderForm.vue';
-// #endregion import block end
+// #endregion import block start
 
 // #region variable block start
 // const fabOpen = ref(true);
+const showPrintDialog = ref(false);
 const showSearchCustNoForm = ref(false);
 const formName = '訂單合約';
 const theUser = ref([]);
@@ -522,6 +567,7 @@ const salesList = ref([]);
 const currencyList  = ref([]);
 const taxTypeList = ref([]);
 const taxRateList   = ref([]);
+const selectedAr = ref([]);
 const priceCondList = ref([]);
 const handMethod = ref([]);
 const dueDateTerm = ref([]);
@@ -543,6 +589,15 @@ const showDatePopup = ref(false);
 const showForm = ref(false);
 const custNumberList = ref([]);
 const transToOrderForm = ref(false);
+const arColumns = [
+  { name: '款項期別', label: '款項期別', align: 'left', field: '款項期別', sortable: true },
+  { name: '成數', label: '成數(%)', align: 'right', field: '成數', sortable: true },
+  { name: '金額', label: '金額', align: 'right', field: '金額', sortable: true,
+    format: val => val != null
+      ? Number(val).toLocaleString('zh-TW')
+      : '' },
+  { name: '請款單號', label: '請款單號', align: 'left', field: '請款單號', sortable: true },
+];
 const columns =
 [
   // { name: 'quono', label: '報價單號', align: 'left', field: 'quono', sortable: true },
@@ -562,9 +617,6 @@ const columns =
   format: val => val != null
     ? dayjs(val).format('YYYY/MM/DD')
     : ''  },
-  // { name: '付款方式', label: '交易條件', align: 'left', field: '付款方式', sortable: true },
-  // { name: '交貨方式', label: '運輸方式', align: 'left', field: '交貨方式', sortable: true },
-  // { name: '價格條件', label: '貿易條件', align: 'left', field: '價格條件', sortable: true },
   { name: '幣別', label: '幣別', align: 'left', field: '幣別', sortable: true },
   { name: '稅率', label: '稅率', align: 'left', field: '稅率', sortable: true },
   { name: '目的港', label: '目的港', align: 'left', field: '目的港', sortable: true },
@@ -631,6 +683,13 @@ const bankAccountCheckForm = ref({
 // #endregion variable block end
 
 // #region function block start
+const showPrintForm = () =>{
+  if (selectedAr.value.length == 0){
+    alert("請選取一筆收款資料做列印");
+    return;
+  } 
+  showPrintDialog.value = true;
+}
 const openOrderDetails = async (orderNo)=>{
   await custStore.getSalesOrderListByNo(orderNo).then((data)=>{
     selected.value = [];
@@ -712,6 +771,7 @@ const openCustomerDialog = (type) =>{
       收款帳號.value = custNumberList?.value?.find((x)=>x.正航編號==salesOrderForm.value.客戶編號)?.credibility??'';
       changeSalesName();
       errorMessage.value = "";
+      selectedAr.value = [];
       if (type == '預覽')
         preview.value = true;
       else
