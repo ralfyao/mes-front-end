@@ -2,10 +2,10 @@
   <div class="row justify-start">
     <!-- <div class="col-12" style="max-width:1500px"> -->
       <!-- <h5> -->
-        <div class="col-3 justify-start" style="max-width:300px">
+        <div class="col-1 justify-start" style="max-width:150px">
           <q-icon name="play_circle" size="30px" >{{ formName }}</q-icon>
         </div>
-        <div class="col-9 justify-start" style="max-width:1200px">
+        <div class="col-11 justify-start" style="max-width:1350px">
           <!-- <div v-if="(hasAllAuth ||(auth && auth.編修))"> -->
             <!-- <div class="padding-right"> -->
               <q-btn v-if="(hasAllAuth ||(auth && auth.編修))" color="primary" class="padding-right"
@@ -74,9 +74,9 @@
             {{mode}}訂單
             <q-btn v-if="!preview && (salesOrderForm.客戶編號 != null && salesOrderForm.客戶編號 != '')" label="報價單分配" color="green" glossy densed @click="quotationDistribution"/>&nbsp;
             <div class="col-3 flex" v-if="mode == '修改'">
-              <q-checkbox v-model="salesOrderForm.結案" label="結案" :readonly="readonly || preview" @update:model-value="updateCloseFlag"/>
-              <q-btn v-if="!preview" label="轉零件工令" color="primary" glossy densed @click="openTransToMiscForm"/>&nbsp;
-              <q-btn v-if="!preview" label="轉開出貨單" color="brown" glossy densed @click="openTransToOrderForm"/>
+              <q-checkbox v-model="salesOrderForm.結案" v-if="!preview && (auth && (auth.高管 || hasAllAuth))" label="結案" :readonly="readonly || preview" @update:model-value="updateCloseFlag"/>
+              <q-btn v-if="!preview && salesOrderForm.核准 != ''" label="轉零件工令" color="primary" glossy densed @click="openTransToMiscForm"/>&nbsp;
+              <q-btn v-if="!preview && salesOrderForm.核准 != ''" label="轉開出貨單" color="brown" glossy densed @click="openTransToOrderForm"/>
             </div>
             <div class="col-3 flex" v-if="(hasAllAuth ||(auth && auth.核准)) && !preview && mode == '修改'">
               <q-btn color="grey" class="padding-right"
@@ -86,7 +86,7 @@
                       glossy v-if="!salesOrderForm.核准日 || salesOrderForm.核准日== ''"
                       :loading="loading" @click="validate(true)">核准</q-btn> &nbsp;
             </div>
-            <div class="col-3 flex" v-if="(hasAllAuth ||(auth && auth.輸出))">
+            <div class="col-3 flex" v-if="(hasAllAuth ||(auth && auth.輸出)) &&  salesOrderForm.核准 != ''">
                 <!-- <div class="padding-right"> -->
                   <q-btn color="grey" class="padding-right"
                     glossy
@@ -100,7 +100,7 @@
             </div>
             <q-card-actions align="right">
               <q-btn flat label="取消" color="negative" @click="close" />
-              <q-btn v-if="!preview" label="送出" color="primary" @click="handleOtherAction" />
+              <q-btn v-if="!preview && (mode == '新增' || (mode == '修改' && salesOrderForm.核准 == ''))" label="送出" color="primary" @click="handleOtherAction" />
             </q-card-actions>
        </div>
         </q-card-section>
@@ -153,7 +153,7 @@
               <!--預交日、客戶全名-->
               <div class="row q-col-gutter-md">
                 <div class="col-2 col-md-2" style="max-width: 200px">
-                  <q-input outlined dense v-model="salesOrderForm.要望日期" :readonly="readonly || preview" label="預交日" mask="####/##/##" :rules="[val => !!val || '日期為必填欄位']">
+                  <q-input outlined dense v-model="salesOrderForm.要望日期" :readonly="readonly || preview" label="預交日" mask="####/##/##">
                     <template v-slot:append>
                       <q-icon name="event" class="cursor-pointer">
                         <q-popup-proxy cover v-model="showETDPopup" transition-show="scale" transition-hide="scale">
@@ -192,6 +192,7 @@
                   option-label="currency"
                   option-value="currency"
                   emit-value map-options
+                  :rules="[val =>  !!val || '幣別為必填欄位']"
                   />
                 </div>
                 <div class="col-8 col-md-8" style="max-width: 600px">
@@ -209,7 +210,7 @@
                 <div class="col-4 col-md-4" style="max-width: 300px">
                   <q-select  outlined dense v-model="salesOrderForm.價格條件"  label="價格條件"
                   :options="priceCondList" :readonly="readonly || preview"
-                  :rules="[val =>  !!val || '價格條件為必填欄位']"  emit-value map-options
+                   emit-value map-options
                   option-value="條文編號"
                   option-label="條文名稱"/>
                 </div>
@@ -221,12 +222,11 @@
               <!--總額、交貨方式-->
               <div class="row q-col-gutter-md">
                 <div class="col-6 col-md-6" style="max-width: 500px">
-                    <q-input outlined dense v-model="salesOrderForm.總額" :readonly="readonly || preview" label="總額" />
+                    <q-input outlined dense v-model="salesOrderForm.總額" :readonly="readonly || preview" label="訂單總額" :rules="[val => !!val || '訂單總額為必填欄位']" />
                 </div>
                 <div class="col-6 col-md-6" style="max-width: 500px">
                   <q-select  outlined v-model="salesOrderForm.交貨方式" dense :readonly="readonly || preview"  label="交貨方式"
                     :options="handMethod"
-                    :rules="[val =>  !!val || '交貨方式為必填欄位']"
                     option-value="條文編號"
                     option-label="條文名稱"
                     emit-value map-options
@@ -243,7 +243,6 @@
                 <div class="col-6 col-md-6" style="max-width: 500px">
                   <q-select  outlined v-model="salesOrderForm.交貨日期" dense  label="交期要求"
                     :options="dueDateTerm" :readonly="readonly || preview"
-                    :rules="[val =>  !!val || '交貨日期為必填欄位']"
                     option-value="條文編號"
                     option-label="條文名稱"
                     emit-value map-options
@@ -259,7 +258,6 @@
                 <div class="col-6 col-md-6" style="max-width: 500px">
                   <q-select  outlined v-model="salesOrderForm.付款方式" dense :readonly="readonly || preview"  label="付款方式"
                   :options="paymentTerm"
-                  :rules="[val =>  !!val || '付款方式為必填欄位']"
                   emit-value map-options
                   option-value="條文編號"
                   option-label="條文名稱"/>
@@ -386,8 +384,7 @@
                         <q-select outlined dense :readonly="readonly || preview" v-model="item.mtype" label="機台類型"
                         :options="eqpTypeList"
                         option-value="typeid" :display-value="getTypeLabel(item.mtype)"
-                        option-label="type" emit-value map-options
-                        :rules="[val =>  !!val || '機台類別為必填欄位']"/>
+                        option-label="type" emit-value map-options/>
                       </div>
 
                       <div class="col-1 col-md-1" style="max-width: 80px">
@@ -701,15 +698,16 @@ const openCustomerDialog = (type) =>{
       return;
     } else {
       salesOrderForm.value = selected.value[0];
-      salesOrderForm.value.建檔日 = dayjs(salesOrderForm.value.建檔日, "MM/DD/YYYY HH:mm:ss").format("YYYY/MM/DD")
-      salesOrderForm.value.修改日 = dayjs(salesOrderForm.value.修改日, "MM/DD/YYYY HH:mm:ss").format("YYYY/MM/DD")
-      salesOrderForm.value.核准日 = dayjs(salesOrderForm.value.核准日, "MM/DD/YYYY HH:mm:ss").format("YYYY/MM/DD")
+      salesOrderForm.value.建檔日 = dayjs(salesOrderForm.value.建檔日, "MM/DD/YYYY").format("YYYY/MM/DD")
+      salesOrderForm.value.修改日 = dayjs(salesOrderForm.value.修改日, "MM/DD/YYYY").format("YYYY/MM/DD")
+      salesOrderForm.value.核准日 = dayjs(salesOrderForm.value.核准日, "MM/DD/YYYY").format("YYYY/MM/DD")
       salesOrderForm.value.orderListDetail.forEach((x)=> onBlur(x));
       console.log('selected customer:', salesOrderForm.value)
       console.log('custNumberList.value',custNumberList.value);
       console.log('salesOrderForm.value.客戶編號', salesOrderForm.value.客戶編號);
       console.log('Customer Number List', custNumberList.value.find((x)=>x.正航編號==salesOrderForm.value.客戶編號));
-      salesOrderForm.value.日期 = dayjs(salesOrderForm.value.日期, "MM/DD/YYYY HH:mm:ss").format("YYYY/MM/DD")
+      salesOrderForm.value.日期 = dayjs(salesOrderForm.value.日期, "MM/DD/YYYY").format("YYYY/MM/DD")
+      salesOrderForm.value.要望日期 = dayjs(salesOrderForm.value.要望日期, "MM/DD/YYYY").format("YYYY/MM/DD")
       companyName.value = custNumberList?.value?.find((x)=>x.正航編號==salesOrderForm.value.客戶編號)?.company??'';
       收款帳號.value = custNumberList?.value?.find((x)=>x.正航編號==salesOrderForm.value.客戶編號)?.credibility??'';
       changeSalesName();
@@ -754,7 +752,8 @@ const init = async () =>{
   await custStore.getSalesOrderList().then((data)=>{
     console.log('data list', data);
     list.value = data;
-    list.value.forEach((x)=>x.日期 = dayjs(x.日期, "MM/DD/YYYY HH:mm:ss").format("YYYY/MM/DD"))
+    list.value.forEach((x)=>x.日期 = dayjs(x.日期, "MM/DD/YYYY").format("YYYY/MM/DD"))
+    list.value.forEach((x)=>x.要望日期 = dayjs(x.要望日期, "MM/DD/YYYY").format("YYYY/MM/DD"))
   });
   await custStore.getCustNumberList().then((data)=>{
     console.log('custNumberList', data);
@@ -861,6 +860,14 @@ const handleOtherAction = async () =>{
 const submitForm = async () =>{
   console.log('sales order form:', salesOrderForm);
   const Account = SessionStorage.getItem('Account');
+  var percent = 0;
+  salesOrderForm.value.arListDetail.forEach((x)=>{
+    percent += x.成數;
+  })
+  if (percent != 100){
+    alert('成數異常，請確認款項分配的成數總和為100%');
+    return;
+  }
   if (mode.value == '新增'){
     console.log('mode', mode.value)
     salesOrderForm.value.建檔 = Account.account;
@@ -875,23 +882,8 @@ const submitForm = async () =>{
       }
       secondDialog.value = false;
     });
-  } else if (mode.value == '修改') {
-    console.log('mode', mode.value)
-    salesOrderForm.value.修改 = Account.account;
-    secondDialog.value = true;
-    await custStore.updateSalesOrderForm(salesOrderForm).then((data)=>{
-      console.log('response', data);
-      if (data.data.errorMessage){
-        alert(data.data.errorMessage);
-      } else {
-        alert('修改成功');
-      }
-      secondDialog.value = false;
-      init();
-    });
-  }
-  showForm.value = false;
-        salesOrderForm.value = {
+    showForm.value = false;
+    salesOrderForm.value = {
           account:SessionStorage.getItem('Account').account,
           識別:'',
           日期:'',
@@ -923,6 +915,30 @@ const submitForm = async () =>{
           orderListDetail:[],
           arListDetail: []
         };
+  } else if (mode.value == '修改') {
+    console.log('mode', mode.value)
+    salesOrderForm.value.修改 = Account.account;
+    secondDialog.value = true;
+    await custStore.updateSalesOrderForm(salesOrderForm).then((data)=>{
+      console.log('response', data);
+      if (data.data.errorMessage){
+        alert(data.data.errorMessage);
+      } else {
+        alert('修改成功');
+        salesOrderForm.value = custStore.getSalesOrderListByNo(salesOrderForm.value.單號).then((data)=>{
+          salesOrderForm.value = data[0];
+          salesOrderForm.value.要望日期 = dayjs(salesOrderForm.value.要望日期, "MM/DD/YYYY").format("YYYY/MM/DD")
+          salesOrderForm.value.建檔日 = dayjs(salesOrderForm.value.建檔日, "MM/DD/YYYY").format("YYYY/MM/DD")
+          salesOrderForm.value.修改日 = dayjs(salesOrderForm.value.修改日, "MM/DD/YYYY").format("YYYY/MM/DD")
+          salesOrderForm.value.核准日 = dayjs(salesOrderForm.value.核准日, "MM/DD/YYYY").format("YYYY/MM/DD")
+          salesOrderForm.value.orderListDetail.forEach((x)=> onBlur(x));
+        });
+      }
+      secondDialog.value = false;
+      // init();
+    });
+  }
+  
 }
 const AddAR = () =>{
   salesOrderForm.value.arListDetail.push({
@@ -942,11 +958,13 @@ const updateCloseFlag = async () =>{//TO-DO
       alert(data.data.errorMessage);
     } else {
       salesOrderForm.value.結案 = (data.data.result.結案=='0'?false:true);
-      if (data.data.result.結案=='1')
+      if (data.data.result.結案==true){
         alert('已結案');
-      else
+      }
+      else{
         alert('已取消結案');
-      showForm.value = false;
+      }
+      // showForm.value = false;
     }
     secondDialog.value = false;
   });
@@ -1146,9 +1164,12 @@ const validate = async(valid) =>{
       alert(data.data.errorMessage);
     } else {
       alert((valid?'覆核':'取消覆核')+'成功!');
+      salesOrderForm.value.結案 = valid?true:false;
+      salesOrderForm.value.核准 = valid?theUser.value.account:'';
+      salesOrderForm.value.核准日 = valid?dayjs(new Date(), "YYYY/MM/DD").format("YYYY/MM/DD"):'';
     }
-    close();
-    init();
+    // close();
+    // init();
   })
 }
 const openTransToMiscForm = () =>{
