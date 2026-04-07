@@ -1,61 +1,56 @@
 <template>
-  <q-layout class="q-pa-md padding  q-gutter-sm">
-    <h5 class="no-wrap text-left">
-      <div class="row justify-start padding-top">
-        <div class="col-2 col-md-2">
-          <q-icon name="play_circle" size="30px" >{{ formName }}</q-icon>
-        </div>
-        <div v-if="(hasAllAuth ||(auth && auth.編修))">
-          <!-- <div class="padding-right"> -->
-            <q-btn color="primary" class="padding-right"
+  <!--#region 標頭及維護按鈕-->
+  <div class="row justify-start">
+      <div class="col-1 justify-start" style="max-width:150px">
+        <q-icon name="play_circle" size="30px" >{{ formName }}</q-icon>
+      </div>
+      <div class="col-11 justify-start" style="max-width:1350px">
+        <!-- <div class="padding-right"> -->
+            <q-btn  v-if="(hasAllAuth ||(auth && auth.編修))" color="primary" class="padding-right"
                         glossy @click="openCustomDialog('新增')"
                         :loading="loading">新增出貨單</q-btn>&nbsp;
           <!-- </div> -->
           <!-- <div class="padding-right"> -->
-            <q-btn color="info" class="padding-right"
+            <q-btn  v-if="(hasAllAuth ||(auth && auth.編修))" color="info" class="padding-right"
                         glossy @click="openCustomDialog('修改')"
                         :loading="loading">修改出貨單</q-btn>&nbsp;
           <!-- </div> -->
           <!-- <div class="padding-right"> -->
-            <q-btn color="red" class="padding-right"
+            <q-btn  v-if="(hasAllAuth ||(auth && auth.編修))" color="red" class="padding-right"
                         glossy @click="deleteShippingOrder"
                         :loading="loading">刪除出貨單</q-btn>&nbsp;
-          <!-- </div> -->
-        </div>
-
-        <div v-if="(hasAllAuth ||(auth && auth.查詢))">
-        <!-- <div class="padding-right"> -->
-          <q-btn color="green" class="padding-right"
+            <q-btn color="green" class="padding-right"
                        glossy @click="openCustomDialog('預覽')"
                        :loading="loading">預覽出貨單</q-btn>&nbsp;
-          <q-btn color="blue-6" class="padding-right"
-                  glossy @click="openSearchForm"
-                  :loading="loading">出貨單查詢</q-btn>&nbsp;
-        </div>
+            <q-btn  v-if="(hasAllAuth ||(auth && auth.查詢))" color="blue-6" class="padding-right"
+                        glossy @click="openSearchForm"
+                        :loading="loading">出貨單查詢</q-btn>&nbsp;
+          <!-- </div> -->
       </div>
-      <div class="row justify-start padding-top">
-        <div class="col-6 col-md-6"  style="max-width: 500px">
+      <div class="col-12" style="max-width:3000px">
           <div class="text-left text-red">{{ errorMessage }}</div>
         </div>
-      </div>
-    </h5>
-    <q-page-container>
-      <q-page>
+  </div>
+  <!--#endregion-->
+  <!--#region 訂單列表 -->
+    <div class="row justify-start">
+      <div class="col-12 col-md-12"  style="max-width: 1500px">
         <q-table  class="rounded-borders my-sticky-header-table"
-                :columns="columns"
-                row-key="識別"
-                :rows="list"
-                flat
-                bordered
-                virtual-scroll
-                style="max-height: 500px"
-                selection="single"
-                v-model:selected="selected"
-                @selection="onSelection"
-                :pagination="{ rowsPerPage: 5 }"
-        ></q-table >
-      </q-page>
-    </q-page-container>
+                    :columns="columns"
+                    row-key="識別"
+                    :rows="list"
+                    flat
+                    bordered
+                    style="max-height: 1000px"
+                    selection="single"
+                    v-model:selected="selected"
+                    @selection="onSelection"
+                    :pagination="{ rowsPerPage: 10 }"
+            ></q-table>
+      </div>
+    </div>
+  <!--#endregion-->
+  <!--#region 主表單-->
     <!--主畫面-->
     <q-dialog v-model="showForm" persistent >
       <q-card class="q-pa-md"  style="width: 1000px; max-width: 80vw;">
@@ -341,6 +336,8 @@
         </q-form>
       </q-card>
     </q-dialog>
+  <!--#endregion-->
+  <!--#region 子表單-->
     <!--銀行資訊核對-->
     <q-dialog v-model="showBankInfo" persistent>
       <BankInfoView v-model:showForm="showBankInfo" :bankAccountCheckForm="bankAccountCheckForm"/>
@@ -353,7 +350,7 @@
     <q-dialog v-model="showSearchForm" persistent>
       <SoldOutQueryForm v-model:showForm="showSearchForm" v-model:list="list"/>
     </q-dialog>
-  </q-layout>
+  <!--#endregion-->
   <LoadingComponent v-model="secondDialog"/>
 </template>
 <script setup>
@@ -363,10 +360,10 @@ import BankInfoView from '@/components/customer/salesorder/BankInfoView.vue';
 import SalesOrderDistributionView from '@/components/customer/salesorder/SalesOrderDistributionView.vue';
 import {
     QIcon
-  , QLayout
+  // , QLayout
   , QBtn
-  , QPageContainer
-  , QPage
+  // , QPageContainer
+  // , QPage
   , QTable
   , QDialog
   , QCard

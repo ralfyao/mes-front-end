@@ -30,16 +30,15 @@
       <div class="row q-col-gutter-md">
         <div class="col-12 col-md-12">
           <q-table
-                          :columns="arColumns"
-                          row-key="識別"
-                          :rows="list"
-                          selection="single"
-                          v-model:selected="selectedDetail"
-                          flat
-                          bordered
-                          style="max-height: 70vh;"
-                        />
-                          
+            :columns="arColumns"
+            row-key="識別"
+            :rows="list"
+            selection="single"
+            v-model:selected="selectedDetail"
+            flat
+            bordered
+            style="max-height: 70vh;"
+          />     
         </div>
       </div>
       <br>
@@ -65,10 +64,8 @@
         </div>
         <div class="col-4 col-md-4">
           <q-btn color="blue-7" outlined glossy label="日文訂單 T" @click="printFormT(3)"/>
-
         </div>
       </div>
-      
     </q-card-section>
   </q-card>
 </template>
@@ -119,9 +116,14 @@ const props = defineProps({
   showForm: {
     type: Boolean,
     default: false
+  },
+  selectedAr:{
+    type:Array,
+    default:()=>[],
   }
 });
 const salesOrderForm = ref({});
+const selectedAr = ref([]);
 //#endregion variable block end
 
 //#region function block start
@@ -132,7 +134,32 @@ const close = () => {
 onMounted(()=>{
   salesOrderForm.value = props.salesOrderForm;
   list.value = salesOrderForm.value.orderListDetail;
+  selectedAr.value = props.selectedAr;
   console.log("salesOrderForm.value", salesOrderForm.value);
 })
+
+const printForm = (type) =>{
+  console.log('selectedAr', selectedAr.value);
+  if (selectedAr.value.length == 0){
+    alert("請選取一筆訂單明細資料做列印");
+    return;
+  } 
+  emits('update:showForm', false);
+  // eslint-disable-next-line no-unused-vars
+  const url = `/api/salesorder/print?ordno=${salesOrderForm.value.單號}&type=${type}`;
+  window.open(url, '_blank');
+}
+
+const printFormT = (type) =>{
+  console.log('selectedAr', selectedAr.value);
+  if (selectedAr.value.length == 0){
+    alert("請選取一筆訂單明細資料做列印");
+    return;
+  } 
+  emits('update:showForm', false);
+  // eslint-disable-next-line no-unused-vars
+  const url = `/api/salesorder/print?ordno=${salesOrderForm.value.單號}&type=${type}`;
+  window.open(url, '_blank');
+}
 //#endregion function block end
 </script>

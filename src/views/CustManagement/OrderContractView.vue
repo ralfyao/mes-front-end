@@ -55,7 +55,7 @@
                     selection="single"
                     v-model:selected="selected"
                     @selection="onSelection"
-                    :pagination="{ rowsPerPage: 10 }"
+                    :pagination="{ rowsPerPage: 7 }"
             >
         <template v-slot:body-cell-單號="props">
           <q-td :props="props">
@@ -298,7 +298,7 @@
                           :columns="arColumns"
                           row-key="識別"
                           :rows="salesOrderForm.arListDetail"
-                          selection="single"
+                          selection="multiple"
                           v-model:selected="selectedAr"
                           flat
                           bordered
@@ -507,7 +507,7 @@
   </q-dialog>
   <!--列印視窗-->
   <q-dialog v-model="showPrintDialog" persistent>
-    <PrintForm v-model:showForm="showPrintDialog" v-model:salesOrderForm="salesOrderForm"/>
+    <PrintForm v-model:showForm="showPrintDialog" v-model:salesOrderForm="salesOrderForm" v-model:selectedAr="selectedAr"/>
   </q-dialog>
   <!--#endregion-->
   <LoadingComponent v-model="secondDialog"/>
