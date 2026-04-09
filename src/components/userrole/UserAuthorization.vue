@@ -26,6 +26,7 @@
             flat
             bordered
             virtual-scroll
+            :pagination="{ rowsPerPage: 1000 }"
           >
             <!-- 授權表單欄位 -->
             <template v-slot:body-cell-menuSubName="props">
