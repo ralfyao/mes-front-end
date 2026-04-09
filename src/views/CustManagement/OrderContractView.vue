@@ -345,18 +345,18 @@
                               <q-btn label="轉立帳單" color="green" glossy v-if="!preview && (props.row.請款單號 == '')" @click="transferReceivable(props.row)" />
                             </q-td>
                           </template>
-                            
+
                         </q-table>
                         <!-- <div v-for="item in salesOrderForm.arListDetail" v-bind:key="item.識別" class="row no-wrap q-col-gutter-md">
                           <div class="col-1 col-md-1" style="max-width: 200px">
                           </div>
                           <div class="col-1 col-md-1 flex" style="max-width: 200px">
-                            
+
                           </div>
                           <div class="col-1 col-md-1 flex" style="max-width: 200px">
                           </div>
                           <div class="col-2 col-md-2 flex" style="max-width: 300px">
-                            
+
                           </div>
                           <div class="col-2 col-md-2 flex" style="max-width: 300px">
                           </div>
@@ -687,7 +687,7 @@ const showPrintForm = () =>{
   if (selectedAr.value.length == 0){
     alert("請選取一筆收款資料做列印");
     return;
-  } 
+  }
   showPrintDialog.value = true;
 }
 const openOrderDetails = async (orderNo)=>{
@@ -922,8 +922,9 @@ const submitForm = async () =>{
   const Account = SessionStorage.getItem('Account');
   var percent = 0;
   salesOrderForm.value.arListDetail.forEach((x)=>{
-    percent += x.成數;
+    percent += parseInt(x.成數);
   })
+  console.log('percent:', percent);
   if (percent != 100){
     alert('成數異常，請確認款項分配的成數總和為100%');
     return;
@@ -985,20 +986,13 @@ const submitForm = async () =>{
         alert(data.data.errorMessage);
       } else {
         alert('修改成功');
-        salesOrderForm.value = custStore.getSalesOrderListByNo(salesOrderForm.value.單號).then((data)=>{
-          salesOrderForm.value = data[0];
-          salesOrderForm.value.要望日期 = dayjs(salesOrderForm.value.要望日期, "MM/DD/YYYY").format("YYYY/MM/DD")
-          salesOrderForm.value.建檔日 = dayjs(salesOrderForm.value.建檔日, "MM/DD/YYYY").format("YYYY/MM/DD")
-          salesOrderForm.value.修改日 = dayjs(salesOrderForm.value.修改日, "MM/DD/YYYY").format("YYYY/MM/DD")
-          salesOrderForm.value.核准日 = dayjs(salesOrderForm.value.核准日, "MM/DD/YYYY").format("YYYY/MM/DD")
-          salesOrderForm.value.orderListDetail.forEach((x)=> onBlur(x));
-        });
       }
       secondDialog.value = false;
-      // init();
+      init();
+      showForm.value = false;
     });
   }
-  
+
 }
 const AddAR = () =>{
   salesOrderForm.value.arListDetail.push({

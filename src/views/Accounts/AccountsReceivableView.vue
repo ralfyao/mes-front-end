@@ -60,7 +60,6 @@
             <div class="row q-col-gutter-md">
               <div v-if="mode == '修改'">
                 <div class="col-6 flex">
-                  <q-checkbox v-model="form.結案" label="結案" :readonly="readonly || preview" @update:model-value="updateCloseFlag"/>
                   <q-btn v-if="!preview" label="出納收款" color="green" glossy densed @click="quotationDistribution"/>&nbsp;
                   <q-btn v-if="!preview" label="收款明細導入" color="primary" glossy densed/>&nbsp;
                   <q-btn v-if="!preview" label="會計傳票" color="brown" glossy densed/>
@@ -105,17 +104,17 @@
               <div class="col-2 col-md-2" style="max-width: 166px">
                 <q-input v-model="form.單號" :readonly="readonly || preview" outlined dense label="單號"/>
               </div>
-              <div class="col-2 col-md-2" style="max-width: 166px">
+              <div class="col-2 col-md-2" style="max-width: 200px">
                 <q-select v-model="form.類別" outlined dense label="收款類別" emit-value map-options
                   :options="categoryList"
                 />
               </div>
-              <div class="col-2 col-md-2" style="max-width: 166px">
+              <div class="col-2 col-md-2" style="max-width: 200px">
                 <q-select v-model="form.machineno" outlined dense label="憑證種類" emit-value map-options
                   :options="certCategoryList"
                 />
               </div>
-              <div class="col-2 col-md-2" style="max-width: 166px">
+              <div class="col-2 col-md-2" style="max-width: 200px">
                 <q-input outlined dense v-model="form.收款日期" label="發票日期" :readonly="readonly || preview" mask="####/##/##" :rules="[val => !!val || '日期為必填欄位']">
                   <template v-slot:append>
                     <q-icon name="event" class="cursor-pointer">
@@ -130,7 +129,7 @@
                   </template>
                 </q-input>
               </div>
-              <div class="col-2 col-md-2" style="max-width: 166px">
+              <div class="col-2 col-md-2" style="max-width: 200px">
                 <q-input outlined dense v-model="form.銀轉金額" type="number" min='0.0' label="未稅金額"/>
               </div>
             </div>
@@ -150,22 +149,22 @@
                   <CustListQueryView v-model:showForm="showSearchCustNoForm" v-model:custNo="form.客戶編號"/>
                 </q-dialog>
               </div>
-              <div class="col-4 col-md-4" style="max-width: 322px">
+              <div class="col-6 col-md-6" style="max-width: 488px">
                 <q-input  :readonly="readonly || preview" v-model="companyName" outlined dense label="客戶簡稱"/>
               </div>
               <div class="col-2 col-md-2" style="max-width: 166px">
                 <q-input  :readonly="readonly || preview" v-model="form.發票號碼" outlined dense label="發票號碼"/>
               </div>
-              <div class="col-2 col-md-2" style="max-width: 166px">
+              <div class="col-4 col-md-4" style="max-width: 322px">
                 <q-input  :readonly="readonly || preview" v-model="form.收票金額" outlined dense label="稅額" @blur="calculateTax()"/>
-              </div>
-              <div class="col-2 col-md-2" style="max-width: 166px">
-                <q-input  :readonly="readonly || preview" v-model="form.傳票" outlined dense label="會計傳票"/>
               </div>
             </div>
             <br>
             <!--幣別、匯率、收款單號、帳期、總額-->
             <div class="row q-col-gutter-md">
+              <div class="col-2 col-md-2" style="max-width: 166px">
+                <q-input  :readonly="readonly || preview" v-model="form.傳票" outlined dense label="會計傳票"/>
+              </div>
               <div class="col-2 col-md-2" style="max-width: 166px">
                 <q-select outlined dense  label="幣別"
                   v-model="form.幣別"
@@ -187,6 +186,9 @@
               <div class="col-2 col-md-2" style="max-width: 166px">
                 <q-input  :readonly="readonly || preview" v-model="form.請款人員" outlined dense label="收款單號"/>
                 <q-btn  v-if="!preview" color="orange" size="sm" label="單筆收款"/>
+              </div>
+              <div class="col-2 col-md-2" style="max-width: 166px">
+                  <q-checkbox v-model="form.結案" label="結案" :readonly="readonly || preview" @update:model-value="updateCloseFlag"/>
               </div>
               <div class="col-2 col-md-2" style="max-width: 166px">
                 <q-input  :readonly="readonly || preview" v-model="form.備註" outlined dense label="帳期"/>

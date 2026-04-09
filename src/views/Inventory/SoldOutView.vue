@@ -53,7 +53,7 @@
   <!--#region 主表單-->
     <!--主畫面-->
     <q-dialog v-model="showForm" persistent >
-      <q-card class="q-pa-md"  style="width: 1000px; max-width: 80vw;">
+      <q-card class="q-pa-md"  style="width: 1500px; max-width: 80vw;">
         <q-card-section>
           <div class="text-h4">
             {{mode}}出貨單
@@ -91,9 +91,10 @@
         </q-card-section>
         <q-form ref="myForm" >
           <q-card-section>
-            <!--日期、客戶編號-->
+            <!--日期、單號、客戶編號、佣金-->
             <div class="row q-col-gutter-md">
-              <div class="col-6 col-md-6" style="max-width: 500px">
+              <!--日期-->
+              <div class="col-2 col-md-2" style="max-width: 250px">
                 <q-input  outlined dense :readonly="preview" v-model="form.日期" label="日期" mask="####/##/##" :rules="[val => !!val || '日期為必填欄位']">
                   <template v-slot:append>
                     <q-icon name="event" class="cursor-pointer">
@@ -108,27 +109,36 @@
                   </template>
                 </q-input>
               </div>
-              <div class="col-6 col-md-6" style="max-width: 500px">
-                 <q-select v-model="form.客戶編號" :readonly="readonly || preview" outlined dense label="客戶編號"
-                :options="custNumberList"
-                option-label="正航編號"
-                option-value="正航編號"
-                emit-value map-options
-                @update:model-value="changeCustCompany"
+              <!--單號-->
+              <div class="col-2 col-md-2" style="max-width: 250px">
+                <q-input outlined dense v-model="form.單號" readonly label="出貨單號"/>
+              </div>
+              <!--客戶編號-->
+              <div class="col-2 col-md-2" style="max-width: 250px">
+                <q-select v-model="form.客戶編號" :readonly="readonly || preview" outlined dense label="客戶編號"
+                  :options="custNumberList"
+                  option-label="正航編號"
+                  option-value="正航編號"
+                  emit-value map-options
+                  @update:model-value="changeCustCompany"
                 />
                 <q-icon name="search" size="30px" @click="openSearcCustomerForm" class="cursor-pointer"></q-icon>
                 <q-dialog v-model="showSearchCustNoForm" perisitent>
                   <CustListQueryView v-model:showForm="showSearchCustNoForm" v-model:custNo="form.客戶編號"/>
                 </q-dialog>
-                <label class="text-red text-center" style=" font-size: 24px;">{{ companyName }}</label>
+              </div>
+
+              <div class="col-3 col-md-3" style="max-width: 375px">
+                <label class="text-red text-center" style=" font-size: 24px;">客戶簡稱：{{ companyName }}</label>
+              </div>
+              <div class="col-3 col-md-3" style="max-width: 375px">
+                  <q-input outlined dense v-model="form.佣金" :readonly="preview" label="應付佣金"/>
               </div>
             </div>
-            <!--佣金、原定交貨日期-->
+            <!--交貨日期、稅別、稅率、客戶全名-->
             <div class="row q-col-gutter-md">
-              <div class="col-6 col-md-6" style="max-width: 500px">
-                <q-input outlined dense v-model="form.佣金" :readonly="preview" label="應付佣金"/>
-              </div>
-              <div class="col-6 col-md-6" style="max-width: 500px">
+              <!--交貨日期-->
+              <div class="col-2 col-md-2" style="max-width: 250px">
                 <q-input  outlined dense :readonly="preview" v-model="form.原定交貨日期" label="原定交貨日" mask="####/##/##" :rules="[val =>  !!val || '日期為必填欄位']">
                   <template v-slot:append>
                     <q-icon name="event" class="cursor-pointer">
@@ -143,31 +153,28 @@
                   </template>
                 </q-input>
               </div>
-            </div>
-            <!--稅別、稅率-->
-            <div class="row q-col-gutter-md">
-              <div class="col-6 col-md-6" style="max-width: 500px">
+              <!--稅別-->
+              <div class="col-2 col-md-2" style="max-width: 250px">
                 <q-select v-model="form.稅別" outlined dense :readonly="readonly || preview" label="稅別"
                 :options="taxTypeList"
                 emit-value map-options
                 />
               </div>
-              <div class="col-6 col-md-6" style="max-width: 500px">
-                <q-select  outlined dense v-model="form.稅率"  label="稅率" :readonly="readonly || preview"
+              <!--稅率-->
+              <div class="col-2 col-md-2" style="max-width: 250px">
+                 <q-select  outlined dense v-model="form.稅率"  label="稅率" :readonly="readonly || preview"
                 :rules="[val =>  !!val || '稅率為必填欄位']"  emit-value map-options
                 :options="taxRateList"/>
               </div>
-            </div>
-            <!--客戶全名-->
-            <div class="row q-col-gutter-md">
-              <div class="col-12 col-md-12" style="max-width: 1000px">
+              <!--客戶全名-->
+              <div class="col-6 col-md-6" style="max-width: 750px">
                 <q-input  :readonly="readonly || preview" v-model="companyFullName" outlined dense label="客戶全名"></q-input>
               </div>
             </div>
-            <br>
-            <!--幣別、匯率-->
+            <!--幣別、匯率、訂單總額、收貨地址-->
             <div class="row q-col-gutter-md">
-              <div class="col-6 col-md-6" style="max-width: 500px">
+              <!--幣別-->
+              <div class="col-3 col-md-3" style="max-width: 375px">
                 <q-select v-model="form.幣別" :readonly="readonly || preview" outlined dense label="幣別"
                 :options="currencyList"
                 option-label="currency"
@@ -176,7 +183,8 @@
                 emit-value map-options
                 />
               </div>
-              <div class="col-6 col-md-6" style="max-width: 500px">
+              <!--匯率-->
+              <div class="col-3 col-md-3" style="max-width: 375px">
                 <q-select outlined dense  label="匯率"
                   :options="exRateList"
                   v-model="form.匯率"
@@ -185,37 +193,28 @@
                   :rules="[val => !preview && !!val || '匯率為必填欄位']"
                   />
               </div>
-            </div>
-            <!--訂單總額、收款帳號-->
-            <div class="row q-col-gutter-md">
-              <div class="col-6 col-md-6" style="max-width: 500px">
+              <!--訂單總額-->
+              <div class="col-3 col-md-3" style="max-width: 375px">
                 <q-input v-model="form.總額" outlined dense label="訂單總額" readonly />
               </div>
-              <div class="col-6 col-md-6" style="max-width: 500px">
-                <q-input v-model="form.收款帳號" outlined dense label="收款帳號" />
-                <q-btn outlined dense glossy color="green"  v-if="!preview" label="核對" @click="openBankInfo"/>
-              </div>
-            </div>
-            <!--收貨地址-->
-            <div class="row q-col-gutter-md">
-              <div class="col-12 col-md-12" style="max-width: 1000px">
+              <!--收貨地址-->
+              <div class="col-3 col-md-3" style="max-width: 375px">
                 <q-input v-model="form.交貨地址" outlined dense :readonly="preview" label="收貨地址"/>
               </div>
             </div>
-            <br>
-            <!--指配國別、目的港-->
+            <!--收款帳號、指配國別、目的地、交貨方式、-->
             <div class="row q-col-gutter-md">
-              <div class="col-6 col-md-6" style="max-width: 500px">
+              <div class="col-2 col-md-2" style="max-width: 250px">
+                <q-input v-model="form.收款帳號" outlined dense label="收款帳號" />
+                <q-btn outlined dense glossy color="green"  v-if="!preview" label="核對" @click="openBankInfo"/>
+              </div>
+              <div class="col-2 col-md-2" style="max-width: 250px">
                 <q-input v-model="form.指配國別" outlined dense :readonly="preview" label="指配國別" />
               </div>
-              <div class="col-6 col-md-6" style="max-width: 500px">
+              <div class="col-2 col-md-2" style="max-width: 250px">
                 <q-input v-model="form.目的港" outlined dense :readonly="preview" label="目的地"/>
               </div>
-            </div>
-            <br>
-            <!--交貨方式、貿易條件-->
-            <div class="row q-col-gutter-md">
-              <div class="col-6 col-md-6" style="max-width: 500px">
+              <div class="col-3 col-md-3" style="max-width: 375px">
                 <q-select  outlined v-model="form.交貨方式" dense :readonly="readonly || preview"  label="交貨方式"
                     :options="handMethod"
                     :rules="[val =>  !!val || '交貨方式為必填欄位']"
@@ -224,7 +223,7 @@
                     emit-value map-options
                   />
               </div>
-              <div class="col-6 col-md-6" style="max-width: 500px">
+              <div class="col-3 col-md-3" style="max-width: 375px">
                 <q-select  outlined dense v-model="form.價格條件"  label="貿易條件"
                 :options="priceCondList" :readonly="readonly || preview"
                 :rules="[val =>  !!val || '價格條件為必填欄位']"  emit-value map-options
@@ -232,9 +231,9 @@
                 option-label="條文名稱"/>
               </div>
             </div>
-            <!--業務員、付款方式-->
+            <!--業務員、備註、付款方式-->
             <div class="row q-col-gutter-md">
-              <div class="col-6 col-md-6" style="max-width: 500px">
+              <div class="col-2 col-md-2" style="max-width: 2500px">
                 <q-select v-model="form.業務員" :readonly="readonly || preview" outlined dense label="業務人員"
                 :options="salesList"
                 option-label="工號"
@@ -246,19 +245,16 @@
                   {{ salesname }}
                 </label>
               </div>
-              <div class="col-6 col-md-6" style="max-width: 500px">
+              <div class="col-6 col-md-6" style="max-width: 750px">
+                <q-input v-model="form.remark" outlined dense :readonly="preview" label="備註"/>
+              </div>
+              <div class="col-4 col-md-4" style="max-width: 500px">
                 <q-select  outlined v-model="form.付款方式" dense :readonly="readonly || preview"  label="付款方式"
                 :options="paymentTerm"
                 :rules="[val =>  !!val || '付款方式為必填欄位']"
                 emit-value map-options
                 option-value="條文編號"
                 option-label="條文名稱"/>
-              </div>
-            </div>
-            <br>
-            <div class="row q-col-gutter-md">
-              <div class="col-12 col-md-12" style="max-width: 1000px">
-                <q-input v-model="form.remark" outlined dense :readonly="preview" label="備註"/>
               </div>
             </div>
           </q-card-section>
