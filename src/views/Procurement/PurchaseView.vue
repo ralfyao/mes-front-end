@@ -22,7 +22,7 @@
                     :loading="loading">採購單查詢</q-btn>&nbsp;
     </div>
     <div class="col-12" style="max-width:3000px">
-      <div class="text-left text-red">{{ errorMessage }}</div>
+      <div class="text-left text-h4 text-red">{{ errorMessage }}</div>
     </div>
   </div>
   <!--#endregion-->
@@ -31,7 +31,7 @@
     <div class="col-12 col-md-12"  style="max-width: 1500px">
       <q-table  class="rounded-borders my-sticky-header-table"
                 :columns="columns"
-                row-key="識別"
+                row-key="單號"
                 :rows="list"
                 flat
                 bordered
@@ -49,6 +49,7 @@
     <ProcurementForm v-model:showForm="showForm" v-model:mode="mode" v-model:procurementData="procurementData" v-model:preview="preview" />
   </q-dialog>
   <!--#endregion-->
+  <LoadingComponent v-model="secondDialog" />
 </template>
 <script setup>
 //#region import
@@ -60,10 +61,11 @@ import {
     , QDialog
   // , QLayout
 } from 'quasar';
-import { ref } from 'vue';
+import { onMounted, ref, watch } from 'vue';
 import dayjs from 'dayjs';
 import { usePurchaseStore } from '@/composables/usePurchase';
 import ProcurementForm from '@/components/procurement/ProcurementForm.vue';
+import LoadingComponent from '@/components/LoadingComponent.vue';
 //#endregion
 
 //#region variable
@@ -79,6 +81,8 @@ const mode = ref('新增');
 const procurementData = ref({});
 const preview = ref(false);
 const showForm = ref(false);
+const secondDialog = ref(false);
+const selected = ref([]);
 const columns =
 [
   // { name: 'quono', label: '報價單號', align: 'left', field: 'quono', sortable: true },
@@ -112,6 +116,17 @@ const columns =
 //#endregion
 
 //#region function
+onMounted(async () => {
+  init();
+});
+const init = async() =>{
+  secondDialog.value = true;
+  await purchaseStore.getAllPurchasesList().then((data) => {
+    console.log('purchaseList', data);
+    list.value = data;
+    secondDialog.value = false;
+  });
+}
 const openCustomerDialog = (type) =>{
   console.log('openCustomerDialog', type)
   if (type === '新增') {
@@ -143,22 +158,62 @@ const openCustomerDialog = (type) =>{
     preview.value = false;
     showForm.value = true;
   } else if (type === '修改') {
-    // if (selected.value.length === 0) {
-    //   errorMessage.value = '請選擇一筆資料進行修改';
-    //   return;
-    // }
-    // mode.value = '修改';
-    // procurementData.value = selected.value[0];
-    // preview.value = false;
+    if (selected.value.length === 0) {
+      errorMessage.value = '請選擇一筆資料進行修改';
+      return;
+    }
+    mode.value = '修改';
+    procurementData.value = selected.value[0];
+    console.log('selected', selected.value[0]);
+    preview.value = false;
+    showForm.value = true;
   } else if (type === '預覽') {
-    // if (selected.value.length === 0) {
-    //   errorMessage.value = '請選擇一筆資料進行預覽';
-    //   return;
-    // }
-    // mode.value = '預覽';
-    // procurementData.value = selected.value[0];
-    // preview.value = true;
+    if (selected.value.length === 0) {
+      errorMessage.value = '請選擇一筆資料進行預覽';
+      return;
+    }
+    mode.value = '預覽';
+    procurementData.value = selected.value[0];
+    preview.value = true;
+    showForm.value = true;
   }
+}
+
+watch(() => showForm.value, async (newVal) => {
+  if (!newVal) {
+    secondDialog.value = true;
+    await purchaseStore.getAllPurchasesList().then((data) => {
+      console.log('purchaseList', data);
+      list.value = data;
+      secondDialog.value = false;
+    });
+  }
+});
+
+const deleteCustomer = () =>{
+  if (selected.value.length === 0) {
+    errorMessage.value = '請選擇一筆資料進行刪除';
+    return;
+  }
+  var result = confirm('您確認是否要刪除?');
+  if (!result)
+    return;
+  secondDialog.value = true;
+  purchaseStore.deletePurchaseOrder(selected.value[0].單號).then((response) => {
+    console.log('delete response', response);
+    if (response.errorMessage && response.errorMessage !== '') {
+      // 在這裡可以處理錯誤，例如顯示錯誤訊息
+      alert('刪除失敗:' + response.errorMessage);
+    } else {
+      // 在這裡可以處理成功的回應，例如顯示成功訊息或更新 UI
+      alert('刪除成功!');
+    }
+    secondDialog.value = false;
+    init();
+  }).catch((error) => {
+    console.error('Delete error:', error);
+    secondDialog.value = false;
+  });
 }
 
 const openSearchForm = () =>{

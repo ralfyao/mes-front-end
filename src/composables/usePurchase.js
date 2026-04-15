@@ -12,6 +12,48 @@ export const usePurchaseStore = defineStore('purchase', {
       const response = await apiClient.get(constant.APIUrl + 'api/AllPurchasesList')
       console.log('response', response)
       return response.data.resultList;
-    }
+    },
+    async getPONo() {
+      const constant = Constant()
+      console.log('APIUrl', constant.APIUrl)
+      const response = await apiClient.get(constant.APIUrl + 'api/GetPONo')
+      console.log('response', response)
+      return response.data.result;
+    },
+    async getProcurementorList() {
+      const constant = Constant()
+      console.log('APIUrl', constant.APIUrl)
+      const response = await apiClient.get(constant.APIUrl + 'api/GetProcurementorList')
+      console.log('response', response)
+      return response.data.resultList;
+    },
+    async createPurchaseOrder(purchaseOrderData) {
+      const constant = Constant()
+      console.log('APIUrl', constant.APIUrl)
+      const response = await apiClient.post(constant.APIUrl + 'api/CreatePurchaseOrder', purchaseOrderData)
+      console.log('response', response)
+      return response.data;
+    },
+    async updatePurchaseOrder(purchaseOrderData) {
+      const constant = Constant()
+      console.log('APIUrl', constant.APIUrl)
+      const response = await apiClient.post(constant.APIUrl + 'api/UpdatePurchaseOrder', purchaseOrderData)
+      console.log('response', response)
+      return response.data;
+    },
+    async deletePurchaseOrder(purchaseOrderId) {
+      const constant = Constant()
+      console.log('APIUrl', constant.APIUrl)
+      const response = await apiClient.get(constant.APIUrl + 'api/DeletePurchaseOrder?purchaseOrderNo=' + purchaseOrderId)
+      console.log('response', response)
+      return response.data;
+    },
+    async voidPurchaseOrder(purchaseOrderId) {
+      const constant = Constant()
+      console.log('APIUrl', constant.APIUrl)
+      const response = await apiClient.get(constant.APIUrl + 'api/VoidPurchaseOrder?purchaseOrderNo=' + purchaseOrderId)
+      console.log('response', response)
+      return response.data;
+    },
   }
 });

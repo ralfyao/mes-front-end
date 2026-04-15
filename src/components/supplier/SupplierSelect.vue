@@ -6,11 +6,12 @@
     option-value="廠商編號"
     option-label="廠商編號"
     label="廠商編號"
-    @selection="onSelection"
+    :readonly="preview"
+    @update:model-value="onSelection"
     emit-value map-options
   >
   </q-select>
-  <q-icon name="search" size="30px" @click="openSearchSupplierNoForm" class="cursor-pointer"></q-icon>
+  <q-icon name="search" size="30px" v-if="!preview" @click="openSearchSupplierNoForm" class="cursor-pointer"></q-icon>
   <q-dialog v-model="showSearchSupplierNoForm" perisitent>
     <SupplierListQueryView v-model:supplierNo="supplierNo" v-model:showForm="showSearchSupplierNoForm" />
   </q-dialog>
@@ -39,8 +40,13 @@ const props = defineProps({
   supplierNo:{
     type: String,
     default: ''
+  },
+  preview:{
+    type: Boolean,
+    default: false
   }
 });
+const preview = ref(false);
 const supplierNo = ref('');
 const supplierName = ref('');
 const supplierList = ref([]);
@@ -50,8 +56,17 @@ const showSearchSupplierNoForm = ref(false);
 
 //#region function
 onMounted(async () => {
-  supplierNo.value = props.supplierNo;
-  supplierList.value = await supplierStore.getAllSupplierList();
+  console.log('props.supplierNo', props.supplierNo);
+  await supplierStore.getAllSupplierList().then((data) => {
+    console.log('getAllSupplierList response:', data);
+    supplierList.value =  data;
+    supplierNo.value = props.supplierNo;
+    preview.value = props.preview;
+  }).catch((error) => {
+    console.error('getAllSupplierList error:', error);
+    supplierList.value = [];
+  });
+  console.log('supplierList', supplierList.value);
 });
 
 const onSelection = (value) => {
@@ -67,7 +82,7 @@ const openSearchSupplierNoForm = () => {
 
 watch(() => supplierNo.value, async (newVal) => {
   await supplierStore.querySupplier({ supplierNo: newVal }).then(response => {
-    // console.log('Query response:', response);
+    console.log('Query response:', response);
     if (response.length > 0) {// 假設 response 是一個包含廠商資料的陣列
       supplierName.value = response[0].廠商名稱;
       emit('update:supplierNo', newVal); // 向父組件傳遞選擇的廠商編號
