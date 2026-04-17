@@ -1,5 +1,5 @@
 <template>
-  <q-card class="q-pa-md"  style="width: 500px; max-width: 95vw;">
+  <q-card class="q-pa-md"  style="width: 1000px; max-width: 95vw;">
     <q-card-section>
       <div class="text-h6">廠商列表查詢</div>
     </q-card-section>
@@ -62,7 +62,9 @@ const selected = ref([])
 const emits = defineEmits(['update:supplierNo', 'update:showForm']);
 const columns = [
   { name: '廠商編號', label: '廠商編號', align: 'left', field: '廠商編號', sortable: true },
+  { name: '廠商簡稱', label: '廠商簡稱', align: 'left', field: '廠商簡稱', sortable: true },
   { name: '廠商名稱', label: '廠商名稱', align: 'left', field: '廠商名稱', sortable: true },
+  { name: '公司地址', label: '公司地址', align: 'left', field: '公司地址', sortable: true },
   // { name: '聯絡人', label: '聯絡人', align: 'left', field: '聯絡人', sortable: true },
   // { name: '電話號碼', label: '電話號碼', align: 'left', field: '電話號碼', sortable: true }
 ];
