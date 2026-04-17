@@ -90,7 +90,7 @@ const columns =
   format: val => val != null
     ? dayjs(val).format('YYYY/MM/DD')
     : '' },
-  { name: '單號', label: '訂單單號', align: 'left', field: '單號', sortable: true },
+  { name: '單號', label: '採購單號', align: 'left', field: '單號', sortable: true },
   { name: '廠商編號', label: '廠商編號', align: 'left', field: '廠商編號', sortable: true },
   { name: '廠商全稱', label: '廠商全稱', align: 'left', field: '廠商全稱', sortable: true },
   // { name: '指配國別', label: '國別', align: 'left', field: '指配國別', sortable: true },
@@ -121,9 +121,13 @@ onMounted(async () => {
 });
 const init = async() =>{
   secondDialog.value = true;
+  errorMessage.value = '';
+
   await purchaseStore.getAllPurchasesList().then((data) => {
     console.log('purchaseList', data);
+    list.value = [];
     list.value = data;
+    selected.value = [];
     secondDialog.value = false;
   });
 }
@@ -181,12 +185,7 @@ const openCustomerDialog = (type) =>{
 
 watch(() => showForm.value, async (newVal) => {
   if (!newVal) {
-    secondDialog.value = true;
-    await purchaseStore.getAllPurchasesList().then((data) => {
-      console.log('purchaseList', data);
-      list.value = data;
-      secondDialog.value = false;
-    });
+    init();
   }
 });
 
@@ -198,6 +197,11 @@ const deleteCustomer = () =>{
   var result = confirm('您確認是否要刪除?');
   if (!result)
     return;
+  if (selected.value[0].核准日 && selected.value[0].核准日 != '')
+  {
+    alert('已核准的採購單不可刪除');
+    return;
+  }
   secondDialog.value = true;
   purchaseStore.deletePurchaseOrder(selected.value[0].單號).then((response) => {
     console.log('delete response', response);

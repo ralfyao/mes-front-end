@@ -3,7 +3,23 @@
     <q-card-section>
       <div class="col-3 flex text-h4">
         {{mode}}採購單
-        <q-btn v-if="!preview" label="採購單分配" color="green" glossy densed/>
+        <div class="flex col-7">
+          <q-btn v-if="!preview" class="padding-right" label="採購單分配" color="green" glossy densed/> &nbsp;
+          <q-btn v-if="!preview" class="padding-right" label="工作內容撰寫" color="blue" glossy densed @click="openRecordTrackingDialog"/> &nbsp;
+        </div>
+        <div class="flex col-7" v-if="(hasAllAuth ||(auth && auth.核准)) && !preview">
+          <q-btn color="grey" class="padding-right"
+                        glossy v-if="procurementData.核准日 && procurementData.核准日!= ''"
+                        :loading="loading" @click="validate(false)">取消核准</q-btn> &nbsp;
+          <q-btn color="grey" class="padding-right"
+                        glossy v-if="!procurementData.核准日 || procurementData.核准日== ''"
+                        :loading="loading" @click="validate(true)">核准</q-btn> &nbsp;
+        </div>
+        <div class="flex col-7" v-if="(hasAllAuth ||(auth && auth.輸出)) && (procurementData.核准日 && procurementData.核准日!= '')">
+          <q-btn color="grey" class="padding-right"
+                    glossy
+                    :loading="loading">列印</q-btn> &nbsp;
+          </div>
       </div>
     </q-card-section>
     <q-card-section>
@@ -121,7 +137,7 @@
             <q-input label="交貨日期" outlined :readonly="preview" dense v-model="procurementData.交貨日期" type="date" />
           </div>
           <div class="col-1 col-md-1">
-            <q-btn v-if="!preview" label="作廢" color="primary" glossy densed @click="voidPO(procurementData.單號)"/>
+            <q-btn v-if="!preview" label="作廢" color="red" glossy densed @click="voidPO(procurementData.單號)"/>
           </div>
         </div>
       </q-form>
@@ -165,12 +181,12 @@
         </template>
         <template v-slot:body-cell-數量="props">
           <q-td :props="props">
-            <q-input outlined dense type="number" @blur="calculateAmount()" :readonly="preview" v-model="props.row.數量" />
+            <q-input style="width: 100px;" outlined dense type="number" @blur="calculateAmount()" :readonly="preview" v-model="props.row.數量" />
           </q-td>
         </template>
         <template v-slot:body-cell-單價="props">
           <q-td :props="props">
-            <q-input outlined dense type="number" @blur="calculateAmount()" :readonly="preview" v-model="props.row.單價" />
+            <q-input style="width: 100px;" outlined dense type="number" @blur="calculateAmount()" :readonly="preview" v-model="props.row.單價" />
           </q-td>
         </template>
         <template v-slot:body-cell-未稅金額="props">
@@ -200,12 +216,17 @@
         </template>
         <template v-slot:body-cell-備註="props">
           <q-td :props="props">
-            <q-input outlined dense :readonly="preview" v-model="props.row.備註" />
+            <q-input outlined style="width: 200px;" dense :readonly="preview" v-model="props.row.備註" />
           </q-td>
         </template>
         <template v-slot:body-cell-請購序號="props">
           <q-td :props="props">
             <q-input outlined type="number" dense :readonly="preview" v-model="props.row.請購序號" />
+          </q-td>
+        </template>
+        <template v-slot:body-cell-識別="props">
+          <q-td :props="props">
+            <q-btn v-if="!preview" label="作廢" color="red" glossy densed @click="voidPOItem(props.row)"/>
           </q-td>
         </template>
       </q-table >
@@ -234,6 +255,9 @@
       <q-btn label="送出" flat color="blue" @click="submit"/>
     </q-card-actions>
   </q-card>
+  <q-dialog v-model="recordTrackingDialog" persistent max-width="600px">
+    <ProcurementRecordTracking v-model:procurementNo="procurementData.單號" v-model:showForm="recordTrackingDialog" @close="recordTrackingDialog = false"/>
+  </q-dialog>
   <LoadingComponent v-model="secondDialog"/>
 </template>
 <script setup>
@@ -249,6 +273,7 @@ import { QCard,
   QTable,
   QTd,
   QCheckbox,
+  QDialog
 } from 'quasar';
 import {
   ref
@@ -266,10 +291,14 @@ import { usePurchaseStore } from '@/composables/usePurchase';
 import { useItemStore } from '@/composables/useItem';
 import ProcurementSelect from '@/components/procurement/ProcurementSelect.vue';
 import LoadingComponent from '@/components/LoadingComponent.vue';
+import ProcurementRecordTracking from '@/components/procurement/ProcurementRecordTracking.vue';
 // #endregion
 
 // #region variable
+const formName = '採購作業';
 const authStore = useAuth();
+const auth = authStore.getAuth(formName);
+const hasAllAuth = authStore.hasAllAuth(formName);
 const itemStore = useItemStore();
 const 品項編號Options = ref([]);
 const myForm = ref(null);
@@ -303,6 +332,7 @@ const transportationList = ref([
 const supplier = ref({
   contactList: []
 });
+const recordTrackingDialog = ref(false);
 const procurementData = ref({
    單號:''
   ,日期:''
@@ -331,7 +361,10 @@ const procurementData = ref({
 const columns = ref([
   { name: '品項編號', label: '品項編號', align: 'left', field: '品項編號', sortable: true },
   { name: '品名規格', label: '品名規格', align: 'left', field: '品名規格', sortable: true },
-  { name: '數量', label: '數量', align: 'right', field: '數量', sortable: true },
+  { name: '數量', label: '採購數量', align: 'right', field: '數量', sortable: true },
+  { name: '收貨數量', label: '收貨數量', align: 'left', field: '收貨數量', sortable: true },
+  { name: '合格數量', label: '合格數量', align: 'left', field: '合格數量', sortable: true },
+  { name: '特採數量', label: '特採數量', align: 'left', field: '特採數量', sortable: true },
   { name: '單位', label: '單位', align: 'left', field: '單位', sortable: true },
   { name: '單價', label: '單價', align: 'right', field: '單價', sortable: true },
   { name: '未稅金額', label: '未稅金額', align: 'right', field: '未稅金額', sortable: true },
@@ -340,7 +373,9 @@ const columns = ref([
   { name: '專案序號', label: '專案序號', align: 'left', field: '專案序號', sortable: true },
   { name: '樣品', label: '樣品', align: 'center', field: '樣品', sortable: true },
   { name: '備註', label: '備註', align: 'left', field: '備註', sortable: false },
+
   { name: '請購序號', label: '請購序號', align: 'left', field: '請購序號', sortable: false },
+  { name: '識別', label: '作廢', align: 'left', field: '識別', sortable: false },
 ]);
 const supplierStore = useSupplierStore();
 const preview = ref(false);
@@ -360,6 +395,10 @@ const props = defineProps({
   showForm: {
     type: Boolean,
     default: false
+  },
+  formName:{
+    type: String,
+    default: '採購作業'
   }
 })
 
@@ -399,6 +438,22 @@ const submit = async () => {
       // 在這裡可以處理錯誤，例如顯示錯誤訊息
     });
   } else if (mode.value === '修改') {
+    if (procurementData.value.建檔日 == 'Invalid Date'){
+      procurementData.value.建檔日 = dayjs().format('YYYY-MM-DD');
+    }
+    if (procurementData.value.核准日 == 'Invalid Date'){
+      procurementData.value.核准日 = dayjs().format('YYYY-MM-DD');
+    }
+    if (procurementData.value.修改日 == 'Invalid Date'){
+      procurementData.value.修改日 = dayjs().format('YYYY-MM-DD');
+    }
+    procurementData.value.建檔日 = dayjs(procurementData.value.建檔日).format('YYYY-MM-DD');
+    procurementData.value.核准日 = dayjs(procurementData.value.核准日).format('YYYY-MM-DD');
+    procurementData.value.修改 = authStore.getUser().account;
+    procurementData.value.修改日 = dayjs().format('YYYY-MM-DD');
+    procurementData.value.procurementList.forEach(item => {
+      item.交貨日期 = dayjs(item.交貨日期).format('YYYY-MM-DD');
+    });
     await purchaseStore.updatePurchaseOrder(procurementData.value).then((response) => {
       console.log('update response', response);
       if (response.errorMessage && response.errorMessage !== '') {
@@ -426,6 +481,7 @@ const submit = async () => {
 const addItem = () => {
   procurementData.value.procurementList.push({
     // 識別: Date.now(), // 使用時間戳作為識別碼，實際應用中可能需要更複雜的識別邏輯
+    識別:0,
     品項編號: '',
     品名規格: '',
     單位: '',
@@ -443,6 +499,7 @@ const addItem = () => {
 const init = async () =>{
   mode.value = props.mode;
   console.log('mode.value', mode.value);
+  // formName.value = props.formName;
   if (mode.value === '新增') {
     await purchaseStore.getPONo().then((data)=>{
       console.log('newPONo', data);
@@ -475,6 +532,7 @@ const init = async () =>{
     };
   } else {
     if (props.procurementData){
+      console.log('props.procurementData', props.procurementData);
       procurementData.value = props.procurementData;
       procurementData.value.日期 = dayjs(procurementData.value.日期).format('YYYY-MM-DD');
       procurementData.value.交貨日期 = dayjs(procurementData.value.交貨日期).format('YYYY-MM-DD');
@@ -515,7 +573,7 @@ const calculateAmount = () =>{
   procurementData.value.procurementList.forEach(item => {
     console.log('procurementData.value.營業稅率', procurementData.value.營業稅率);
     item.未稅金額 = item.數量 * item.單價;
-    item.稅額 = item.未稅金額 * parseFloat(procurementData.value.營業稅率);
+    item.稅額 = Math.round(item.未稅金額 * procurementData.value.營業稅率 * 100) / 100;
     item.採購金額 = item.未稅金額 + item.稅額;
   });
 }
@@ -553,6 +611,42 @@ const voidPO = async (poNo) =>{
   }
 }
 
+const voidPOItem = async (row) =>{
+  if (confirm('確定要作廢這筆採購品項嗎？')) {
+    secondDialog.value = true;
+    await purchaseStore.voidPurchaseOrderItem(row.識別).then((response) => {
+      console.log('void item response', response);
+      if (response.errorMessage && response.errorMessage !== '') {
+        // 在這裡可以處理錯誤，例如顯示錯誤訊息
+        alert('作廢失敗:' + response.errorMessage);
+      } else {
+        // 在這裡可以處理成功的回應，例如顯示成功訊息或更新 UI
+        alert('作廢成功!');
+        secondDialog.value = false;
+        close();
+      }
+    }).catch((error) => {
+      console.error('Void item error:', error);
+      secondDialog.value = false;
+      close();
+      // 在這裡可以處理錯誤，例如顯示錯誤訊息
+    });
+  }
+}
+
+const validate = async (validate) =>{
+  const user = authStore.getUser().account;
+  await purchaseStore.evaluatePurchaseOrder(procurementData.value.單號, validate, user).then((data)=>{
+    console.log('validate response', data);
+    if(data?.data?.errorMessage && data?.data?.errorMessage != ''){
+      alert(data.data.errorMessage)
+    } else {
+      alert(`${validate ? '核准' : '取消核准'}完成`);
+    }
+    close();
+  })
+}
+
 watch(() => procurementData.value.廠商編號, async (newVal) => {
   await supplierStore.querySupplier({ supplierNo: newVal }).then(response => {
     supplier.value = response[0];
@@ -560,5 +654,9 @@ watch(() => procurementData.value.廠商編號, async (newVal) => {
     console.error('Query error:', error);
   });
 })
+
+const openRecordTrackingDialog = () =>{
+  recordTrackingDialog.value = true;
+}
 // #endregion
 </script>

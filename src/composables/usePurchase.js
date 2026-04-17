@@ -13,6 +13,16 @@ export const usePurchaseStore = defineStore('purchase', {
       console.log('response', response)
       return response.data.resultList;
     },
+    async getPurchaseOrderByNo(purchaseOrderNo) {
+      const constant = Constant()
+      console.log('APIUrl', constant.APIUrl)
+      const response = await apiClient.get(constant.APIUrl + 'api/AllPurchasesList?purchaseOrderNo=' + purchaseOrderNo)
+      console.log('response', response)
+      if (response.data.resultList) {
+        return response.data.resultList[0];
+      }
+      return {};
+    },
     async getPONo() {
       const constant = Constant()
       console.log('APIUrl', constant.APIUrl)
@@ -55,5 +65,21 @@ export const usePurchaseStore = defineStore('purchase', {
       console.log('response', response)
       return response.data;
     },
+    async voidPurchaseOrderItem(itemId) {
+      const constant = Constant()
+      console.log('APIUrl', constant.APIUrl)
+      const response = await apiClient.get(constant.APIUrl + 'api/VoidPurchaseOrderItem?itemId=' + itemId)
+      console.log('response', response)
+      return response.data;
+    },
+    async evaluatePurchaseOrder(formNo, validate, user){
+      const constant = Constant()
+      const response = await apiClient.get(constant.APIUrl + `api/EvaluatePurchaseOrder?formNo=${formNo}&validate=${validate}&user=${user}`);
+      console.log('response', response);
+      if (response.data.result) {
+        return response
+      }
+      return null;
+    }
   }
 });
