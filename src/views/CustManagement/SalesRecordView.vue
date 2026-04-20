@@ -90,7 +90,7 @@
                   <template v-slot:append>
                     <q-icon name="event" class="cursor-pointer">
                       <q-popup-proxy cover v-model="showDatePopup" transition-show="scale" transition-hide="scale">
-                        <q-date v-model="form.rfqdate" :readonly="preview" mask="DD/MM/YYYY" no-title>
+                        <q-date v-close-popup v-model="form.rfqdate" @update:model-value="showDatePopup = false" :readonly="preview" mask="DD/MM/YYYY" no-title>
                           <div class="row items-center justify-end">
                             <q-btn v-close-popup label="Close" color="primary" flat @click="showDatePopup = false" />
                           </div>

@@ -501,6 +501,32 @@ const init = async () =>{
   console.log('mode.value', mode.value);
   // formName.value = props.formName;
   if (mode.value === '新增') {
+    preview.value = false;
+    procurementData.value ={
+      單號:''
+      ,日期:''
+      ,廠商編號:''
+      ,聯絡人:''
+      ,營業稅率:0
+      ,幣別:''
+      ,匯率:''
+      ,採購人員:''
+      ,採購類別:''
+      ,交易條件:''
+      ,運輸方式:''
+      ,送貨地址:''
+      ,貿易條件:''
+      ,交貨日期:''
+      ,結案:''
+      ,建檔:''
+      ,建檔日:''
+      ,修改:''
+      ,修改日:''
+      ,核准:''
+      ,核准日:''
+      ,注意事項:''
+      ,procurementList:[]
+    }
     await purchaseStore.getPONo().then((data)=>{
       console.log('newPONo', data);
       newPONo.value = data;

@@ -91,7 +91,7 @@
                   <template v-slot:append>
                     <q-icon name="event" class="cursor-pointer">
                       <q-popup-proxy cover v-model="props.row.showDatePopup" transition-show="scale" transition-hide="scale">
-                        <q-date class="col-6" outlined dense :readonly="readonly || preview" v-model="props.row.職務代理效期" mask="DD/MM/YYYY" no-title>
+                        <q-date v-close-popup class="col-6" @update:model-value="props.row.showDatePopup = false" outlined dense :readonly="readonly || preview" v-model="props.row.職務代理效期" mask="DD/MM/YYYY" no-title>
                           <div class="row items-center justify-end">
                             <q-btn v-close-popup label="Close" color="primary" flat @click="props.row.showDatePopup = false" />
                           </div>

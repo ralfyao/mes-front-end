@@ -10,11 +10,11 @@
               <label class="text-h6">詢問單日期</label>
             </div>
             <div class="col-9 col-md-9  row items-center no-wrap" style="max-width: 550px">
-              <q-input outlined dense v-model="startDate" style="width: 160px" label="開始日期" mask="####/##/##">
+              <q-input outlined dense v-close-popup v-model="startDate" style="width: 160px" label="開始日期" mask="####/##/##">
                   <template v-slot:append>
                     <q-icon name="event" class="cursor-pointer">
                     <q-popup-proxy cover v-model="showFromDatePopup" transition-show="scale" transition-hide="scale">
-                      <q-date v-model="startDate" mask="YYYYMMDD" class="width:100px;" no-title>
+                      <q-date v-model="startDate" @update:model-value="showFromDatePopup = false" mask="YYYYMMDD" class="width:100px;" no-title>
                         <div class="row items-center justify-end">
                           <q-btn v-close-popup label="Close" color="primary" flat @click="showFromDatePopup = false" />
                         </div>
@@ -32,7 +32,7 @@
                 <template v-slot:append>
                   <q-icon name="event" class="cursor-pointer">
                     <q-popup-proxy cover v-model="showEndDatePopup" transition-show="scale" transition-hide="scale">
-                      <q-date v-model="endDate" mask="YYYYMMDD" class="width:100px;" no-title>
+                      <q-date @update:model-value="showEndDatePopup = false" v-model="endDate" mask="YYYYMMDD" class="width:100px;" no-title>
                         <div class="row items-center justify-end">
                           <q-btn v-close-popup label="Close" color="primary" flat @click="showEndDatePopup = false" />
                         </div>

@@ -169,7 +169,7 @@
                   <template v-slot:append>
                     <q-icon name="event" class="cursor-pointer">
                       <q-popup-proxy cover v-model="props.row.showDatePopup" transition-show="scale" transition-hide="scale">
-                        <q-date v-model="props.row.詢價日期" :readonly="readonly || preview" mask="YYYYMMDD" no-title>
+                        <q-date v-close-popup v-model="props.row.詢價日期" @update:model-value="props.row.showDatePopup = false" :readonly="readonly || preview" mask="YYYYMMDD" no-title>
                           <div class="row items-center justify-end">
                             <q-btn v-close-popup label="Close" color="primary" flat @click="props.row.showDatePopup = false" />
                           </div>
@@ -224,7 +224,7 @@
                   <template v-slot:append>
                     <q-icon name="event" class="cursor-pointer">
                       <q-popup-proxy cover v-model="props.row.showEffDatePopup" transition-show="scale" transition-hide="scale">
-                        <q-date v-model="props.row.報價有效日期" :readonly="readonly || preview" mask="YYYYMMDD" no-title>
+                        <q-date v-close-popup v-model="props.row.報價有效日期" @update:model-value="props.row.showEffDatePopup = false" :readonly="readonly || preview" mask="YYYYMMDD" no-title>
                           <div class="row items-center justify-end">
                             <q-btn v-close-popup label="Close" color="primary" flat @click="props.row.showEffDatePopup = false" />
                           </div>

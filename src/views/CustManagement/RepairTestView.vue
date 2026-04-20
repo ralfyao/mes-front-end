@@ -89,7 +89,7 @@
                   <template v-slot:append>
                     <q-icon name="event" class="cursor-pointer">
                       <q-popup-proxy cover v-model="showDatePopup" transition-show="scale" transition-hide="scale">
-                        <q-date v-model="form.申請日期" :readonly="readonly || preview" mask="YYYYMMDD" no-title>
+                        <q-date v-close-popup v-model="form.申請日期" @update:model-value="showDatePopup = false" :readonly="readonly || preview" mask="YYYYMMDD" no-title>
                           <div class="row items-center justify-end">
                             <q-btn v-close-popup label="Close" color="primary" flat @click="showDatePopup = false" />
                           </div>
@@ -217,7 +217,7 @@
                       <template v-slot:append>
                         <q-icon name="event" class="cursor-pointer">
                           <q-popup-proxy cover v-model="showServiceDatePopup" transition-show="scale" transition-hide="scale">
-                            <q-date v-model="form.實際服務日期" :readonly="readonly || preview" mask="YYYYMMDD" no-title>
+                            <q-date v-close-popup v-model="form.實際服務日期" @update:model-value="showServiceDatePopup = false" :readonly="readonly || preview" mask="YYYYMMDD" no-title>
                               <div class="row items-center justify-end">
                                 <q-btn v-close-popup label="Close" color="primary" flat @click="showServiceDatePopup = false" />
                               </div>
@@ -263,7 +263,7 @@
                       <template v-slot:append>
                         <q-icon name="event" class="cursor-pointer">
                           <q-popup-proxy cover v-model="showStartServiceDatePopup" transition-show="scale" transition-hide="scale">
-                            <q-date v-model="form.希望服務日期" :readonly="readonly || preview" mask="YYYYMMDD" no-title>
+                            <q-date v-close-popup v-model="form.希望服務日期" @update:model-value="showStartServiceDatePopup = false" :readonly="readonly || preview" mask="YYYYMMDD" no-title>
                               <div class="row items-center justify-end">
                                 <q-btn v-close-popup label="Close" color="primary" flat @click="showStartServiceDatePopup = false" />
                               </div>
@@ -276,7 +276,7 @@
                       <template v-slot:append>
                         <q-icon name="event" class="cursor-pointer">
                           <q-popup-proxy cover v-model="showEndServiceDatePopup" transition-show="scale" transition-hide="scale">
-                            <q-date v-model="form.維修結案日期" :readonly="readonly || preview" mask="YYYYMMDD" no-title>
+                            <q-date v-close-popup v-model="form.維修結案日期" @update:model-value="showEndServiceDatePopup = false" :readonly="readonly || preview" mask="YYYYMMDD" no-title>
                               <div class="row items-center justify-end">
                                 <q-btn v-close-popup label="Close" color="primary" flat @click="showEndServiceDatePopup = false" />
                               </div>

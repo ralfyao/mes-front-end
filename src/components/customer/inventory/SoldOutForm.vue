@@ -13,7 +13,7 @@
               <template v-slot:append>
                 <q-icon name="event" class="cursor-pointer">
                   <q-popup-proxy cover v-model="showDatePopup" transition-show="scale" transition-hide="scale">
-                    <q-date v-model="form.日期" readonly mask="YYYY/MM/DD" no-title>
+                    <q-date v-model="form.日期" readonly mask="YYYY/MM/DD" v-close-popup no-title @update:model-value="showDatePopup = false">
                       <div class="row items-center justify-end">
                         <q-btn v-close-popup label="Close" color="primary" flat @click="showDatePopup = false" />
                       </div>
@@ -57,7 +57,7 @@
               <template v-slot:append>
                 <q-icon name="event" class="cursor-pointer">
                   <q-popup-proxy cover v-model="showShipDatePopup" transition-show="scale" transition-hide="scale">
-                    <q-date v-model="form.原定交貨日期" mask="YYYY/MM/DD" no-title>
+                    <q-date v-model="form.原定交貨日期" mask="YYYY/MM/DD" @update:model-value="showDatePopup = false" no-title v-close-popup>
                       <div class="row items-center justify-end">
                         <q-btn v-close-popup label="Close" color="primary" flat @click="showDatePopup = false" />
                       </div>

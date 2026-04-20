@@ -43,7 +43,7 @@
                 <template v-slot:append>
                   <q-icon name="event" class="cursor-pointer">
                     <q-popup-proxy cover v-model="showDatePopup" transition-show="scale" transition-hide="scale">
-                      <q-date v-model="quotationForm.quodate" mask="YYYYMMDD" no-title>
+                      <q-date v-model="quotationForm.quodate" v-close-popup @update:model-value="showDatePopup = false" mask="YYYYMMDD" no-title>
                         <div class="row items-center justify-end">
                           <q-btn v-close-popup label="Close" :readonly="readonly || props.preview" color="primary" flat @click="showDatePopup = false" />
                         </div>
@@ -62,8 +62,8 @@
               <q-input outlined dense v-model="quotationForm.condate" :readonly="readonly || props.preview" label="報價有效日期" mask="####/##/##" :rules="[ val =>!props.preview &&  !!val || '日期為必填欄位']">
                 <template v-slot:append>
                   <q-icon name="event" class="cursor-pointer">
-                    <q-popup-proxy cover v-model="showConDatePopup" transition-show="scale" transition-hide="scale">
-                      <q-date v-model="quotationForm.condate" :readonly="readonly || props.preview" mask="YYYY/MM/DD" no-title>
+                    <q-popup-proxy cover v-model="showConDatePopup" @update:model-value="showConDatePopup = false" transition-show="scale" transition-hide="scale">
+                      <q-date v-model="quotationForm.condate" v-close-popup :readonly="readonly || props.preview" mask="YYYY/MM/DD" no-title>
                         <div class="row items-center justify-end">
                           <q-btn v-close-popup label="Close" color="primary" flat @click="showConDatePopup = false" />
                         </div>

@@ -9,8 +9,8 @@
               <q-input dense outlined :readonly="preview" v-model="form.工作日期" label="日期" mask="####/##/##" :rules="[val =>  !!val || '洽談日期為必填欄位']">
                 <template v-slot:append>
                   <q-icon name="event" class="cursor-pointer">
-                    <q-popup-proxy cover v-model="showRfqDatePopup" transition-show="scale" transition-hide="scale">
-                      <q-date v-model="form.工作日期" :readonly="preview" mask="YYYY/MM/DD" no-title>
+                    <q-popup-proxy cover v-model="showRfqDatePopup" @update:model-value="showRfqDatePopup = false" transition-show="scale" transition-hide="scale">
+                      <q-date v-close-popup v-model="form.工作日期" :readonly="preview" mask="YYYY/MM/DD" no-title>
                         <div class="row items-center justify-end">
                           <q-btn v-close-popup label="Close" color="primary" flat @click="showRfqDatePopup = false" />
                         </div>
@@ -75,7 +75,7 @@
                 <template v-slot:append>
                   <q-icon name="event" class="cursor-pointer">
                     <q-popup-proxy cover v-model="showRecallDatePopup" transition-show="scale" transition-hide="scale">
-                      <q-date v-model="form.預計再訪" :readonly="preview" mask="YYYY/MM/DD" no-title>
+                      <q-date v-close-popup v-model="form.預計再訪" @update:model-value="showRecallDatePopup = false" :readonly="preview" mask="YYYY/MM/DD" no-title>
                         <div class="row items-center justify-end">
                           <q-btn v-close-popup label="Close" color="primary" flat @click="showRecallDatePopup = false" />
                         </div>

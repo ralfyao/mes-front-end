@@ -17,7 +17,7 @@
               <template v-slot:append>
                 <q-icon name="event" class="cursor-pointer">
                   <q-popup-proxy cover v-model="showDatePopup" transition-show="scale" transition-hide="scale">
-                    <q-date v-model="form.申請日期"  :readonly="readonly || preview" mask="YYYY/MM/DD" no-title>
+                    <q-date v-close-popup v-model="form.申請日期" @update:model-value="showDatePopup = false" :readonly="readonly || preview" mask="YYYY/MM/DD" no-title>
                       <div class="row items-center justify-end">
                         <q-btn v-close-popup label="Close" color="primary" flat @click="showDatePopup = false" />
                       </div>
@@ -68,7 +68,7 @@
               <template v-slot:append>
                 <q-icon name="event" class="cursor-pointer">
                   <q-popup-proxy cover v-model="showDate3Popup" transition-show="scale" transition-hide="scale">
-                    <q-date v-model="form.交貨日期"  :readonly="readonly || preview" mask="YYYY/MM/DD" no-title>
+                    <q-date v-close-popup v-model="form.交貨日期" @update:model-value="showDate3Popup = false" :readonly="readonly || preview" mask="YYYY/MM/DD" no-title>
                       <div class="row items-center justify-end">
                         <q-btn v-close-popup label="Close" color="primary" flat @click="showDate3Popup = false" />
                       </div>
@@ -85,7 +85,7 @@
               <template v-slot:append>
                 <q-icon name="event" class="cursor-pointer">
                   <q-popup-proxy cover v-model="showDate2Popup" transition-show="scale" transition-hide="scale">
-                    <q-date v-model="form.保固效期"  :readonly="readonly || preview" mask="YYYY/MM/DD" no-title>
+                    <q-date v-close-popup v-model="form.保固效期" @update:model-value="showDate2Popup = false" :readonly="readonly || preview" mask="YYYY/MM/DD" no-title>
                       <div class="row items-center justify-end">
                         <q-btn v-close-popup label="Close" color="primary" flat @click="showDate2Popup = false" />
                       </div>
