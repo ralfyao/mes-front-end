@@ -25,10 +25,10 @@
   <!--#endregion -->
   <!--#region 進貨單列表 -->
   <div class="row justify-start">
-    <div class="col-12 col-md-12"  style="max-width: 1500px">
+    <div class="col-12 col-md-12"  style="max-width: 2000px">
       <q-table  class="rounded-borders my-sticky-header-table"
                 :columns="columns"
-                row-key="請購序號"
+                row-key="單號"
                 :rows="list"
                 flat
                 bordered
@@ -41,14 +41,17 @@
     </div>
   </div>
   <!--#endregion -->
-
+  <q-dialog v-model="showDialog" persistent>
+    <stock-in-form v-model:mode="mode" v-model:showForm="showDialog" v-model:form="form"/>
+  </q-dialog>
 </template>
 <script setup>
 // #region import
 import {
   QIcon,
   QBtn,
-  QTable
+  QTable,
+  QDialog,
 //   QCard,
 } from 'quasar';
 import {
@@ -56,13 +59,37 @@ import {
   onMounted
 } from 'vue';
 import { useAuth } from '@/composables/useAuth';
+import { useStockIn } from '@/composables/useStockIn';
+import StockInForm from '@/components/inventory/StockInForm.vue';
 // #endregion
 
 // #region variable
 const formName = "進貨入庫";
+// const showDialog = ref(false);
 // eslint-disable-next-line no-unused-vars
+const form = ref({
+  單號:''
+  ,日期:''
+  ,倉管人員:''
+  ,備註:''
+  ,建檔:''
+  ,建檔日:''
+  ,修改:''
+  ,修改日:''
+  ,核准:''
+  ,核准日:''
+  ,採購覆核:''
+  ,覆核日:''
+  ,傳票:''
+  ,defailList:[]
+});
 const mode = ref('');
+const preview = ref(false);
+const showDialog = ref(false);
+const selected = ref([]);
+const stockInStore = useStockIn();
 const authStore = useAuth();
+const list = ref([]);
 const hasAllAuth = authStore.hasAllAuth(formName);
 const auth = authStore.getAuth(formName);
 const columns = ref([
@@ -91,10 +118,24 @@ const columns = ref([
 const openCustomerDialog = (type) =>{
   console.log(type);
   mode.value = type;
+  if (type == '新增'){
+    preview.value = false;
+  } else if (type == '修改'){
+    preview.value = false;
+  } else if (type == '預覽') {
+    preview.value = true;
+  }
+  showDialog.value = true;
+}
+
+const init = async()=>{
+  await stockInStore.getAllStockInLists().then((data)=>{
+    list.value = data;
+  })
 }
 
 onMounted(async()=>{
-
+  init();
 })
 // #endregion
 </script>
