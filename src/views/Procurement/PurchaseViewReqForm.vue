@@ -97,12 +97,13 @@
               </template>
               <template v-slot:body-cell-指定供應廠商="props">
                 <q-td :props="props">
-                  <q-input  outlined dense :readonly="readonly||preview" v-model="props.row.指定供應廠商"></q-input>
+                   <q-select v-model="props.row.指定供應廠商" :readonly="readonly || preview" outlined dense
+                  :options="vendorList" option-value="廠商編號" option-label="廠商編號" @update:model-value="updateVendorAlias(props.row)"  emit-value map-options/>
                 </q-td>
-              </template>
+             </template>
               <template v-slot:body-cell-廠商簡稱="props">
                 <q-td :props="props">
-                  <q-input  outlined dense :readonly="readonly||preview" v-model="props.row.廠商簡稱"></q-input>
+                  <q-input  outlined dense readonly v-model="props.row.廠商簡稱"></q-input>
                 </q-td>
               </template>
               <template v-slot:body-cell-註記="props">
@@ -140,10 +141,12 @@ import {
 import dayjs from 'dayjs'
 import { usePurchaseStore } from '@/composables/usePurchase';
 import ProductQueryLikeForm from '@/components/product/ProductQueryLikeForm.vue';
+import { useSupplierStore } from '@/composables/useSupplier';
 // import { useItemStore } from '@/composables/useItem';
 //#endregion
 
 //#region variable
+const vendorList = ref([]);
 const list = ref([]);
 const preview = ref(false);
 const myForm = ref(null);
@@ -215,6 +218,7 @@ const props = defineProps({
     value:false,
   }
 });
+const supplierStore = useSupplierStore();
 const currentRow = ref(null);
 const emits = defineEmits(['update:showForm']);
 const form = ref({
@@ -268,6 +272,17 @@ const init = async () =>{
   await purchaseStore.getDeptList().then((data)=>{
     deptList.value = data;
   });
+  await supplierStore.getAllSupplierList().then((data)=>{
+    vendorList.value = data;
+  })
+}
+
+const updateVendorAlias = (row) =>{
+  let vendor = vendorList.value.find(x => x.廠商編號 == row.指定供應廠商);
+  console.log('vendor', vendor);
+  if (vendor){
+    row.廠商簡稱 = vendor.廠商簡稱;
+  }
 }
 
 onMounted(async ()=>{
