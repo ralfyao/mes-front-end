@@ -44,7 +44,7 @@
   <!--#endregion-->
   <!--#region 訂單列表 -->
   <div class="row justify-start">
-    <div class="col-12 col-md-12"  style="max-width: 1500px">
+    <div class="col-12 col-md-12"  style="max-width: 2000px">
       <q-table  class="rounded-borders my-sticky-header-table"
                     :columns="columns"
                     row-key="識別"

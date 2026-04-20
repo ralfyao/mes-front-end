@@ -28,7 +28,7 @@
   <!--#endregion-->
   <!--#region 請購單列表 -->
   <div class="row justify-start">
-    <div class="col-12 col-md-12"  style="max-width: 1500px">
+    <div class="col-12 col-md-12"  style="max-width: 2000px">
       <q-table  class="rounded-borders my-sticky-header-table"
                 :columns="columns"
                 row-key="請購序號"
@@ -40,6 +40,7 @@
                 selection="single"
                 v-model:selected="selected"
                 :pagination="{ rowsPerPage: 5 }"
+                :visible-columns="visibleColumns"
         >
         <template v-slot:body-cell-緊急="props">
           <q-td :props="props">
@@ -64,16 +65,20 @@ import { QIcon, QBtn,
  } from 'quasar';
 import { ref,
   onMounted,
-  watch
+  watch,
+  computed
  } from 'vue';
 import { useAuth } from '@/composables/useAuth';
 import dayjs from 'dayjs';
 import { usePurchaseStore } from '@/composables/usePurchase';
 import LoadingComponent from '@/components/LoadingComponent.vue';
 import PurchaseViewReqForm from './PurchaseViewReqForm.vue';
+import { useQuasar } from 'quasar';
 //#endregion
 
 //#region variable
+const COL_WIDTH = 50
+const $q = useQuasar();
 const errorMessage = ref('');
 const selected = ref([]);
 const formName = ref('請購作業');
@@ -109,20 +114,35 @@ const columns = ref([
   { name: '請購日期', label: '請購日期', align: 'left', field: '日期', sortable: true ,
   format: val => val != null
     ? dayjs(val).format('YYYY/MM/DD')
-    : '' },
-  { name: '請購部門', label: '請購部門', align: 'left', field: '請購部門', sortable: true },
-  { name: '請購類別', label: '請購類別', align: 'left', field: '請購類別', sortable: true },
-  { name: '品項編號', label: '品項編號', align: 'left', field: '品項編號', sortable: true },
-  { name: '品名規格', label: '品名規格', align: 'left', field: '品名規格', sortable: true },
-  { name: '單位', label: '單位', align: 'left', field: '單位', sortable: true },
-  { name: '需求數量', label: '需求數量', align: 'left', field: '數量', sortable: true },
-  { name: '緊急', label: '緊急', align: 'left', field: '緊急', sortable: true },
-  { name: '需求日期', label: '需求日期', align: 'left', field: '需求日期', sortable: true },
-  { name: '用途', label: '用途', align: 'left', field: '用途', sortable: true },
-  { name: '指定供應廠商', label: '指定廠商', align: 'left', field: '指定供應廠商', sortable: true },
-  { name: '廠商簡稱', label: '廠商簡稱', align: 'left', field: '廠商簡稱', sortable: true },
-  { name: '註記', label: '註記', align: 'left', field: '註記', sortable: true },
+    : '', sort: (a, b) => {
+    return new Date(a) - new Date(b)
+  } },
+  { name: '請購部門', label: '請購部門', align: 'left', field: '請購部門', sortable: true, priority: 1 },
+  { name: '請購類別', label: '請購類別', align: 'left', field: '請購類別', sortable: true, priority: 1 },
+  { name: '品項編號', label: '品項編號', align: 'left', field: '品項編號', sortable: true, priority: 1 },
+  { name: '品名規格', label: '品名規格', align: 'left', field: '品名規格', sortable: true, priority: 1 },
+  { name: '單位', label: '單位', align: 'left', field: '單位', sortable: true, priority: 1 },
+  { name: '需求數量', label: '需求數量', align: 'left', field: '數量', sortable: true, priority: 1 },
+  { name: '緊急', label: '緊急', align: 'left', field: '緊急', sortable: true, priority: 1 },
+  { name: '需求日期', label: '需求日期', align: 'left', field: '需求日期', sortable: true,
+    format: val => val != null
+    ? dayjs(val).format('YYYY/MM/DD')
+    : '', sort: (a, b) => {
+    return new Date(a) - new Date(b)
+  }, priority: 1  },
+  { name: '用途', label: '用途', align: 'left', field: '用途', sortable: true, priority: 1 },
+  { name: '指定供應廠商', label: '指定廠商', align: 'left', field: '指定供應廠商', sortable: true, priority: 1 },
+  { name: '廠商簡稱', label: '廠商簡稱', align: 'left', field: '廠商簡稱', sortable: true, priority: 1 },
+  { name: '註記', label: '註記', align: 'left', field: '註記', sortable: true, priority: 1 },
 ])
+const visibleColumns = computed(() => {
+  const maxCols = Math.floor($q.screen.width / COL_WIDTH)
+
+  return [...columns.value]
+    .sort((a, b) => a.priority - b.priority)
+    .slice(0, maxCols)
+    .map(col => col.name)
+})
 //#endregion
 
 //#region function

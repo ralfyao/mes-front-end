@@ -28,7 +28,7 @@
   <!--#endregion-->
   <!--#region 採購單列表 -->
   <div class="row justify-start">
-    <div class="col-12 col-md-12"  style="max-width: 1500px">
+    <div class="col-12 col-md-12"  style="max-width: 2000px">
       <q-table  class="rounded-borders my-sticky-header-table"
                 :columns="columns"
                 row-key="單號"
@@ -86,13 +86,25 @@ const selected = ref([]);
 const columns =
 [
   // { name: 'quono', label: '報價單號', align: 'left', field: 'quono', sortable: true },
-  { name: '日期', label: '日期', align: 'left', field: '日期', sortable: true ,
+  { name: '日期', label: '日期', align: 'left', field: '日期', sortable: true  ,
   format: val => val != null
     ? dayjs(val).format('YYYY/MM/DD')
-    : '' },
+    : '', sort: (a, b) => {
+    return new Date(a) - new Date(b)
+  }  },
   { name: '單號', label: '採購單號', align: 'left', field: '單號', sortable: true },
   { name: '廠商編號', label: '廠商編號', align: 'left', field: '廠商編號', sortable: true },
   { name: '廠商全稱', label: '廠商全稱', align: 'left', field: '廠商全稱', sortable: true },
+  { name: '聯絡人', label: '聯絡人', align: 'left', field: '聯絡人', sortable: true },
+  { name: '營業稅率', label: '營業稅率', align: 'left', field: '營業稅率', sortable: true },
+  { name: '幣別', label: '幣別', align: 'left', field: '幣別', sortable: true },
+  { name: '匯率', label: '匯率', align: 'left', field: '匯率', sortable: true },
+  { name: '送貨地址', label: '送貨地址', align: 'left', field: '送貨地址', sortable: true },
+  { name: '付款條件', label: '付款條件', align: 'left', field: '交易條件', sortable: true },
+  { name: '運輸方式', label: '運輸方式', align: 'left', field: '運輸方式', sortable: true },
+  { name: '採購人員', label: '採購人員', align: 'left', field: '採購人員', sortable: true },
+  { name: '注意事項', label: '注意事項', align: 'left', field: '注意事項', sortable: true },
+  { name: '貿易條件', label: '貿易條件', align: 'left', field: '貿易條件', sortable: true },
   // { name: '指配國別', label: '國別', align: 'left', field: '指配國別', sortable: true },
   // { name: '總額', label: '訂單總額', align: 'right', field: '總額', sortable: true,
   // format: val => val != null
