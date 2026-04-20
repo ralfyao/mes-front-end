@@ -80,6 +80,38 @@ export const usePurchaseStore = defineStore('purchase', {
         return response
       }
       return null;
+    },
+    async getAllPurchaseRequestList(){
+      const constant = Constant()
+      const response = await apiClient.get(constant.APIUrl + `api/AllPurchaseRequestList`);
+      console.log('response', response);
+      if (response.data.resultList) {
+        return response.data.resultList
+      }
+      return null;
+    },
+    async getDeptList(){
+      const constant = Constant()
+      const response = await apiClient.get(constant.APIUrl + `api/AllDepartmentList`);
+      console.log('response', response);
+      if (response.data.resultList) {
+        return response.data.resultList
+      }
+      return null;
+    },
+    async savePurchaseRequest(form){
+      const constant = Constant()
+      console.log('APIUrl', constant.APIUrl)
+      const response = await apiClient.post(constant.APIUrl + 'api/SavePurchaseRequest', form)
+      console.log('response', response)
+      return response;
+    },
+    async deletePurchaseRequest(form){
+      const constant = Constant()
+      console.log('APIUrl', constant.APIUrl)
+      const response = await apiClient.get(constant.APIUrl + 'api/DeletePurchaseRequest?formSerial='+form.請購序號, )
+      console.log('response', response)
+      return response;
     }
   }
 });

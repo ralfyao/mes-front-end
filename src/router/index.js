@@ -32,6 +32,7 @@ const routes = [
       { path: 'procurement/supplier', component: () => import('@/views/Procurement/SupplierView.vue') },//供應商管理
       { path: 'procurement/quotation', component: () => import('@/views/Procurement/QuotationView.vue') },//廠商詢價
       { path: 'procurement/purchase', component: () => import('@/views/Procurement/PurchaseView.vue') },//採購作業
+      { path: 'procurement/purchasereq', component: () => import('@/views/Procurement/PurchaseViewReq.vue') },//採購作業
       { path: 'procurement/outsourcing', component: () => import('@/views/Procurement/OutsourcingView.vue') },//委外加工
       { path: 'procurement/invoicewoff', component: () => import('@/views/Procurement/InvoiceWoffView.vue') },//付款作業
       //客戶維護
