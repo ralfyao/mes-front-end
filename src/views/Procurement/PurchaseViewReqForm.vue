@@ -254,7 +254,7 @@ const close = () => {
 }
 const submit = async () =>{
   await purchaseStore.savePurchaseRequest(list.value[0]).then((data)=>{
-    if (!data.data.errorMessage){
+    if (!data.data.errorMessage && data.data.errorMessage  != ''){
       alert(data.data.errorMessage);
     } else {
       alert('儲存成功!');
