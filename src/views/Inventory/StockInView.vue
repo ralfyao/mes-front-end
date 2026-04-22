@@ -163,6 +163,10 @@ const openCustomerDialog = (type) =>{
       ,defailList:[]
     }
   } else if (type == '修改'){
+    if (selected.value.length == 0){
+      errorMessage.value = '請選取一筆資料修改!'
+      return;
+    }
     preview.value = false;
     form.value = selected.value[0];
     form.value.日期 = dayjs(form.value.日期).format("YYYY/MM/DD")
