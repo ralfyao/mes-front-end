@@ -36,5 +36,25 @@ export const useHRStore = defineStore('hr', {
       }
       return null;
     },
+    async getAllWorkers(){
+      const constant = Constant()
+      console.log('APIUrl', constant.APIUrl)
+      const response = await apiClient.get(constant.APIUrl + 'api/AllWorkers')
+      console.log('response', response)
+      if (response) {
+        return response.data.resultList;
+      }
+      return null;
+    },
+    async getWorkerByNumber(workerNumber){
+      const constant = Constant()
+      console.log('APIUrl', constant.APIUrl)
+      const response = await apiClient.get(constant.APIUrl + 'api/GetWorkerByNumber?workerNumber=' + workerNumber)
+      console.log('response', response)
+      if (response.data.result) {
+        return response.data.result
+      }
+      return null;
+    }
   }
 });

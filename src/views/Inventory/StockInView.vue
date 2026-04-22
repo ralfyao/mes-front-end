@@ -42,8 +42,9 @@
   </div>
   <!--#endregion -->
   <q-dialog v-model="showDialog" persistent>
-    <stock-in-form v-model:mode="mode" v-model:showForm="showDialog" v-model:form="form"/>
+    <stock-in-form v-model:mode="mode" v-model:showForm="showDialog" v-model:preview="preview" v-model:form="form"/>
   </q-dialog>
+  <loading-component v-model="secondDialog"/>
 </template>
 <script setup>
 // #region import
@@ -56,15 +57,20 @@ import {
 } from 'quasar';
 import {
   ref,
-  onMounted
+  onMounted,
+  watch
 } from 'vue';
 import { useAuth } from '@/composables/useAuth';
 import { useStockIn } from '@/composables/useStockIn';
 import StockInForm from '@/components/inventory/StockInForm.vue';
+import dayjs from 'dayjs';
+import LoadingComponent from '@/components/LoadingComponent.vue';
 // #endregion
 
 // #region variable
 const formName = "進貨入庫";
+const errorMessage = ref('');
+const secondDialog = ref(false);
 // const showDialog = ref(false);
 // eslint-disable-next-line no-unused-vars
 const form = ref({
@@ -94,22 +100,42 @@ const hasAllAuth = authStore.hasAllAuth(formName);
 const auth = authStore.getAuth(formName);
 const columns = ref([
       { name:'單號',	label:'單號',	field:'單號',	align:'left', sortable:true},
-      { name:'廠商編號',	label:'廠商編號',	field:'廠商編號',	align:'left', sortable:true},
-      { name:'品項編號',	label:'品項編號',	field:'品項編號',	align:'left', sortable:true},
-      { name:'品名規格',	label:'品名規格',	field:'品名規格',	align:'left', sortable:true},
-      { name:'批號',	label:'批號',	field:'批號',	align:'left', sortable:true},
-      { name:'收貨數量',	label:'收貨數量',	field:'收貨數量',	align:'right', sortable:true},
-      { name:'合格數量',	label:'合格數量',	field:'合格數量',	align:'right', sortable:true},
-      { name:'特採數量',	label:'特採數量',	field:'特採數量',	align:'right', sortable:true},
-      { name:'退回數量',	label:'退回數量',	field:'退回數量',	align:'right', sortable:true},
-      { name:'實際單價',	label:'實際單價',	field:'實際單價',	align:'right', sortable:true},
-      { name:'折讓金額',	label:'折讓金額',	field:'折讓金額',	align:'left', sortable:true},
-      { name:'付款金額',	label:'付款金額',	field:'付款金額',	align:'left', sortable:true},
-      { name:'樣品',	label:'樣品',	field:'樣品',	align:'left', sortable:true},
-      { name:'採購單號',	label:'採購單號',	field:'採購單號',	align:'left', sortable:true},
-      { name:'退貨單號',	label:'退貨單號',	field:'退貨單號',	align:'left', sortable:true},
-      { name:'包裝單號',	label:'包裝單號',	field:'包裝單號',	align:'left', sortable:true},
-      { name:'勾選',	label:'勾選',	field:'勾選',	align:'left', sortable:true},
+      { name:'日期',	label:'日期',	field:'日期',	align:'left', sortable:true  ,
+        format: val => val != null
+        ? dayjs(val).format('YYYY/MM/DD')
+        : '', sort: (a, b) => {
+        return new Date(a) - new Date(b)
+        }  },
+      { name:'倉管人員',	label:'倉管人員',	field:'倉管人員',	align:'left', sortable:true},
+      { name:'備註',	label:'備註',	field:'備註',	align:'left', sortable:true},
+      { name:'建檔',	label:'建檔',	field:'建檔',	align:'left', sortable:true},
+      { name:'建檔日',	label:'建檔日',	field:'建檔日',	align:'left', sortable:true ,
+        format: val => val != null
+        ? dayjs(val).format('YYYY/MM/DD')
+        : '', sort: (a, b) => {
+        return new Date(a) - new Date(b)
+        }},
+      { name:'修改',	label:'修改',	field:'修改',	align:'left', sortable:true},
+      { name:'修改日',	label:'修改日',	field:'修改日',	align:'left', sortable:true ,
+        format: val => val != null
+        ? dayjs(val).format('YYYY/MM/DD')
+        : '', sort: (a, b) => {
+        return new Date(a) - new Date(b)
+        }},
+      { name:'核准',	label:'核准',	field:'核准',	align:'left', sortable:true},
+      { name:'核准日',	label:'核准日',	field:'核准日',	align:'left', sortable:true ,
+        format: val => val != null
+        ? dayjs(val).format('YYYY/MM/DD')
+        : '', sort: (a, b) => {
+        return new Date(a) - new Date(b)
+        }},
+      { name:'採購覆核',	label:'採購覆核',	field:'採購覆核',	align:'left', sortable:true},
+      { name:'覆核日',	label:'覆核日',	field:'覆核日',	align:'left', sortable:true ,
+        format: val => val != null
+        ? dayjs(val).format('YYYY/MM/DD')
+        : '', sort: (a, b) => {
+        return new Date(a) - new Date(b)
+        }},
 ]);
 // import { }
 // #endregion
@@ -120,8 +146,26 @@ const openCustomerDialog = (type) =>{
   mode.value = type;
   if (type == '新增'){
     preview.value = false;
+    form.value = {
+      單號:''
+      ,日期:''
+      ,倉管人員:''
+      ,備註:''
+      ,建檔:''
+      ,建檔日:''
+      ,修改:''
+      ,修改日:''
+      ,核准:''
+      ,核准日:''
+      ,採購覆核:''
+      ,覆核日:''
+      ,傳票:''
+      ,defailList:[]
+    }
   } else if (type == '修改'){
     preview.value = false;
+    form.value = selected.value[0];
+    form.value.日期 = dayjs(form.value.日期).format("YYYY/MM/DD")
   } else if (type == '預覽') {
     preview.value = true;
   }
@@ -129,13 +173,41 @@ const openCustomerDialog = (type) =>{
 }
 
 const init = async()=>{
+  selected.value = [];
+  secondDialog.value = true;
   await stockInStore.getAllStockInLists().then((data)=>{
     list.value = data;
+    secondDialog.value = false;
   })
 }
 
 onMounted(async()=>{
   init();
 })
+
+watch(showDialog, async (newValue)=>{
+  if (!newValue){
+    await init();
+  }
+})
+
+const deleteCustomer = async () =>{
+  if (selected.value.length == 0) {
+    errorMessage.value = '請選取一筆資料刪除!';
+    return;
+  }
+  if (confirm('確認刪除?')){
+    secondDialog.value = true;
+    await stockInStore.deleteStockInForm(form.value).then((data)=>{
+      if (data.data.errorMessage && data.data.errorMessage != ''){
+        alert()
+      } else {
+        alert('刪除成功');
+      }
+      secondDialog.value = false;
+      init();
+    });
+  }
+}
 // #endregion
 </script>
