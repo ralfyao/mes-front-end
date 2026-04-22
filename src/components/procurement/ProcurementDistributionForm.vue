@@ -66,6 +66,7 @@ import {
 } from 'vue';
 import LoadingComponent from '../LoadingComponent.vue';
 import { useStockIn } from '@/composables/useStockIn';
+import dayjs from 'dayjs';
 // #endregion
 
 // #region variable
@@ -93,7 +94,11 @@ const columns = ref([
   {name:'樣品', label:'樣品', field:'樣品', sort:true, align:'left'},
   {name:'廠商編號', label:'廠商編號', field:'廠商編號', sort:true, align:'left'},
   {name:'廠商簡稱', label:'廠商簡稱', field:'廠商簡稱', sort:true, align:'left'},
-  {name:'預交日期', label:'預交日期', field:'預交日期', sort:true, align:'left'},
+  {name:'預交日期', label:'預交日期', field:'預交日期', sort:true, align:'left',
+    format: val => val != null
+        ? dayjs(val).format('YYYY/MM/DD')
+        : ''
+  },
 ]);
 const list = ref([]);
 const tmpList = ref([]);
