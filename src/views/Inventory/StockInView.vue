@@ -22,6 +22,12 @@
                     :loading="loading">進貨單查詢</q-btn>&nbsp;
       </div>
     </div>
+    <div class="row justify-start">
+      <div class="col-12 justify-start flex" style="max-width:1500px">
+
+        <label class="text-h4"><font color=red>{{ errorMessage }}</font></label>
+      </div>
+    </div>
   <!--#endregion -->
   <!--#region 進貨單列表 -->
   <div class="row justify-start">
