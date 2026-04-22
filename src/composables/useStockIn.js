@@ -53,5 +53,14 @@ export const useStockIn = defineStore('stockIn', {
         return response
       }
       return null;
+    },
+    async queryAvailableProcItem(){
+      const constant = Constant()
+      console.log('APIUrl', constant.APIUrl)
+      const response = await apiClient.get(constant.APIUrl + 'api/QueryAvailableProcItem')
+      console.log('response', response)
+      if (response)
+        return response.data.resultList;
+      return [];
     }
   }});

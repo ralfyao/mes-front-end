@@ -121,6 +121,9 @@
       <q-btn label="送出" color="red" flat dense @click="submit"/>
     </q-card-actions>
   </q-card>
+  <q-dialog v-model="showProcurementDistribution" persistent>
+    <ProcurementDistributionForm v-model:showForm="showProcurementDistribution" v-model:list="tmpList" />
+  </q-dialog>
   <LoadingComponent v-model="secondDialog"/>
 </template>
 <script setup>
@@ -137,22 +140,27 @@ import {QCard
   , QSelect
   , QTable
   , QTd
-  , QCheckbox,
-  SessionStorage
+  , QCheckbox
+  , SessionStorage
+  , QDialog
 } from 'quasar';
 import { ref,
   defineProps,
   onMounted,
   defineEmits,
+  watch,
  } from 'vue'
  import dayjs from 'dayjs'
 import { useStockIn } from '@/composables/useStockIn';
 import { useItemStore } from '@/composables/useItem';
 import LoadingComponent from '../LoadingComponent.vue';
 import { useHRStore } from '@/composables/useHR';
+import ProcurementDistributionForm from '../procurement/ProcurementDistributionForm.vue';
 // #endregion
 
 // #region variable
+// const showChooseProcItem = ref(false);
+const tmpList = ref([]);
 const hrStore = useHRStore();
 const showProcurementDistribution = ref(false);
 const whWorkerName = ref('');
@@ -328,6 +336,31 @@ const init = async () =>{
     })
   }
 }
+watch(showProcurementDistribution, (newValue) =>{
+  if (!newValue){
+    if (!form.value.detailList)
+      form.value.detailList = [];
+    tmpList.value.forEach(x => form.value.detailList.push({
+      品項編號:x.品項編號,
+      品名規格:x.品名規格,
+      單位:x.單位,
+      廠商編號:x.廠商編號,
+      廠商簡稱:x.廠商簡稱,
+      採購數量:x.採購數量,
+      收貨數量:x.收貨數量,
+      合格數量:x.合格數量,
+      特採數量:x.特採數量,
+      退回數量:x.退回數量,
+      樣品:x.樣品,
+      備註:x.備註,
+      專案序號:x.專案序號,
+      採購單號:x.採購單號,
+      實際單價:x.實際單價,
+      折讓金額:x.折讓金額,
+      付款金額:x.付款金額
+    }));
+  }
+})
 onMounted(async ()=>{
   await init();
 })
