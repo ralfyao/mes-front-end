@@ -296,8 +296,8 @@ const openRoleDialog = async (type) => {
     const Account = SessionStorage.getItem('Account');
     form.value.roleName = role.privilegeDesc;
     form.value.account = Account.account;
-    let res = await userPriv.getPrivMenuByRole(form.value.roleName );
-    userPrivList.value = res;
+    let res1 = await userPriv.getPrivMenuByRole(form.value.roleName );
+    userPrivList.value = res1;
     console.log('userPrivList', userPrivList.value);
     userPrivList.value.forEach(x =>{
       selectedMenu.value.push({ menuID: x.menuID });

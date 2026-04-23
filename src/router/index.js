@@ -25,6 +25,7 @@ const routes = [
       //進銷存貨
       { path: 'inventory/items', component: () => import('@/views/Inventory/ItemView.vue') },//品項維護
       { path: 'inventory/soldout', component: () => import('@/views/Inventory/SoldOutView.vue') },//銷貨出庫
+      { path: 'inventory/incomecert', component: () => import('@/views/Inventory/IncomeCertReg.vue') },//進項憑證
       { path: 'inventory/stockin', component: () => import('@/views/Inventory/StockInView.vue') },//進貨入庫
       { path: 'inventory/transfer', component: () => import('@/views/Inventory/TransferView.vue') },//庫存移轉
       { path: 'inventory/costcarryforward', component: () => import('@/views/Inventory/CostCarryForwardView.vue') },//成本結轉
