@@ -12,6 +12,13 @@ export const useItemStore = defineStore('item', {
       const response = await apiClient.get(constant.APIUrl + 'api/ItemList')
       console.log('response', response)
       return response.data.resultList;
+    },
+    async getItemTypeList(){
+      const constant = Constant()
+      console.log('APIUrl', constant.APIUrl)
+      const response = await apiClient.get(constant.APIUrl + 'api/ItemTypeList')
+      console.log('response', response)
+      return response.data.resultList;
     }
   }
 });

@@ -7,19 +7,19 @@
     <div class="col-11 justify-start" style="max-width:1350px">
       <q-btn v-if="(hasAllAuth ||(auth && auth.編修))" color="primary" class="padding-right"
                 glossy @click="openCustomerDialog('新增')"
-                :loading="loading">新增進貨憑證</q-btn>&nbsp;
+                :loading="loading">新增進項憑證</q-btn>&nbsp;
       <q-btn v-if="(hasAllAuth ||(auth && auth.編修))" color="info" class="padding-right"
                 glossy @click="openCustomerDialog('修改')"
-                :loading="loading">修改進貨憑證</q-btn>&nbsp;
+                :loading="loading">修改進項憑證</q-btn>&nbsp;
       <q-btn v-if="(hasAllAuth ||(auth && auth.編修))" color="red" class="padding-right"
                   glossy @click="deleteCustomer"
-                  :loading="loading">刪除進貨憑證</q-btn>&nbsp;
+                  :loading="loading">刪除進項憑證</q-btn>&nbsp;
       <q-btn v-if="(hasAllAuth ||(auth && auth.查詢))" color="green" class="padding-right"
                   glossy @click="openCustomerDialog('預覽')"
-                    :loading="loading">進貨憑證預覽</q-btn>&nbsp;
+                    :loading="loading">進項憑證預覽</q-btn>&nbsp;
       <q-btn v-if="(hasAllAuth ||(auth && auth.查詢))" color="blue-6" class="padding-right"
                   glossy @click="openSearchForm"
-                    :loading="loading">進貨憑證查詢</q-btn>&nbsp;
+                    :loading="loading">進項憑證查詢</q-btn>&nbsp;
     </div>
   </div>
   <div class="row justify-start">
