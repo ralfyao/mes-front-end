@@ -63,6 +63,7 @@ import {
 import {
   ref
   , onMounted
+  , watch
 } from 'vue';
 import { useAuth } from '@/composables/useAuth';
 import { useItemStore } from '@/composables/useItem';
@@ -123,6 +124,8 @@ const columns = ref([
 // #region function
 const init =async() =>{
   secondDialog.value = true;
+  selected.value = [];
+  errorMessage.value = '';
   await itemStore.getAllItems().then((data)=>{
     list.value = data;
     secondDialog.value = false;
@@ -131,6 +134,25 @@ const init =async() =>{
 onMounted(async ()=>{
   init();
 })
+
+const deleteCustomer = async () =>{
+  if (selected.value.length == 0){
+    errorMessage.value = '請選取一筆刪除';
+    return;
+  }
+  if (confirm('確認刪除?')){
+    secondDialog.value = true;
+    await itemStore.deleteItem(form.value).then((data)=>{
+      if (data.data.errorMessage && data.data.errorMessage != ''){
+        alert(data.data.errorMessage);
+      } else {
+        alert('執行成功');
+      }
+      secondDialog.value = false;
+      init();
+    });
+  }
+}
 
 const openCustomerDialog = (type)=>{
   mode.value = type;
@@ -162,14 +184,27 @@ const openCustomerDialog = (type)=>{
       ,來源屬性:''};
 
   } else if (mode.value == '修改') {
+    if (selected.value.length == 0){
+      errorMessage.value = '請選取一筆'+mode.value;
+      return;
+    }
     console.log(mode.value);
     form.value = selected.value[0];
 
   } else if (mode.value == '預覽') {
+    if (selected.value.length == 0){
+      errorMessage.value = '請選取一筆'+mode.value;
+      return;
+    }
     console.log(mode.value);
     form.value = selected.value[0];
   }
   showDialog.value = true;
 }
+watch(showDialog, newValue =>{
+  if (!newValue){
+    init();
+  }
+})
 // #endregion
 </script>
