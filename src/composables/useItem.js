@@ -43,7 +43,7 @@ export const useItemStore = defineStore('item', {
     async deleteItem(form){
       const constant = Constant()
       console.log('APIUrl', constant.APIUrl)
-      const response = await apiClient.post(constant.APIUrl + 'api/DeleteItem?itemNo='+form.產品編號)
+      const response = await apiClient.get(constant.APIUrl + 'api/DeleteItem?itemNo='+form.產品編號)
       console.log('response', response)
       if (response) {
         return response

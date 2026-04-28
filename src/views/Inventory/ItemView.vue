@@ -142,6 +142,8 @@ const deleteCustomer = async () =>{
   }
   if (confirm('確認刪除?')){
     secondDialog.value = true;
+    form.value = selected.value[0];
+    console.log('delete form', form.value)
     await itemStore.deleteItem(form.value).then((data)=>{
       if (data.data.errorMessage && data.data.errorMessage != ''){
         alert(data.data.errorMessage);
