@@ -62,5 +62,14 @@ export const useStockIn = defineStore('stockIn', {
       if (response)
         return response.data.resultList;
       return [];
+    },
+    async queryAllIncomeCertReg(){
+      const constant = Constant()
+      console.log('APIUrl', constant.APIUrl)
+      const response = await apiClient.get(constant.APIUrl + 'api/QueryAllIncomeCertReg')
+      console.log('response', response)
+      if (response)
+        return response;
+      return [];
     }
   }});

@@ -9,6 +9,7 @@
     :readonly="preview"
     @update:model-value="onSelection"
     emit-value map-options
+    style="width:200px"
   >
   </q-select>
   <q-icon name="search" size="30px" v-if="!preview" @click="openSearchSupplierNoForm" class="cursor-pointer"></q-icon>
